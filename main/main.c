@@ -28,7 +28,7 @@ esp_err_t bean_init()
 {
     ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
     ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
-    ESP_RETURN_ON_ERROR(bmi088_init(), TAG, "BMI088 Init failed");
+    ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
     return ESP_OK;
 }
 
@@ -62,13 +62,13 @@ void app_main()
         else{
             ESP_LOGE(TAG, "Failed to read from altimeter");
         }
-        if(update_accel_data() == ESP_OK){
+        if(bean_imu_update_accel() == ESP_OK){
             ESP_LOGI(TAG, "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2", get_x_accel_data(), get_y_accel_data(), get_z_accel_data());
         }
         else{
             ESP_LOGE(TAG, "Failed to update accelerometer data");
         }
-        if(update_gyro_data() == ESP_OK){
+        if(bean_imu_update_gyro() == ESP_OK){
             ESP_LOGI(TAG, "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s", get_x_gyro_data(), get_y_gyro_data(), get_z_gyro_data());
         }
         else{

@@ -17,7 +17,7 @@
  *
  * @return esp_err_t Returns ESP_OK if the initialization is successful, otherwise an error code.
  */
-esp_err_t bmi088_init();
+esp_err_t bean_imu_init();
 
 /**
  * @brief Sets the output data rate (ODR) for the accelerometer.
@@ -88,14 +88,14 @@ esp_err_t set_gyro_power_mode(uint8_t power_mode);
  *
  * @return esp_err_t Returns ESP_OK if the update is successful, otherwise an error code.
  */
-esp_err_t update_accel_data();
+esp_err_t bean_imu_update_accel();
 
 /**
  * @brief Updates the gyroscope data.
  *
  * @return esp_err_t Returns ESP_OK if the update is successful, otherwise an error code.
  */
-esp_err_t update_gyro_data();
+esp_err_t bean_imu_update_gyro();
 
 /**
  * @brief Gets the X-axis accelerometer data.

@@ -64,7 +64,7 @@ static void delay_us(uint32_t period, void *intf_ptr){
     ets_delay_us(period);
 }
 
-esp_err_t bmi088_init(){
+esp_err_t bean_imu_init(){
     sensor = (struct bmi08_dev *)malloc(sizeof(struct bmi08_dev));
     config_file_ptr = (uint8_t *)malloc(sizeof(uint8_t));
     accel_data = (struct bmi08_sensor_data *)malloc(sizeof(struct bmi08_sensor_data));
@@ -297,7 +297,7 @@ static float lsb_to_dps(int16_t val, float dps, uint8_t bit_width)
     return (dps / (half_scale)) * (val);
 }
 
-esp_err_t update_accel_data(){
+esp_err_t bean_imu_update_accel(){
     //set_accel_power_mode(BMI08_ACCEL_PM_ACTIVE);
     if (accel_range == 0){
         ESP_LOGE(TAG, "BMI088 accel range not set, cant measure yet");
@@ -319,7 +319,7 @@ esp_err_t update_accel_data(){
     return ESP_OK;
 }
 
-esp_err_t update_gyro_data(){
+esp_err_t bean_imu_update_gyro(){
     int8_t rslt = bmi08g_get_data(gyro_data,sensor);
     if (rslt != BMI08_OK){
         ESP_LOGE(TAG, "BMI088 gyro get data error");
