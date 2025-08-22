@@ -25,14 +25,27 @@
 static char TAG[] = "MAIN";
 
 
+esp_err_t bean_init()
+{
+    ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
+    ESP_RETURN_ON_ERROR(bmp390_init(), TAG, "BMP390 Init failed");
+    ESP_RETURN_ON_ERROR(bmi088_init(), TAG, "BMI088 Init failed");
+    return ESP_OK;
+}
+
 void app_main()
 {   
     ESP_LOGI(TAG, "Starting up...");
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     ESP_ERROR_CHECK(nvs_flash_init());
 
-    io_init();
-    
+    if(bean_init() != ESP_OK){
+        ESP_LOGE(TAG, "Bean Init failed");
+        leds_set_color(0, (led_color_rgb_t){255,0, 0});
+        leds_set_color(1, (led_color_rgb_t){255,0, 0});
+        return;
+    }
+
     leds_set_color(0, (led_color_rgb_t){255, 255, 255});
     leds_set_color(1, (led_color_rgb_t){255, 255, 255});
     vTaskDelay(3000 / portTICK_PERIOD_MS);
@@ -44,6 +57,24 @@ void app_main()
         leds_set_color(0, (led_color_rgb_t){0, 0, 255});
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         leds_set_color(0, (led_color_rgb_t){0, 0, 0});
+        if(perform_reading() == ESP_OK){
+            ESP_LOGI(TAG, "Pressure: %.2f Pa, Temperature: %.2f C", get_pressure(), get_temperature());
+        }
+        else{
+            ESP_LOGE(TAG, "Failed to read from altimeter");
+        }
+        if(update_accel_data() == ESP_OK){
+            ESP_LOGI(TAG, "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2", get_x_accel_data(), get_y_accel_data(), get_z_accel_data());
+        }
+        else{
+            ESP_LOGE(TAG, "Failed to update accelerometer data");
+        }
+        if(update_gyro_data() == ESP_OK){
+            ESP_LOGI(TAG, "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s", get_x_gyro_data(), get_y_gyro_data(), get_z_gyro_data());
+        }
+        else{
+            ESP_LOGE(TAG, "Failed to update gyroscope data");
+        }
     }
 }
 
