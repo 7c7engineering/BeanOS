@@ -1,0 +1,3 @@
+[submodule "components/altimeter/BMP3"]
+	path = components/altimeter/BMP3
+	url = https://github.com/boschsensortec/BMP3-Sensor-API.git
