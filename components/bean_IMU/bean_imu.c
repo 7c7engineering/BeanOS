@@ -4,7 +4,7 @@ Date: 8/04/2024
 Description: BMI088 driver for ESP32-S3 using BMI08X library from Bosch Sensortec
 */
 
-#include "bmi088.h"
+#include "bean_imu.h"
 
 static float lsb_to_mps2(int16_t val, float g_range, uint8_t bit_width);
 static float lsb_to_dps(int16_t val, float dps, uint8_t bit_width);

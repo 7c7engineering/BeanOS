@@ -7,7 +7,7 @@
 #include <freertos/task.h>
 #include "systemio.h"
 #include "sdkconfig.h"
-#include "altimeter.h"
+#include "bean_altimeter.h"
 #include "bean_storage.h"
 #include "esp_console.h"
 #include "linenoise/linenoise.h"
@@ -18,8 +18,7 @@
 #include "argtable3/argtable3.h"
 #include "nvs_flash.h"
 #include "leds.h"
-#include "systemio.h"
-#include "bmi088.h"
+#include "bean_imu.h"
 
 
 static char TAG[] = "MAIN";
@@ -28,7 +27,7 @@ static char TAG[] = "MAIN";
 esp_err_t bean_init()
 {
     ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
-    ESP_RETURN_ON_ERROR(bmp390_init(), TAG, "BMP390 Init failed");
+    ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
     ESP_RETURN_ON_ERROR(bmi088_init(), TAG, "BMI088 Init failed");
     return ESP_OK;
 }
@@ -57,8 +56,8 @@ void app_main()
         leds_set_color(0, (led_color_rgb_t){0, 0, 255});
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         leds_set_color(0, (led_color_rgb_t){0, 0, 0});
-        if(perform_reading() == ESP_OK){
-            ESP_LOGI(TAG, "Pressure: %.2f Pa, Temperature: %.2f C", get_pressure(), get_temperature());
+        if(bean_altimeter_update() == ESP_OK){
+            ESP_LOGI(TAG, "Pressure: %.2f Pa, Temperature: %.2f C", bean_altimeter_get_pressure(), bean_altimeter_get_temperature());
         }
         else{
             ESP_LOGE(TAG, "Failed to read from altimeter");

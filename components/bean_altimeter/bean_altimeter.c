@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "altimeter.h"
+#include "bean_altimeter.h"
 
 bool _filterEnabled, _tempOSEnabled, _presOSEnabled, _ODREnabled;
 uint8_t _i2caddr;
@@ -98,7 +98,7 @@ static int8_t validate_trimming_param(struct bmp3_dev *dev)
     return rslt;
 }
 
-esp_err_t bmp390_init()
+esp_err_t bean_altimeter_init()
 {
     sensor = (struct bmp3_dev *) malloc(sizeof(struct bmp3_dev));
     settings = (struct bmp3_settings *) malloc(sizeof(struct bmp3_settings));
@@ -137,7 +137,7 @@ esp_err_t bmp390_init()
     return ESP_OK;
 }
 
-esp_err_t perform_reading()
+esp_err_t bean_altimeter_update()
 {
     int8_t rslt;
     /* Used to select the settings user needs to change */
@@ -198,12 +198,12 @@ esp_err_t perform_reading()
     return ESP_OK;
 }
 
-double get_temperature()
+double bean_altimeter_get_temperature()
 {
     return bmp390_temperature;
 }
 
-double get_pressure()
+double bean_altimeter_get_pressure()
 {
     return bmp390_pressure;
 }

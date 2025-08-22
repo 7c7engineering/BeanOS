@@ -9,10 +9,10 @@
 
 #define BMP3_DOUBLE_PRECISION_COMPENSATION
 
-esp_err_t bmp390_init(void);
-esp_err_t perform_reading(void);
-double get_pressure(void);
-double get_temperature(void);
+esp_err_t bean_altimeter_init(void);
+esp_err_t bean_altimeter_update(void);
+double bean_altimeter_get_pressure(void);
+double bean_altimeter_get_temperature(void);
 esp_err_t setTemperatureOversampling(uint8_t oversample);
 esp_err_t setPressureOversampling(uint8_t oversample);
 esp_err_t setIIRFilterCoeff(uint8_t coeff);
