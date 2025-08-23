@@ -1,5 +1,5 @@
 #include "systemio.h"
-
+#include "bean_context.h"
 static char tag[] = "systemio";
 
 
@@ -8,8 +8,8 @@ esp_err_t io_init() {
     esp_err_t ret = ESP_OK;
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = I2C_MASTER_SDA_IO;
-    conf.scl_io_num = I2C_MASTER_SCL_IO;
+    conf.sda_io_num = (int)PIN_I2C_SDA;
+    conf.scl_io_num = (int)PIN_I2C_SCL;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     conf.master.clk_speed = 100000;
@@ -18,7 +18,6 @@ esp_err_t io_init() {
     int i2c_master_port = I2C_NUM_0;
     ESP_ERROR_CHECK(i2c_param_config(i2c_master_port, &conf));
     ESP_ERROR_CHECK(i2c_driver_install(i2c_master_port, conf.mode, 0, 0, 0));
-    leds_init();
     return ESP_OK;
 }
 

@@ -3,15 +3,16 @@
 #include "driver/gpio.h"
 #include "driver/ledc.h"
 #include "gamma.h"
+#include "bean_context.h"
 
 static char tag[] = "leds";
 
-static const gpio_num_t PIN_LEDR1      = GPIO_NUM_33;
-static const gpio_num_t PIN_LEDG1      = GPIO_NUM_34;
-static const gpio_num_t PIN_LEDB1      = GPIO_NUM_35;
-static const gpio_num_t PIN_LEDG2      = GPIO_NUM_16;
-static const gpio_num_t PIN_LEDB2      = GPIO_NUM_17;
-static const gpio_num_t PIN_LEDR2      = GPIO_NUM_18;
+// static const gpio_num_t PIN_LEDR1      = GPIO_NUM_33;
+// static const gpio_num_t PIN_LEDG1      = GPIO_NUM_34;
+// static const gpio_num_t PIN_LEDB1      = GPIO_NUM_35;
+// static const gpio_num_t PIN_LEDG2      = GPIO_NUM_16;
+// static const gpio_num_t PIN_LEDB2      = GPIO_NUM_17;
+// static const gpio_num_t PIN_LEDR2      = GPIO_NUM_18;
 
 const ledc_channel_t LEDC_CHANNEL_RED1 = LEDC_CHANNEL_0;
 const ledc_channel_t LEDC_CHANNEL_GREEN1 = LEDC_CHANNEL_1;
@@ -21,7 +22,7 @@ const ledc_channel_t LEDC_CHANNEL_GREEN2 = LEDC_CHANNEL_4;
 const ledc_channel_t LEDC_CHANNEL_BLUE2 = LEDC_CHANNEL_5;
 
 
-esp_err_t leds_init() {
+esp_err_t bean_led_init() {
     esp_err_t ret = ESP_OK;
 
     ledc_timer_config_t ledc_timer = {
@@ -69,7 +70,7 @@ esp_err_t leds_init() {
     return ESP_OK;
 }
 
-esp_err_t leds_set_color(uint8_t led, led_color_rgb_t color){
+esp_err_t bean_led_set_color(uint8_t led, led_color_rgb_t color){
     ledc_channel_t r_channel, g_channel, b_channel;
     switch(led){
         case 0:

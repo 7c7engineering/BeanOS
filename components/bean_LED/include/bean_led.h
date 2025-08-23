@@ -15,4 +15,5 @@ typedef struct led_color_hsv_t {
 } led_color_hsv_t;
 
 esp_err_t bean_led_init();
+esp_err_t bean_led_set_color(uint8_t led, led_color_rgb_t color);
 

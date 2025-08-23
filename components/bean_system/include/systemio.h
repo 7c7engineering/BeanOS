@@ -5,6 +5,5 @@
 #include "esp_log.h"
 #include <driver/gpio.h>
 #include "driver/i2c.h"
-#include "leds.h"
 
 esp_err_t io_init();
