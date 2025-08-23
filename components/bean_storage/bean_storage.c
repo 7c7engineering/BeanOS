@@ -14,8 +14,8 @@ static esp_flash_t* init_ext_flash(void)
         .mosi_io_num = PIN_MOSI,
         .miso_io_num = PIN_MISO,
         .sclk_io_num = PIN_CLK,
-        .quadhd_io_num = PIN_HD,
-        .quadwp_io_num = PIN_WP,
+        .quadhd_io_num = -1,
+        .quadwp_io_num = -1,
     };
 
     const esp_flash_spi_device_config_t device_config = {
@@ -85,7 +85,7 @@ static bool mount_fatfs(const char* partition_label)
     return true;
 }
 
-esp_err_t storage_init(void){
+esp_err_t bean_storage_init(void){
     // Set up SPI bus and initialize the external SPI Flash chip
     flash = init_ext_flash();
     if (flash == NULL) {
