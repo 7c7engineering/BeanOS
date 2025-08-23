@@ -20,8 +20,8 @@ esp_err_t bean_beep_init()
 	// Configure MCPWM timer for default 2kHz, 50% duty
 	mcpwm_config_t pwm_config = {
 		.frequency = 2000,
-		.cmpr_a = 50.0,
-		.cmpr_b = 50.0,
+		.cmpr_a = 0.0,
+		.cmpr_b = 0.0,
 		.duty_mode = MCPWM_DUTY_MODE_0,
 		.counter_mode = MCPWM_UP_COUNTER,
 	};
