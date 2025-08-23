@@ -1,5 +1,18 @@
-#include <stdio.h>
 #include "bean_storage.h"
+#include "bean_context.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "esp_flash.h"
+#include "esp_flash_spi_init.h"
+#include "esp_partition.h"
+#include "esp_vfs.h"
+#include "esp_vfs_fat.h"
+#include "esp_system.h"
+
+#define HOST_ID  SPI2_HOST//SPI3_HOST
+#define SPI_DMA_CHAN SPI_DMA_CH_AUTO
 
 static esp_flash_t * flash;
 const char *partition_label = "storage";
@@ -11,9 +24,9 @@ static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 static esp_flash_t* init_ext_flash(void)
 {
     const spi_bus_config_t bus_config = {
-        .mosi_io_num = PIN_MOSI,
-        .miso_io_num = PIN_MISO,
-        .sclk_io_num = PIN_CLK,
+        .mosi_io_num = PIN_FLASH_MOSI,
+        .miso_io_num = PIN_FLASH_MISO,
+        .sclk_io_num = PIN_FLASH_CLK,
         .quadhd_io_num = -1,
         .quadwp_io_num = -1,
     };
@@ -21,7 +34,7 @@ static esp_flash_t* init_ext_flash(void)
     const esp_flash_spi_device_config_t device_config = {
         .host_id = HOST_ID,
         .cs_id = 0,
-        .cs_io_num = PIN_CS,
+        .cs_io_num = PIN_FLASH_CS,
         .io_mode = SPI_FLASH_DIO,
         .freq_mhz = 20,
     };
