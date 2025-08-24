@@ -22,6 +22,7 @@
 #include "bean_imu.h"
 #include "bean_beep.h"
 #include "bean_storage.h"
+#include "bean_battery.h"
 
 static char TAG[] = "MAIN";
 
@@ -29,6 +30,7 @@ esp_err_t bean_init()
 {
     ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
     ESP_RETURN_ON_ERROR(bean_led_init(), TAG, "LEDs Init failed");
+    ESP_RETURN_ON_ERROR(bean_battery_init(), TAG, "Battery Init failed");
     ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
     ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
     ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
@@ -64,10 +66,13 @@ void app_main()
 
     while (1)
     {
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
         bean_led_set_color(0, (led_color_rgb_t){0, 50, 0});
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
         bean_led_set_color(0, (led_color_rgb_t){0, 0, 0});
+
+        continue; // Skipping the rest of the loop
+
         if (bean_altimeter_update() == ESP_OK)
         {
             ESP_LOGI(TAG, "Pressure: %.2f Pa, Temperature: %.2f C", bean_altimeter_get_pressure(), bean_altimeter_get_temperature());
