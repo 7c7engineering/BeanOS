@@ -2,9 +2,10 @@
 #include "esp_log.h"
 #include "esp_check.h"
 #include "bean_battery.h"
-#include "bean_context.h"
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "freertos/event_groups.h"
 #include "freertos/task.h"
 
 #include "driver/adc.h"
@@ -26,7 +27,7 @@ static adc_cali_handle_t vbat_adc_cali_handle;
 
 TaskHandle_t battery_monitor_task_handle;
 
-esp_err_t bean_battery_init(void)
+esp_err_t bean_battery_init(bean_context_t *ctx)
 {
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_USB_DET, GPIO_MODE_INPUT), TAG, "Set USB DET pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_CHRG_STAT, GPIO_MODE_INPUT), TAG, "Set CHRG STAT pin direction failed");
@@ -53,9 +54,23 @@ esp_err_t bean_battery_init(void)
     };
     ESP_RETURN_ON_ERROR(adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle), TAG, "Failed to create VBAT ADC calibration handle");
 
-    xTaskCreate(&vtask_battery_monitor, "battery_monitor", 2048, NULL, tskIDLE_PRIORITY, &battery_monitor_task_handle);
+    xTaskCreate(&vtask_battery_monitor, "battery_monitor", 2048, (void *)ctx, tskIDLE_PRIORITY, &battery_monitor_task_handle);
     if (battery_monitor_task_handle == NULL) {
         ESP_LOGE(TAG, "Failed to create battery monitor task");
+        return ESP_FAIL;
+    }
+    return ESP_OK;
+}
+
+esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)  
+{
+    log_data_t log_data = {
+        .measurement_type = MEASUREMENT_TYPE_BATTERY_VOLTAGE,
+        .timestamp = esp_log_timestamp(),
+        .measurement_value = voltage_mv
+    };
+    if (xQueueSend(ctx->data_log_queue, &log_data, portMAX_DELAY) != pdPASS) {
+        ESP_LOGE(TAG, "Failed to enqueue battery voltage");
         return ESP_FAIL;
     }
     return ESP_OK;
@@ -65,6 +80,13 @@ void vtask_battery_monitor(void *pvParameter)
 {
     ESP_LOGI(TAG, "Battery monitor task started");
     int voltage_raw, voltage_mv = 0;
+    bean_context_t *ctx = (bean_context_t *)pvParameter;
+    if(ctx == NULL)
+    {
+        ESP_LOGE(TAG, "Battery monitor task: context is NULL");
+        vTaskDelete(NULL);
+        return;
+    }
     while (1)
     {  
         esp_err_t ret = adc_oneshot_read(vbat_adc_handle, vbat_adc_channel, &voltage_raw);
@@ -72,7 +94,7 @@ void vtask_battery_monitor(void *pvParameter)
         {
             adc_cali_raw_to_voltage(vbat_adc_cali_handle, voltage_raw, &voltage_mv);
             voltage_mv *= resistor_voltage_divider;
-            ESP_LOGI(TAG, "Battery Voltage: %d mV", voltage_mv);
+            enqueue_battery_voltage(ctx, voltage_mv);
         }
         else
         {
@@ -80,12 +102,19 @@ void vtask_battery_monitor(void *pvParameter)
         }
 
         // Read the USB detection pin
-        int usb_detected = gpio_get_level(PIN_USB_DET);
-        ESP_LOGI(TAG, "USB detected: %d", usb_detected);
+        if(gpio_get_level(PIN_USB_DET) == 1)
+        {
+            xEventGroupSetBits(ctx->system_event_group, BEAN_SYSTEM_USB_POWERED);
+        }
+        else
+        {
+            xEventGroupClearBits(ctx->system_event_group, BEAN_SYSTEM_USB_POWERED);
+        }
+        // there needs to be more logic for the charging. Because the skybean can start-up without battery and then the CHRG_STAT is LOW.
         int chrg_stat = gpio_get_level(PIN_CHRG_STAT);
         ESP_LOGI(TAG, "Charge status: %d", chrg_stat);
 
         // Delay before the next reading
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }
