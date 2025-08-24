@@ -19,8 +19,9 @@ Each RGB color is bundled into a `led_color_rgb_t` structure.
 void app_main(void)
 {
     bean_led_init();
-    bean_led_set_color(LED1, (led_color_rgb_t){255, 0, 0}); // Set LED1 to red
-    bean_led_set_color(LED2, (led_color_rgb_t){0, 255, 0}); // Set LED2 to green
+    bean_led_set_color(LED_L1, (led_color_rgb_t){255, 0, 0}); // Set L1 to red
+    bean_led_set_color(LED_L2, (led_color_rgb_t){0, 255, 0}); // Set L2 to green
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){0, 0, 255}); // Set both LEDs to blue
 }
 ```
 

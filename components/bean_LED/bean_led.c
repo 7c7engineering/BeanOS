@@ -70,30 +70,40 @@ esp_err_t bean_led_init() {
     return ESP_OK;
 }
 
-esp_err_t bean_led_set_color(uint8_t led, led_color_rgb_t color){
+esp_err_t bean_led_set_color(led_select_t led, led_color_rgb_t color){
     ledc_channel_t r_channel, g_channel, b_channel;
+    esp_err_t ret = ESP_OK;
+
     switch(led){
-        case 0:
+        case LED_L1:
             r_channel = LEDC_CHANNEL_RED1;
             g_channel = LEDC_CHANNEL_GREEN1;
             b_channel = LEDC_CHANNEL_BLUE1;
             break;
-        case 1:
+        case LED_L2:
             r_channel = LEDC_CHANNEL_RED2;
             g_channel = LEDC_CHANNEL_GREEN2;
             b_channel = LEDC_CHANNEL_BLUE2;
             break;
+        case LED_BOTH:
+            // Set both LEDs by calling this function recursively
+            ret = bean_led_set_color(LED_L1, color);
+            if (ret != ESP_OK) {
+                return ret;
+            }
+            ret = bean_led_set_color(LED_L2, color);
+            return ret;
         default:
-            ESP_LOGE(tag, "Invalid LED number: %d", led);
+            ESP_LOGE(tag, "Invalid LED selection: %d", led);
             return ESP_ERR_INVALID_ARG;
     }
+
     uint16_t r = (led_gamma_r[color.r] >> 3);
     uint16_t g = (led_gamma_g[color.g] >> 3);
     uint16_t b = (led_gamma_b[color.b] >> 3);
 
     //ESP_LOGI(tag, "Setting LED %d to RGB(%d, %d, %d)", led, r, g, b);
 
-    esp_err_t ret = ESP_OK;
     ret = ledc_set_duty(LEDC_LOW_SPEED_MODE, r_channel, r);
     ESP_RETURN_ON_ERROR(ret, tag, "Error setting LEDC duty for red channel: %s", esp_err_to_name(ret));
     ret = ledc_set_duty(LEDC_LOW_SPEED_MODE, g_channel, g);
