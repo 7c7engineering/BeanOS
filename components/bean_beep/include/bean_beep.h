@@ -1,8 +1,17 @@
 #pragma once
 #include "esp_err.h"
 
-esp_err_t bean_beep_init();
+// Initialize the beep component
+esp_err_t bean_beep_init(void);
+
+// Non-blocking beep function (replaces the blocking one)
 esp_err_t bean_beep_sound(uint32_t frequency, uint32_t duration_ms);
+
+// Stop current beep if playing
+esp_err_t bean_beep_stop(void);
+
+// Check if beep is currently playing
+bool bean_beep_is_playing(void);
 
 enum notes {
     NOTE_C4 = 261,
