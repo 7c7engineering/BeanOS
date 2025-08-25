@@ -22,6 +22,7 @@
 #include "bean_imu.h"
 #include "bean_beep.h"
 #include "bean_storage.h"
+#include "bean_pyro.h"
 
 static char TAG[] = "MAIN";
 
@@ -33,6 +34,7 @@ esp_err_t bean_init()
     ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
     ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
     ESP_RETURN_ON_ERROR(bean_storage_init(), TAG, "Storage Init failed");
+    ESP_RETURN_ON_ERROR(bean_pyro_init(), TAG, "Pyro Init failed");
     return ESP_OK;
 }
 
