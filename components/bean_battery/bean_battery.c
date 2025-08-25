@@ -54,7 +54,7 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
     };
     ESP_RETURN_ON_ERROR(adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle), TAG, "Failed to create VBAT ADC calibration handle");
 
-    xTaskCreate(&vtask_battery_monitor, "battery_monitor", 2048, (void *)ctx, tskIDLE_PRIORITY, &battery_monitor_task_handle);
+    xTaskCreate(&vtask_battery_monitor, "battery_monitor", 2560, (void *)ctx, tskIDLE_PRIORITY, &battery_monitor_task_handle);
     if (battery_monitor_task_handle == NULL) {
         ESP_LOGE(TAG, "Failed to create battery monitor task");
         return ESP_FAIL;
@@ -69,7 +69,7 @@ esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)
         .timestamp = esp_log_timestamp(),
         .measurement_value = voltage_mv
     };
-    if (xQueueSend(ctx->data_log_queue, &log_data, portMAX_DELAY) != pdPASS) {
+    if (xQueueSend(ctx->data_log_queue, &log_data, pdMS_TO_TICKS(100)) != pdPASS) {
         ESP_LOGE(TAG, "Failed to enqueue battery voltage");
         return ESP_FAIL;
     }
