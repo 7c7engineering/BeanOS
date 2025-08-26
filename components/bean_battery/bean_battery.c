@@ -43,13 +43,13 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
 
     adc_oneshot_chan_cfg_t chan_config = {
         .bitwidth = ADC_WIDTH_BIT_12,
-        .atten = ADC_ATTEN_DB_11};
+        .atten = ADC_ATTEN_DB_12};
     ESP_RETURN_ON_ERROR(adc_oneshot_config_channel(vbat_adc_handle, vbat_adc_channel, &chan_config), TAG, "Failed to configure VBAT ADC channel");
     
     adc_cali_curve_fitting_config_t cali_config = {
         .unit_id = vbat_adc_unit,
         .chan = vbat_adc_channel,
-        .atten = ADC_ATTEN_DB_11,
+        .atten = ADC_ATTEN_DB_12,
         .bitwidth = ADC_WIDTH_BIT_12,
     };
     ESP_RETURN_ON_ERROR(adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle), TAG, "Failed to create VBAT ADC calibration handle");
