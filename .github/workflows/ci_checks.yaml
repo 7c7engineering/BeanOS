@@ -1,0 +1,47 @@
+name: ESP-IDF Build
+
+on: 
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  formatting-check:
+    name: Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run clang-format style check for C/C++/Protobuf programs.
+      uses: jidicula/clang-format-action@v4.15.0
+      with:
+        clang-format-version: '18'
+        check-path: './'
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: espressif/idf:v5.5
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Cache ESP-IDF build
+      uses: actions/cache@v3
+      with:
+        path: |
+          build/
+          managed_components/
+        key: ${{ runner.os }}-esp-idf-${{ hashFiles('**/CMakeLists.txt', '**/sdkconfig', '**/components/**/*') }}
+        restore-keys: |
+          ${{ runner.os }}-esp-idf-
+
+    - name: Build Project
+      shell: bash
+      run: |
+        set -o pipefail  # Make pipes fail on any command, not just the last
+        . /opt/esp/idf/export.sh
+        idf.py build
+        if ! git diff --quiet sdkconfig; then
+          echo "Error: sdkconfig file was modified during build process!"
+          echo "Please run 'idf.py build' locally and commit any sdkconfig changes."
+          exit 1
+        fi
