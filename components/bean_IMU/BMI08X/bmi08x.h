@@ -48,7 +48,8 @@
 #define _BMI08X_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*********************************************************************/
@@ -61,32 +62,32 @@ extern "C" {
 /*********************************************************************/
 
 /**\name    BMI085 Accel Range */
-#define BMI085_ACCEL_RANGE_2G   UINT8_C(0x00)
-#define BMI085_ACCEL_RANGE_4G   UINT8_C(0x01)
-#define BMI085_ACCEL_RANGE_8G   UINT8_C(0x02)
-#define BMI085_ACCEL_RANGE_16G  UINT8_C(0x03)
+#define BMI085_ACCEL_RANGE_2G UINT8_C(0x00)
+#define BMI085_ACCEL_RANGE_4G UINT8_C(0x01)
+#define BMI085_ACCEL_RANGE_8G UINT8_C(0x02)
+#define BMI085_ACCEL_RANGE_16G UINT8_C(0x03)
 
 /**\name  BMI088 Accel Range */
-#define BMI088_ACCEL_RANGE_3G   UINT8_C(0x00)
-#define BMI088_ACCEL_RANGE_6G   UINT8_C(0x01)
-#define BMI088_ACCEL_RANGE_12G  UINT8_C(0x02)
-#define BMI088_ACCEL_RANGE_24G  UINT8_C(0x03)
+#define BMI088_ACCEL_RANGE_3G UINT8_C(0x00)
+#define BMI088_ACCEL_RANGE_6G UINT8_C(0x01)
+#define BMI088_ACCEL_RANGE_12G UINT8_C(0x02)
+#define BMI088_ACCEL_RANGE_24G UINT8_C(0x03)
 
 /**\name    BMI085 Accel unique chip identifier */
-#define BMI085_ACCEL_CHIP_ID    UINT8_C(0x1F)
+#define BMI085_ACCEL_CHIP_ID UINT8_C(0x1F)
 
 /**\name    BMI088 Accel unique chip identifier */
-#define BMI088_ACCEL_CHIP_ID    UINT8_C(0x1E)
+#define BMI088_ACCEL_CHIP_ID UINT8_C(0x1E)
 
-/*********************** BMI08x Accelerometer function prototypes ************************/
+    /*********************** BMI08x Accelerometer function prototypes ************************/
 
-/**
+    /**
  * \ingroup bmi08xag
  * \defgroup bmi08xaApiInit Gyro Initialization
  * @brief Initialize the sensor and device structure
  */
 
-/*!
+    /*!
  * \ingroup bmi08xaApiInit
  * \page bmi08xa_api_bmi08xa_init bmi08xa_init
  * \code
@@ -104,15 +105,15 @@ extern "C" {
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08xa_init(struct bmi08_dev *dev);
+    int8_t bmi08xa_init(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08xag
  * \defgroup bmi08xaApiConf Read accel configurations
  * @brief Read / Write configurations of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08xaApiConf
  * \page bmi08xa_api_bmi08xa_set_meas_conf bmi08xa_set_meas_conf
  * \code
@@ -153,15 +154,15 @@ int8_t bmi08xa_init(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev);
+    int8_t bmi08xa_set_meas_conf(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08xag
  * \defgroup bmi08xaApiSelftest Accel Self test
  * @brief Perform self test of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08xaApiSelftest
  * \page bmi08xa_api_bmi08xa_perform_selftest bmi08xa_perform_selftest
  * \code
@@ -178,15 +179,15 @@ int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev);
  *  @retval > 0 -> Warning
  *
  */
-int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev);
+    int8_t bmi08xa_perform_selftest(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08xag
  * \defgroup bmi08xaApiSync Data Synchronization
  * @brief Enable / Disable data synchronization
  */
 
-/*!
+    /*!
  * \ingroup bmi08xaApiSync
  * \page bmi08xa_api_bmi08xa_configure_data_synchronization bmi08xa_configure_data_synchronization
  * \code
@@ -203,7 +204,7 @@ int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev);
+    int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev);
 
 #ifdef __cplusplus
 }

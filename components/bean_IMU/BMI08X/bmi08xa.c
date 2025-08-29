@@ -409,7 +409,7 @@ const uint8_t bmi08x_config_file[] = {
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-static int8_t null_ptr_check(const struct bmi08_dev *dev);
+static int8_t null_ptr_check(const struct bmi08_dev* dev);
 
 /*!
  * @brief This API performs the pre-requisites needed to perform the self test
@@ -421,7 +421,7 @@ static int8_t null_ptr_check(const struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-static int8_t enable_self_test(struct bmi08_dev *dev);
+static int8_t enable_self_test(struct bmi08_dev* dev);
 
 /*!
  * @brief This API reads the accel data with the positive excitation
@@ -435,7 +435,7 @@ static int8_t enable_self_test(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-static int8_t positive_excited_accel(struct bmi08_sensor_data *accel_pos, struct bmi08_dev *dev);
+static int8_t positive_excited_accel(struct bmi08_sensor_data* accel_pos, struct bmi08_dev* dev);
 
 /*!
  * @brief This API reads the accel data with the negative excitation
@@ -449,7 +449,7 @@ static int8_t positive_excited_accel(struct bmi08_sensor_data *accel_pos, struct
  * @retval < 0 -> Fail
  *
  */
-static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct bmi08_dev *dev);
+static int8_t negative_excited_accel(struct bmi08_sensor_data* accel_neg, struct bmi08_dev* dev);
 
 /*!
  * @brief This API validates the self test results
@@ -465,8 +465,8 @@ static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct
  * @retval < 0 -> Fail
  *
  */
-static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos,
-                                       const struct bmi08_sensor_data *accel_neg,
+static int8_t validate_accel_self_test(const struct bmi08_sensor_data* accel_pos,
+                                       const struct bmi08_sensor_data* accel_neg,
                                        uint8_t variant);
 
 /*!
@@ -479,7 +479,7 @@ static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_range(struct bmi08_dev *dev);
+static int8_t set_range(struct bmi08_dev* dev);
 
 /****************************************************************************/
 
@@ -491,22 +491,18 @@ static int8_t set_range(struct bmi08_dev *dev);
  *  It performs the selection of I2C/SPI read mechanism according to the
  *  selected interface and reads the chip-id of accel sensor.
  */
-int8_t bmi08xa_init(struct bmi08_dev *dev)
+int8_t bmi08xa_init(struct bmi08_dev* dev)
 {
     int8_t rslt;
 
     rslt = bmi08a_init(dev);
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         /* Check for chip id validity */
         if (((dev->variant == BMI085_VARIANT) && (dev->accel_chip_id == BMI085_ACCEL_CHIP_ID)) ||
-            ((dev->variant == BMI088_VARIANT) && (dev->accel_chip_id == BMI088_ACCEL_CHIP_ID)))
-        {
+            ((dev->variant == BMI088_VARIANT) && (dev->accel_chip_id == BMI088_ACCEL_CHIP_ID))) {
             /* Assign stream file */
             dev->config_file_ptr = bmi08x_config_file;
-        }
-        else
-        {
+        } else {
             rslt = BMI08_E_DEV_NOT_FOUND;
         }
     }
@@ -517,7 +513,7 @@ int8_t bmi08xa_init(struct bmi08_dev *dev)
  * @brief This API sets the output data rate, range and bandwidth
  * of accel sensor.
  */
-int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev)
+int8_t bmi08xa_set_meas_conf(struct bmi08_dev* dev)
 {
     int8_t rslt;
 
@@ -525,8 +521,7 @@ int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev)
     rslt = bmi08a_set_meas_conf(dev);
 
     /* Proceed if ODR and BW are valid */
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         rslt = set_range(dev);
     }
 
@@ -537,7 +532,7 @@ int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev)
  *  @brief This API is used to enable/disable and configure the data synchronization
  *  feature.
  */
-int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev)
+int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev)
 {
     int8_t rslt;
 
@@ -545,12 +540,10 @@ int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cf
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         rslt = bmi08a_configure_data_synchronization(sync_cfg, dev);
 
-        if (rslt == BMI08_OK)
-        {
+        if (rslt == BMI08_OK) {
             rslt = set_range(dev);
 
             /* Delay of 100ms for data sync configurations to take effect */
@@ -565,7 +558,7 @@ int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cf
  *  @brief This API checks whether the self test functionality of the sensor
  *  is working or not.
  */
-int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev)
+int8_t bmi08xa_perform_selftest(struct bmi08_dev* dev)
 {
     int8_t rslt;
     int8_t self_test_rslt = 0;
@@ -575,21 +568,17 @@ int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         /* pre-requisites for self test */
         rslt = enable_self_test(dev);
 
-        if (rslt == BMI08_OK)
-        {
+        if (rslt == BMI08_OK) {
             rslt = positive_excited_accel(&accel_pos, dev);
 
-            if (rslt == BMI08_OK)
-            {
+            if (rslt == BMI08_OK) {
                 rslt = negative_excited_accel(&accel_neg, dev);
 
-                if (rslt == BMI08_OK)
-                {
+                if (rslt == BMI08_OK) {
                     /* Validate the self test result */
                     rslt = validate_accel_self_test(&accel_pos, &accel_neg, dev->variant);
 
@@ -600,8 +589,7 @@ int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev)
                     rslt = bmi08a_soft_reset(dev);
 
                     /* Check to ensure bus operations are success */
-                    if (rslt == BMI08_OK)
-                    {
+                    if (rslt == BMI08_OK) {
                         /* Restore self_test_rslt as return value */
                         rslt = self_test_rslt;
                     }
@@ -622,17 +610,14 @@ int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev)
  * @brief This API is used to validate the device structure pointer for
  * null conditions.
  */
-static int8_t null_ptr_check(const struct bmi08_dev *dev)
+static int8_t null_ptr_check(const struct bmi08_dev* dev)
 {
     int8_t rslt;
 
-    if ((dev == NULL) || (dev->read == NULL) || (dev->write == NULL) || (dev->delay_us == NULL))
-    {
+    if ((dev == NULL) || (dev->read == NULL) || (dev->write == NULL) || (dev->delay_us == NULL)) {
         /* Device structure pointer is not valid */
         rslt = BMI08_E_NULL_PTR;
-    }
-    else
-    {
+    } else {
         /* Device structure is fine */
         rslt = BMI08_OK;
     }
@@ -643,21 +628,18 @@ static int8_t null_ptr_check(const struct bmi08_dev *dev)
 /*!
  * @brief This API performs the pre-requisites needed to perform the self test
  */
-static int8_t enable_self_test(struct bmi08_dev *dev)
+static int8_t enable_self_test(struct bmi08_dev* dev)
 {
     int8_t rslt;
 
     /* Configuring sensors to perform accel self test */
     dev->accel_cfg.odr = BMI08_ACCEL_ODR_1600_HZ;
-    dev->accel_cfg.bw = BMI08_ACCEL_BW_NORMAL;
+    dev->accel_cfg.bw  = BMI08_ACCEL_BW_NORMAL;
 
     /*check the chip id of the accel variant and assign the range */
-    if (dev->variant == BMI085_VARIANT)
-    {
+    if (dev->variant == BMI085_VARIANT) {
         dev->accel_cfg.range = BMI085_ACCEL_RANGE_16G;
-    }
-    else if (dev->variant == BMI088_VARIANT)
-    {
+    } else if (dev->variant == BMI088_VARIANT) {
         dev->accel_cfg.range = BMI088_ACCEL_RANGE_24G;
     }
 
@@ -665,13 +647,11 @@ static int8_t enable_self_test(struct bmi08_dev *dev)
 
     /* Enable Accel sensor */
     rslt = bmi08a_set_power_mode(dev);
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         /* Configure sensors with above configured settings */
         rslt = bmi08xa_set_meas_conf(dev);
 
-        if (rslt == BMI08_OK)
-        {
+        if (rslt == BMI08_OK) {
             /* Self test delay */
             dev->delay_us(BMI08_MS_TO_US(BMI08_SELF_TEST_DELAY_MS), dev->intf_ptr_accel);
         }
@@ -683,15 +663,14 @@ static int8_t enable_self_test(struct bmi08_dev *dev)
 /*!
  * @brief This API reads the accel data with the positive excitation
  */
-static int8_t positive_excited_accel(struct bmi08_sensor_data *accel_pos, struct bmi08_dev *dev)
+static int8_t positive_excited_accel(struct bmi08_sensor_data* accel_pos, struct bmi08_dev* dev)
 {
     int8_t rslt;
     uint8_t reg_data = BMI08_ACCEL_POSITIVE_SELF_TEST;
 
     /* Enable positive excitation for all 3 axes */
     rslt = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         /* Read accel data after 50ms delay */
         dev->delay_us(BMI08_MS_TO_US(BMI08_SELF_TEST_DATA_READ_MS), dev->intf_ptr_accel);
         rslt = bmi08a_get_data(accel_pos, dev);
@@ -703,24 +682,22 @@ static int8_t positive_excited_accel(struct bmi08_sensor_data *accel_pos, struct
 /*!
  * @brief This API reads the accel data with the negative excitation
  */
-static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct bmi08_dev *dev)
+static int8_t negative_excited_accel(struct bmi08_sensor_data* accel_neg, struct bmi08_dev* dev)
 {
     int8_t rslt;
     uint8_t reg_data = BMI08_ACCEL_NEGATIVE_SELF_TEST;
 
     /* Enable negative excitation for all 3 axes */
     rslt = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
-    if (rslt == BMI08_OK)
-    {
+    if (rslt == BMI08_OK) {
         /* Read accel data after 50ms delay */
         dev->delay_us(BMI08_MS_TO_US(BMI08_SELF_TEST_DATA_READ_MS), dev->intf_ptr_accel);
         rslt = bmi08a_get_data(accel_neg, dev);
 
-        if (rslt == BMI08_OK)
-        {
+        if (rslt == BMI08_OK) {
             /* Disable self test */
             reg_data = BMI08_ACCEL_SWITCH_OFF_SELF_TEST;
-            rslt = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
+            rslt     = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
         }
     }
 
@@ -730,8 +707,8 @@ static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct
 /*!
  * @brief This API validates the self test results
  */
-static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos,
-                                       const struct bmi08_sensor_data *accel_neg,
+static int8_t validate_accel_self_test(const struct bmi08_sensor_data* accel_pos,
+                                       const struct bmi08_sensor_data* accel_neg,
                                        uint8_t variant)
 {
     int8_t rslt;
@@ -747,19 +724,15 @@ static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos
     accel_data_diff.y = (uint16_t)BMI08_ABS(accel_pos->y - accel_neg->y);
     accel_data_diff.z = (uint16_t)BMI08_ABS(accel_pos->z - accel_neg->z);
 
-    if (variant == BMI085_VARIANT)
-    {
+    if (variant == BMI085_VARIANT) {
         /* Value of LSB_PER_G = (power(2, BMI08_16_BIT_RESOLUTION) / (2 * range)) */
         lsb_per_g = INT32_C(2048); /* for the 16-bit resolution and 16g range */
-    }
-    else if (variant == BMI088_VARIANT)
-    {
+    } else if (variant == BMI088_VARIANT) {
         /* Value of LSB_PER_G = (power(2, BMI08_16_BIT_RESOLUTION) / (2 * range)) */
         lsb_per_g = INT32_C(1365); /* for the 16-bit resolution and 24g range */
     }
 
-    if (lsb_per_g != 0)
-    {
+    if (lsb_per_g != 0) {
         /*! Converting LSB of the differences of accel values to mg */
 
         /* accel x value in mg */
@@ -773,19 +746,14 @@ static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos
 
         /* Validating accel data by comparing with minimum value of the axes in mg */
         /* x axis limit 1000mg, y axis limit 1000mg and z axis limit 500mg */
-        if (accel_data_diff_mg.x >= 1000 && accel_data_diff_mg.y >= 1000 && accel_data_diff_mg.z >= 500)
-        {
+        if (accel_data_diff_mg.x >= 1000 && accel_data_diff_mg.y >= 1000 && accel_data_diff_mg.z >= 500) {
             /* Updating Okay status */
             rslt = BMI08_OK;
-        }
-        else
-        {
+        } else {
             /* Updating Error status */
             rslt = BMI08_E_SELF_TEST_FAIL;
         }
-    }
-    else
-    {
+    } else {
         /* Updating Error status */
         rslt = BMI08_E_SELF_TEST_FAIL;
     }
@@ -796,7 +764,7 @@ static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos
 /*!
  * @brief This API sets range in register
  */
-static int8_t set_range(struct bmi08_dev *dev)
+static int8_t set_range(struct bmi08_dev* dev)
 {
     int8_t rslt;
     uint8_t data = { 0 };
@@ -805,42 +773,34 @@ static int8_t set_range(struct bmi08_dev *dev)
 
     range = dev->accel_cfg.range;
 
-    if (dev->variant == BMI085_VARIANT)
-    {
+    if (dev->variant == BMI085_VARIANT) {
         /* Check for valid Range */
-        if (range > BMI085_ACCEL_RANGE_16G)
-        {
+        if (range > BMI085_ACCEL_RANGE_16G) {
             /* Updating the status */
             is_range_invalid = TRUE;
         }
     }
 
-    if (dev->variant == BMI088_VARIANT)
-    {
+    if (dev->variant == BMI088_VARIANT) {
         /* Check for valid Range */
-        if (range > BMI088_ACCEL_RANGE_24G)
-        {
+        if (range > BMI088_ACCEL_RANGE_24G) {
             /* Updating the status */
             is_range_invalid = TRUE;
         }
     }
 
     /* If Range is valid, write it to accel config registers */
-    if (!is_range_invalid)
-    {
+    if (!is_range_invalid) {
         /* Read accel config. register */
         rslt = bmi08a_get_regs(BMI08_REG_ACCEL_RANGE, &data, 1, dev);
-        if (rslt == BMI08_OK)
-        {
+        if (rslt == BMI08_OK) {
             /* Update data with current range values */
             data = BMI08_SET_BITS_POS_0(data, BMI08_ACCEL_RANGE, range);
 
             /* Write accel range to register */
             rslt = bmi08a_set_regs(BMI08_REG_ACCEL_RANGE, &data, 1, dev);
         }
-    }
-    else
-    {
+    } else {
         /* Invalid configuration present in ODR, BW, Range */
         rslt = BMI08_E_INVALID_CONFIG;
     }

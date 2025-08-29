@@ -45,22 +45,23 @@
 #define _BMI08_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*********************************************************************/
 /* header files */
 #include "bmi08_defs.h"
 
-/*********************** BMI08x Accelerometer function prototypes ************************/
+    /*********************** BMI08x Accelerometer function prototypes ************************/
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiInit Gyro Initialization
  * @brief Initialize the sensor and device structure
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiInit
  * \page bmi08a_api_bmi08a_init bmi08a_init
  * \code
@@ -78,15 +79,15 @@ extern "C" {
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_init(struct bmi08_dev *dev);
+    int8_t bmi08a_init(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiConfig Accel Upload Config File
  * @brief Uploads config file onto the device
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiConfig
  * \page bmi08a_api_bmi08a_load_config_file bmi08a_load_config_file
  * \code
@@ -101,15 +102,15 @@ int8_t bmi08a_init(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_load_config_file(struct bmi08_dev *dev);
+    int8_t bmi08a_load_config_file(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiFConfig Upload Feature Config File
  * @brief Uploads config file onto the device
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiFConfig
  * \page bmi08a_api_bmi08a_write_feature_config bmi08a_write_feature_config
  * \code
@@ -129,15 +130,15 @@ int8_t bmi08a_load_config_file(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t *reg_data, uint8_t len, struct bmi08_dev *dev);
+    int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t* reg_data, uint8_t len, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiRegs Accel Data
  * @brief Read / Write data from the given register address of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiRegs
  * \page bmi08a_api_bmi08a_get_regs bmi08a_get_regs
  * \code
@@ -155,9 +156,9 @@ int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t *reg_data, u
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
+    int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiRegs
  * \page bmi08a_api_bmi08a_set_regs bmi08a_set_regs
  * \code
@@ -177,9 +178,9 @@ int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
+    int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiRegs
  * \page bmi08a_api_bmi08a_get_i2c_wdt bmi08a_get_i2c_wdt
  * \code
@@ -196,9 +197,9 @@ int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, 
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_i2c_wdt(uint8_t *i2c_wdt_sel, uint8_t *i2c_wdt_en, struct bmi08_dev *dev);
+    int8_t bmi08a_get_i2c_wdt(uint8_t* i2c_wdt_sel, uint8_t* i2c_wdt_en, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiRegs
  * \page bmi08a_api_bmi08a_get_i2c_wdt bmi08a_set_i2c_wdt
  * \code
@@ -215,15 +216,15 @@ int8_t bmi08a_get_i2c_wdt(uint8_t *i2c_wdt_sel, uint8_t *i2c_wdt_en, struct bmi0
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_dev *dev);
+    int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiErrorStatus Accel Error status
  * @brief Get error status from accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiErrorStatus
  * \page bmi08a_api_bmi08a_get_error_status bmi08a_get_error_status
  * \code
@@ -258,15 +259,15 @@ int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_error_status(struct bmi08_err_reg *err_reg, struct bmi08_dev *dev);
+    int8_t bmi08a_get_error_status(struct bmi08_err_reg* err_reg, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApistatus Accel status
  * @brief Read status of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApistatus
  * \page bmi08a_api_bmi08a_get_status bmi08a_get_status
  * \code
@@ -293,15 +294,15 @@ int8_t bmi08a_get_error_status(struct bmi08_err_reg *err_reg, struct bmi08_dev *
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_status(uint8_t *status, struct bmi08_dev *dev);
+    int8_t bmi08a_get_status(uint8_t* status, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiSoftreset Accel Soft reset
  * @brief Performs soft reset of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiSoftreset
  * \page bmi08a_api_bmi08a_soft_reset bmi08a_soft_reset
  * \code
@@ -316,15 +317,15 @@ int8_t bmi08a_get_status(uint8_t *status, struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_soft_reset(struct bmi08_dev *dev);
+    int8_t bmi08a_soft_reset(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiConf Read accel configurations
  * @brief Read / Write configurations of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiConf
  * \page bmi08a_api_bmi08a_get_meas_conf bmi08a_get_meas_conf
  * \code
@@ -340,9 +341,9 @@ int8_t bmi08a_soft_reset(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_meas_conf(struct bmi08_dev *dev);
+    int8_t bmi08a_get_meas_conf(struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiConf
  * \page bmi08a_api_bmi08a_set_meas_conf bmi08a_set_meas_conf
  * \code
@@ -383,15 +384,15 @@ int8_t bmi08a_get_meas_conf(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_meas_conf(struct bmi08_dev *dev);
+    int8_t bmi08a_set_meas_conf(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiPowermode Accel power mode
  * @brief Set / Get power mode of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiPowermode
  * \page bmi08a_api_bmi08a_get_power_mode bmi08a_get_power_mode
  * \code
@@ -407,9 +408,9 @@ int8_t bmi08a_set_meas_conf(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_power_mode(struct bmi08_dev *dev);
+    int8_t bmi08a_get_power_mode(struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiPowermode
  * \page bmi08a_api_bmi08a_set_power_mode bmi08a_set_power_mode
  * \code
@@ -424,15 +425,15 @@ int8_t bmi08a_get_power_mode(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_power_mode(struct bmi08_dev *dev);
+    int8_t bmi08a_set_power_mode(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiData Accel Data
  * @brief Read data from accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiData
  * \page bmi08a_api_bmi08a_get_data bmi08a_get_data
  * \code
@@ -451,15 +452,15 @@ int8_t bmi08a_set_power_mode(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_data(struct bmi08_sensor_data *accel, struct bmi08_dev *dev);
+    int8_t bmi08a_get_data(struct bmi08_sensor_data* accel, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiIntConf Accel Interrupt Config
  * @brief Configures interrupt of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiIntConf
  * \page bmi08a_api_bmi08a_set_int_config bmi08a_set_int_config
  * \code
@@ -478,15 +479,15 @@ int8_t bmi08a_get_data(struct bmi08_sensor_data *accel, struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
+    int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiAccelTemp Accel Temperature
  * @brief Read temperature from accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiAccelTemp
  * \page bmi08a_api_bmi08a_get_sensor_temperature bmi08a_get_sensor_temperature
  * \code
@@ -506,15 +507,15 @@ int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg *int_confi
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_sensor_temperature(struct bmi08_dev *dev, int32_t *sensor_temp);
+    int8_t bmi08a_get_sensor_temperature(struct bmi08_dev* dev, int32_t* sensor_temp);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiaccelsensortime Accel sensor time
  * @brief Read sensor time of accel sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiaccelsensortime
  * \page bmi08a_api_bmi08a_get_sensor_time bmi08a_get_sensor_time
  * \code
@@ -530,15 +531,15 @@ int8_t bmi08a_get_sensor_temperature(struct bmi08_dev *dev, int32_t *sensor_temp
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_sensor_time(struct bmi08_dev *dev, uint32_t *sensor_time);
+    int8_t bmi08a_get_sensor_time(struct bmi08_dev* dev, uint32_t* sensor_time);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiSync Data Synchronization
  * @brief Enable / Disable data synchronization
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiSync
  * \page bmi08a_api_bmi08a_configure_data_synchronization bmi08a_configure_data_synchronization
  * \code
@@ -555,15 +556,15 @@ int8_t bmi08a_get_sensor_time(struct bmi08_dev *dev, uint32_t *sensor_time);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev);
+    int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiSyncData Sync Data
  * @brief Synchronizes accel and gyro data from the sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiSyncData
  * \page bmi08a_api_bmi08a_get_synchronized_data bmi08a_get_synchronized_data
  * \code
@@ -586,17 +587,17 @@ int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data *accel,
-                                    struct bmi08_sensor_data *gyro,
-                                    struct bmi08_dev *dev);
+    int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data* accel,
+                                        struct bmi08_sensor_data* gyro,
+                                        struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiInt interrupt
  * @brief Configuring Interrupts
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiInt
  * \page bmi08a_api_bmi08a_set_data_sync_int_config bmi08a_set_data_sync_int_config
  * \code
@@ -615,9 +616,9 @@ int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data *accel,
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg *int_config, struct bmi08_dev *dev);
+    int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg* int_config, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiInt
  * \page bmi08a_api_bmi08a_get_data_int_status bmi08a_get_data_int_status
  * \code
@@ -642,17 +643,17 @@ int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg *int_config, s
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bmi08a_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev);
+    int8_t bmi08a_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev);
 
-/*********************** BMI088 Gyroscope function prototypes ****************************/
+    /*********************** BMI088 Gyroscope function prototypes ****************************/
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiInit Gyro Initialization
  * @brief Initialize the sensor and device structure
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiInit
  * \page bmi08g_api_bmi08g_init bmi08g_init
  * \code
@@ -670,15 +671,15 @@ int8_t bmi08a_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_init(struct bmi08_dev *dev);
+    int8_t bmi08g_init(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiRegs Gyro Data
  * @brief Read / Write data from the given register address of gyro sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiRegs
  * \page bmi08g_api_bmi08g_get_regs bmi08g_get_regs
  * \code
@@ -696,9 +697,9 @@ int8_t bmi08g_init(struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
+    int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiRegs
  * \page bmi08g_api_bmi08g_set_regs bmi08g_set_regs
  * \code
@@ -718,15 +719,15 @@ int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
+    int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiSoftreset gyro Soft reset
  * @brief Performs soft reset of gyro sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiSoftreset
  * \page bmi08g_api_bmi08g_soft_reset bmi08g_soft_reset
  * \code
@@ -741,15 +742,15 @@ int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, 
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_soft_reset(struct bmi08_dev *dev);
+    int8_t bmi08g_soft_reset(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiConf Read gyro configurations
  * @brief Read / Write configurations of gyro sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiConf
  * \page bmi08g_api_bmi08g_get_meas_conf bmi08g_get_meas_conf
  * \code
@@ -769,9 +770,9 @@ int8_t bmi08g_soft_reset(struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_get_meas_conf(struct bmi08_dev *dev);
+    int8_t bmi08g_get_meas_conf(struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiConf
  * \page bmi08g_api_bmi08g_set_meas_conf bmi08g_get_meas_conf
  * \code
@@ -792,15 +793,15 @@ int8_t bmi08g_get_meas_conf(struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_set_meas_conf(struct bmi08_dev *dev);
+    int8_t bmi08g_set_meas_conf(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiPowermode Gyro power mode
  * @brief Set / Get power mode of gyro sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiPowermode
  * \page bmi08g_api_bmi08g_get_power_mode bmi08g_get_power_mode
  * \code
@@ -816,9 +817,9 @@ int8_t bmi08g_set_meas_conf(struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_get_power_mode(struct bmi08_dev *dev);
+    int8_t bmi08g_get_power_mode(struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiPowermode
  * \page bmi08g_api_bmi08g_set_power_mode bmi08g_set_power_mode
  * \code
@@ -833,15 +834,15 @@ int8_t bmi08g_get_power_mode(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_set_power_mode(struct bmi08_dev *dev);
+    int8_t bmi08g_set_power_mode(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiData Gyro data
  * @brief Read Gyro data
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiData
  * \page bmi08g_api_bmi08g_get_data bmi08g_get_data
  * \code
@@ -859,15 +860,15 @@ int8_t bmi08g_set_power_mode(struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_get_data(struct bmi08_sensor_data *gyro, struct bmi08_dev *dev);
+    int8_t bmi08g_get_data(struct bmi08_sensor_data* gyro, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiIntconfig Gyro interrupt config
  * @brief Set interrupt configurations of gyro sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiIntconfig
  * \page bmi08g_api_bmi08g_set_int_config bmi08g_set_int_config
  * \code
@@ -886,9 +887,9 @@ int8_t bmi08g_get_data(struct bmi08_sensor_data *gyro, struct bmi08_dev *dev);
  *  @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev);
+    int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiIntconfig
  * \page bmi08g_api_bmi08g_get_data_int_status bmi08g_get_data_int_status
  * \code
@@ -912,15 +913,15 @@ int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg *int_config
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bmi08g_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev);
+    int8_t bmi08g_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiSelftest Gyro self test
  * @brief Set / Get power mode of gyro sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiSelftest
  * \page bmi08g_api_bmi08g_perform_selftest bmi08g_perform_selftest
  * \code
@@ -936,15 +937,15 @@ int8_t bmi08g_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08g_perform_selftest(struct bmi08_dev *dev);
+    int8_t bmi08g_perform_selftest(struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08gApiFIFO FIFO
  * @brief Access and extract FIFO gyro data
  */
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_get_fifo_config bmi08g_get_fifo_config
  * \code
@@ -960,9 +961,9 @@ int8_t bmi08g_perform_selftest(struct bmi08_dev *dev);
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config *fifo_conf, struct bmi08_dev *dev);
+    int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config* fifo_conf, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_set_fifo_config bmi08g_set_fifo_config
  * \code
@@ -978,9 +979,9 @@ int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config *fifo_conf, struct bm
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config *fifo_conf, struct bmi08_dev *dev);
+    int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config* fifo_conf, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_get_fifo_length bmi08g_get_fifo_length
  * \code
@@ -996,9 +997,9 @@ int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config *fifo_conf, str
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config *fifo_config, struct bmi08_fifo_frame *fifo);
+    int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config* fifo_config, struct bmi08_fifo_frame* fifo);
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_read_fifo_data bmi08g_read_fifo_data
  * \code
@@ -1016,9 +1017,9 @@ int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config *fifo_config, s
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame *fifo, struct bmi08_dev *dev);
+    int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame* fifo, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_extract_gyro bmi08g_extract_gyro
  * \code
@@ -1042,12 +1043,12 @@ int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame *fifo, struct bmi08_d
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data,
-                         const uint16_t *gyro_length,
-                         const struct bmi08_gyr_fifo_config *fifo_conf,
-                         const struct bmi08_fifo_frame *fifo);
+    void bmi08g_extract_gyro(struct bmi08_sensor_data* gyro_data,
+                             const uint16_t* gyro_length,
+                             const struct bmi08_gyr_fifo_config* fifo_conf,
+                             const struct bmi08_fifo_frame* fifo);
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_get_fifo_overrun bmi08g_get_fifo_overrun
  * \code
@@ -1064,9 +1065,9 @@ void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data,
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-int8_t bmi08g_get_fifo_overrun(uint8_t *fifo_overrun, struct bmi08_dev *dev);
+    int8_t bmi08g_get_fifo_overrun(uint8_t* fifo_overrun, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08gApiFIFO
  * \page bmi08g_api_bmi08g_enable_watermark bmi08g_enable_watermark
  * \code
@@ -1083,19 +1084,19 @@ int8_t bmi08g_get_fifo_overrun(uint8_t *fifo_overrun, struct bmi08_dev *dev);
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev *dev);
+    int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev* dev);
 
-/*********************************************************************************/
-/*                              Accel APIs                                       */
-/*********************************************************************************/
+    /*********************************************************************************/
+    /*                              Accel APIs                                       */
+    /*********************************************************************************/
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiFifo FIFO operations
  * @brief FIFO operations of the sensor
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiFifo
  * \page bmi08a_api_bmi08a_set_fifo_config bmi08a_set_fifo_config
  * \code
@@ -1111,9 +1112,9 @@ int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config *config, struct bmi08_dev *dev);
+    int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config* config, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiFifo
  * \page bmi08a_api_bmi08a_get_fifo_config bmi08a_get_fifo_config
  * \code
@@ -1129,9 +1130,9 @@ int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config *config, stru
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config *config, struct bmi08_dev *dev);
+    int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config* config, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiFifo
  * \page bmi08a_api_bmi08a_read_fifo_data bmi08a_read_fifo_data
  * \code
@@ -1149,9 +1150,9 @@ int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config *config, struct bmi
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame *fifo, struct bmi08_dev *dev);
+    int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame* fifo, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiFifo
  * \page bmi08a_api_bmi08a_get_fifo_length bmi08a_get_fifo_length
  * \code
@@ -1172,9 +1173,9 @@ int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame *fifo, struct bmi08_dev *de
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_fifo_length(uint16_t *fifo_length, struct bmi08_dev *dev);
+    int8_t bmi08a_get_fifo_length(uint16_t* fifo_length, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiFifo
  * \page bmi08a_api_bmi08a_get_fifo_wm bmi08a_get_fifo_wm
  * \code
@@ -1190,9 +1191,9 @@ int8_t bmi08a_get_fifo_length(uint16_t *fifo_length, struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_get_fifo_wm(uint16_t *wm, struct bmi08_dev *dev);
+    int8_t bmi08a_get_fifo_wm(uint16_t* wm, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiFifo
  * \page bmi08a_api_bmi08a_set_fifo_wm bmi08a_set_fifo_wm
  * \code
@@ -1208,15 +1209,15 @@ int8_t bmi08a_get_fifo_wm(uint16_t *wm, struct bmi08_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev *dev);
+    int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiExtractAccel Extract accel frames from FIFO
  * @brief Parse and extract accelerometer frames from FIFO data read
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiExtractAccel
  * \page bmi08a_api_bmi08a_extract_accel bmi08a_extract_accel
  * \code
@@ -1241,18 +1242,18 @@ int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev *dev);
  * @retval > 0 -> Warning
  *
  */
-int8_t bmi08a_extract_accel(struct bmi08_sensor_data *accel_data,
-                            uint16_t *accel_length,
-                            struct bmi08_fifo_frame *fifo,
-                            const struct bmi08_dev *dev);
+    int8_t bmi08a_extract_accel(struct bmi08_sensor_data* accel_data,
+                                uint16_t* accel_length,
+                                struct bmi08_fifo_frame* fifo,
+                                const struct bmi08_dev* dev);
 
-/**
+    /**
  * \ingroup bmi08ag
  * \defgroup bmi08aApiFIFODown Accel FIFO down sampling
  * @brief Set / Get accel FIFO down sampling rate
  */
 
-/*!
+    /*!
  * \ingroup bmi08aApiFIFODown
  * \page bmi08a_api_bmi08a_get_fifo_down_sample bmi08a_get_fifo_down_sample
  * \code
@@ -1270,9 +1271,9 @@ int8_t bmi08a_extract_accel(struct bmi08_sensor_data *accel_data,
  *
  */
 
-int8_t bmi08a_get_fifo_down_sample(uint8_t *fifo_downs, struct bmi08_dev *dev);
+    int8_t bmi08a_get_fifo_down_sample(uint8_t* fifo_downs, struct bmi08_dev* dev);
 
-/*!
+    /*!
  * \ingroup bmi08aApiFIFODown
  * \page bmi08a_api_bmi08a_set_fifo_down_sample bmi08a_set_fifo_down_sample
  * \code
@@ -1289,7 +1290,7 @@ int8_t bmi08a_get_fifo_down_sample(uint8_t *fifo_downs, struct bmi08_dev *dev);
  * @retval > 0 -> Warning
  *
  */
-int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev *dev);
+    int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev* dev);
 
 #ifdef __cplusplus
 }

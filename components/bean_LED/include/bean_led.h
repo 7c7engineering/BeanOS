@@ -2,13 +2,15 @@
 
 #include "esp_err.h"
 
-typedef struct led_color_rgb_t {
+typedef struct led_color_rgb_t
+{
     uint8_t r;
     uint8_t g;
     uint8_t b;
 } led_color_rgb_t;
 
-typedef struct led_color_hsv_t {
+typedef struct led_color_hsv_t
+{
     uint8_t h;
     uint8_t s;
     uint8_t v;
@@ -16,4 +18,3 @@ typedef struct led_color_hsv_t {
 
 esp_err_t bean_led_init();
 esp_err_t bean_led_set_color(uint8_t led, led_color_rgb_t color);
-
