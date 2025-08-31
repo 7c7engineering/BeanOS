@@ -45,8 +45,7 @@ void app_main()
     if (bean_init() != ESP_OK)
     {
         ESP_LOGE(TAG, "Bean Init failed");
-        bean_led_set_color(LED_L1, (led_color_rgb_t){255, 0, 0});
-        bean_led_set_color(LED_L2, (led_color_rgb_t){255, 0, 0});
+        bean_led_set_color(LED_BOTH, (led_color_rgb_t){255, 0, 0});
         return;
     }
 
@@ -56,11 +55,9 @@ void app_main()
     bean_beep_sound(NOTE_C5, 100);
     bean_beep_sound(NOTE_E5, 100);
 
-    bean_led_set_color(LED_L1, (led_color_rgb_t){255, 255, 255});
-    bean_led_set_color(LED_L2, (led_color_rgb_t){255, 255, 255});
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){255, 255, 255});
     vTaskDelay(3000 / portTICK_PERIOD_MS);
-    bean_led_set_color(LED_L1, (led_color_rgb_t){0, 0, 0});
-    bean_led_set_color(LED_L2, (led_color_rgb_t){0, 0, 0});
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){0, 0, 0});
 
     while (1)
     {
