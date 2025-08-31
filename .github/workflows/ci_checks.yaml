@@ -39,8 +39,9 @@ jobs:
       run: |
         set -o pipefail  # Make pipes fail on any command, not just the last
         . /opt/esp/idf/export.sh
+        cp sdkconfig _backupsdkconfig
         idf.py build
-        if ! git diff --quiet sdkconfig; then
+        if ! git diff --no-index --quiet -- _backupsdkconfig sdkconfig; then
           echo "Error: sdkconfig file was modified during build process!"
           echo "Please run 'idf.py build' locally and commit any sdkconfig changes."
           exit 1
