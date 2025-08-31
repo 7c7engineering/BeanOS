@@ -24,5 +24,5 @@
 // ADC channels
 static const adc_channel_t ADC_VBAT = ADC_CHANNEL_0;
 
-#define I2C_MASTER_SCL_IO   48    /*!< gpio number for I2C master clock */
-#define I2C_MASTER_SDA_IO   47    /*!< gpio number for I2C master data  */
+#define I2C_MASTER_SCL_IO 48 /*!< gpio number for I2C master clock */
+#define I2C_MASTER_SDA_IO 47 /*!< gpio number for I2C master data  */
