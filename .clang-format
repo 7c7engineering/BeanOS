@@ -47,3 +47,5 @@ AlignConsecutiveAssignments:
   AlignCompound:   false
   AlignFunctionPointers: false
   PadOperators:    true
+
+SortIncludes: false
