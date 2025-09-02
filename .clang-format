@@ -50,3 +50,6 @@ AlignConsecutiveAssignments:
   PadOperators:    true
 
 SortIncludes: false
+
+PointerAlignment: Right
+

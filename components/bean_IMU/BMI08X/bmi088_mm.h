@@ -498,7 +498,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_init(struct bmi08_dev* dev);
+    int8_t bmi088_mma_init(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -534,7 +534,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_meas_conf(struct bmi08_dev* dev);
+    int8_t bmi088_mma_set_meas_conf(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -560,7 +560,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_data(struct bmi08_sensor_data* accel, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_data(struct bmi08_sensor_data *accel, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -587,9 +587,9 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_int_config(const struct bmi08_accel_int_channel_cfg* int_config,
+    int8_t bmi088_mma_set_int_config(const struct bmi08_accel_int_channel_cfg *int_config,
                                      enum bmi088_mm_accel_int_types int_type,
-                                     struct bmi08_dev* dev);
+                                     struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -612,7 +612,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_perform_selftest(struct bmi08_dev* dev);
+    int8_t bmi088_mma_perform_selftest(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -636,7 +636,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_configure_anymotion(struct bmi088_mm_anymotion_cfg anymotion_cfg, struct bmi08_dev* dev);
+    int8_t bmi088_mma_configure_anymotion(struct bmi088_mm_anymotion_cfg anymotion_cfg, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -662,7 +662,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_high_g_config(const struct bmi088_mm_high_g_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_set_high_g_config(const struct bmi088_mm_high_g_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -682,7 +682,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_high_g_config(struct bmi088_mm_high_g_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_high_g_config(struct bmi088_mm_high_g_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -702,7 +702,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_low_g_config(const struct bmi088_mm_low_g_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_set_low_g_config(const struct bmi088_mm_low_g_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -722,7 +722,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_low_g_config(struct bmi088_mm_low_g_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_low_g_config(struct bmi088_mm_low_g_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -740,7 +740,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_no_motion_config(const struct bmi088_mm_no_motion_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_set_no_motion_config(const struct bmi088_mm_no_motion_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -758,7 +758,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_no_motion_config(struct bmi088_mm_no_motion_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_no_motion_config(struct bmi088_mm_no_motion_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -775,7 +775,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_orient_config(const struct bmi088_mm_orient_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_set_orient_config(const struct bmi088_mm_orient_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -792,7 +792,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_orient_config(struct bmi088_mm_orient_cfg* config, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_orient_config(struct bmi088_mm_orient_cfg *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -825,7 +825,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_orient_output(struct bmi088_mm_orient_out* orient_out, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_orient_output(struct bmi088_mm_orient_out *orient_out, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -847,7 +847,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_high_g_output(struct bmi088_mm_high_g_out* high_g_out, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_high_g_output(struct bmi088_mm_high_g_out *high_g_out, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiInt
@@ -877,7 +877,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_get_feat_int_status(uint8_t* int_status, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_feat_int_status(uint8_t *int_status, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -904,7 +904,7 @@ extern "C"
  * @return < 0  -> Fail
  *
  */
-    int8_t bmi088_mma_set_remap_axes(const struct bmi088_mm_remap* remapped_axis, struct bmi08_dev* dev);
+    int8_t bmi088_mma_set_remap_axes(const struct bmi088_mm_remap *remapped_axis, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi088_mmaApiRemap
@@ -924,7 +924,7 @@ extern "C"
  * @return < 0 -> Fail
  *
  */
-    int8_t bmi088_mma_get_remap_axes(struct bmi088_mm_remap* remapped_axis, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_remap_axes(struct bmi088_mm_remap *remapped_axis, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -949,7 +949,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi088_mma_get_version_config(uint16_t* config_major, uint16_t* config_minor, struct bmi08_dev* dev);
+    int8_t bmi088_mma_get_version_config(uint16_t *config_major, uint16_t *config_minor, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm
@@ -974,7 +974,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi088_mma_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev);
+    int8_t bmi088_mma_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev);
 
 #ifdef __cplusplus
 }

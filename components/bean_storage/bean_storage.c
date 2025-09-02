@@ -14,14 +14,14 @@
 #define HOST_ID      SPI2_HOST //SPI3_HOST
 #define SPI_DMA_CHAN SPI_DMA_CH_AUTO
 
-static esp_flash_t* flash;
-const char* partition_label = "storage";
+static esp_flash_t *flash;
+const char *partition_label = "storage";
 
-static const char* TAG         = "BEAN_STORAGE";
-const char* base_path          = "/extflash";
+static const char *TAG         = "BEAN_STORAGE";
+const char *base_path          = "/extflash";
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 
-static esp_flash_t* init_ext_flash(void)
+static esp_flash_t *init_ext_flash(void)
 {
     const spi_bus_config_t bus_config = {
         .mosi_io_num   = PIN_FLASH_MOSI,
@@ -53,7 +53,7 @@ static esp_flash_t* init_ext_flash(void)
     ESP_ERROR_CHECK(spi_bus_initialize(HOST_ID, &bus_config, SPI_DMA_CHAN));
 
     // Add device to the SPI bus
-    esp_flash_t* ext_flash;
+    esp_flash_t *ext_flash;
     ESP_ERROR_CHECK(spi_bus_add_flash_device(&ext_flash, &device_config));
 
     // Probe the Flash chip and initialize it
@@ -71,13 +71,13 @@ static esp_flash_t* init_ext_flash(void)
     return ext_flash;
 }
 
-static const esp_partition_t* add_partition(esp_flash_t* ext_flash, const char* partition_label)
+static const esp_partition_t *add_partition(esp_flash_t *ext_flash, const char *partition_label)
 {
     ESP_LOGI(TAG,
              "Adding external Flash as a partition, label=\"%s\", size=%" PRIu32 " KB",
              partition_label,
              ext_flash->size / 1024);
-    const esp_partition_t* fat_partition;
+    const esp_partition_t *fat_partition;
     const size_t offset = 0;
     ESP_ERROR_CHECK(esp_partition_register_external(ext_flash,
                                                     offset,
@@ -93,7 +93,7 @@ static const esp_partition_t* add_partition(esp_flash_t* ext_flash, const char* 
     return fat_partition;
 }
 
-static bool mount_fatfs(const char* partition_label)
+static bool mount_fatfs(const char *partition_label)
 {
     ESP_LOGI(TAG, "Mounting FAT filesystem");
     const esp_vfs_fat_mount_config_t mount_config = { .max_files              = 4,
@@ -125,13 +125,13 @@ esp_err_t bean_storage_init(void)
     return ESP_OK;
 }
 
-esp_err_t storage_write_file(char* filename, const char* data)
+esp_err_t storage_write_file(char *filename, const char *data)
 {
-    char* abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
+    char *abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
     strcpy(abs_filename, base_path);
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
-    FILE* f = fopen(abs_filename, "wb");
+    FILE *f = fopen(abs_filename, "wb");
     if (f == NULL) {
         ESP_LOGE(TAG, "Failed to open file for writing");
         free(abs_filename);
@@ -143,13 +143,13 @@ esp_err_t storage_write_file(char* filename, const char* data)
     return ESP_OK;
 }
 
-esp_err_t storage_append_file(char* filename, const char* data)
+esp_err_t storage_append_file(char *filename, const char *data)
 {
-    char* abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
+    char *abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
     strcpy(abs_filename, base_path);
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
-    FILE* f = fopen(abs_filename, "a");
+    FILE *f = fopen(abs_filename, "a");
     if (f == NULL) {
         ESP_LOGE(TAG, "Failed to open file for writing (append))");
         free(abs_filename);
@@ -163,8 +163,8 @@ esp_err_t storage_append_file(char* filename, const char* data)
 
 esp_err_t storage_list_files()
 {
-    DIR* dir;
-    struct dirent* pDirent;
+    DIR *dir;
+    struct dirent *pDirent;
     dir = opendir(base_path);
     if (dir == NULL) {
         ESP_LOGE(TAG, "Failed to open directory");
@@ -178,9 +178,9 @@ esp_err_t storage_list_files()
     return ESP_OK;
 }
 
-esp_err_t storage_delete_file(char* filename)
+esp_err_t storage_delete_file(char *filename)
 {
-    char* abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
+    char *abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
     strcpy(abs_filename, base_path);
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
@@ -193,13 +193,13 @@ esp_err_t storage_delete_file(char* filename)
     return ESP_OK;
 }
 
-esp_err_t storage_read_file(char* filename)
+esp_err_t storage_read_file(char *filename)
 {
-    char* abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
+    char *abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
     strcpy(abs_filename, base_path);
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
-    FILE* f = fopen(abs_filename, "rb");
+    FILE *f = fopen(abs_filename, "rb");
     if (f == NULL) {
         ESP_LOGE(TAG, "Failed to open file for reading");
         free(abs_filename);

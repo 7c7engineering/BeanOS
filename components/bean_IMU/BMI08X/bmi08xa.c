@@ -409,7 +409,7 @@ const uint8_t bmi08x_config_file[] = {
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-static int8_t null_ptr_check(const struct bmi08_dev* dev);
+static int8_t null_ptr_check(const struct bmi08_dev *dev);
 
 /*!
  * @brief This API performs the pre-requisites needed to perform the self test
@@ -421,7 +421,7 @@ static int8_t null_ptr_check(const struct bmi08_dev* dev);
  * @retval < 0 -> Fail
  *
  */
-static int8_t enable_self_test(struct bmi08_dev* dev);
+static int8_t enable_self_test(struct bmi08_dev *dev);
 
 /*!
  * @brief This API reads the accel data with the positive excitation
@@ -435,7 +435,7 @@ static int8_t enable_self_test(struct bmi08_dev* dev);
  * @retval < 0 -> Fail
  *
  */
-static int8_t positive_excited_accel(struct bmi08_sensor_data* accel_pos, struct bmi08_dev* dev);
+static int8_t positive_excited_accel(struct bmi08_sensor_data *accel_pos, struct bmi08_dev *dev);
 
 /*!
  * @brief This API reads the accel data with the negative excitation
@@ -449,7 +449,7 @@ static int8_t positive_excited_accel(struct bmi08_sensor_data* accel_pos, struct
  * @retval < 0 -> Fail
  *
  */
-static int8_t negative_excited_accel(struct bmi08_sensor_data* accel_neg, struct bmi08_dev* dev);
+static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct bmi08_dev *dev);
 
 /*!
  * @brief This API validates the self test results
@@ -465,8 +465,8 @@ static int8_t negative_excited_accel(struct bmi08_sensor_data* accel_neg, struct
  * @retval < 0 -> Fail
  *
  */
-static int8_t validate_accel_self_test(const struct bmi08_sensor_data* accel_pos,
-                                       const struct bmi08_sensor_data* accel_neg,
+static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos,
+                                       const struct bmi08_sensor_data *accel_neg,
                                        uint8_t variant);
 
 /*!
@@ -479,7 +479,7 @@ static int8_t validate_accel_self_test(const struct bmi08_sensor_data* accel_pos
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_range(struct bmi08_dev* dev);
+static int8_t set_range(struct bmi08_dev *dev);
 
 /****************************************************************************/
 
@@ -491,7 +491,7 @@ static int8_t set_range(struct bmi08_dev* dev);
  *  It performs the selection of I2C/SPI read mechanism according to the
  *  selected interface and reads the chip-id of accel sensor.
  */
-int8_t bmi08xa_init(struct bmi08_dev* dev)
+int8_t bmi08xa_init(struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -513,7 +513,7 @@ int8_t bmi08xa_init(struct bmi08_dev* dev)
  * @brief This API sets the output data rate, range and bandwidth
  * of accel sensor.
  */
-int8_t bmi08xa_set_meas_conf(struct bmi08_dev* dev)
+int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -532,7 +532,7 @@ int8_t bmi08xa_set_meas_conf(struct bmi08_dev* dev)
  *  @brief This API is used to enable/disable and configure the data synchronization
  *  feature.
  */
-int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev)
+int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -558,7 +558,7 @@ int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cf
  *  @brief This API checks whether the self test functionality of the sensor
  *  is working or not.
  */
-int8_t bmi08xa_perform_selftest(struct bmi08_dev* dev)
+int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev)
 {
     int8_t rslt;
     int8_t self_test_rslt = 0;
@@ -610,7 +610,7 @@ int8_t bmi08xa_perform_selftest(struct bmi08_dev* dev)
  * @brief This API is used to validate the device structure pointer for
  * null conditions.
  */
-static int8_t null_ptr_check(const struct bmi08_dev* dev)
+static int8_t null_ptr_check(const struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -628,7 +628,7 @@ static int8_t null_ptr_check(const struct bmi08_dev* dev)
 /*!
  * @brief This API performs the pre-requisites needed to perform the self test
  */
-static int8_t enable_self_test(struct bmi08_dev* dev)
+static int8_t enable_self_test(struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -663,7 +663,7 @@ static int8_t enable_self_test(struct bmi08_dev* dev)
 /*!
  * @brief This API reads the accel data with the positive excitation
  */
-static int8_t positive_excited_accel(struct bmi08_sensor_data* accel_pos, struct bmi08_dev* dev)
+static int8_t positive_excited_accel(struct bmi08_sensor_data *accel_pos, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t reg_data = BMI08_ACCEL_POSITIVE_SELF_TEST;
@@ -682,7 +682,7 @@ static int8_t positive_excited_accel(struct bmi08_sensor_data* accel_pos, struct
 /*!
  * @brief This API reads the accel data with the negative excitation
  */
-static int8_t negative_excited_accel(struct bmi08_sensor_data* accel_neg, struct bmi08_dev* dev)
+static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t reg_data = BMI08_ACCEL_NEGATIVE_SELF_TEST;
@@ -707,8 +707,8 @@ static int8_t negative_excited_accel(struct bmi08_sensor_data* accel_neg, struct
 /*!
  * @brief This API validates the self test results
  */
-static int8_t validate_accel_self_test(const struct bmi08_sensor_data* accel_pos,
-                                       const struct bmi08_sensor_data* accel_neg,
+static int8_t validate_accel_self_test(const struct bmi08_sensor_data *accel_pos,
+                                       const struct bmi08_sensor_data *accel_neg,
                                        uint8_t variant)
 {
     int8_t rslt;
@@ -764,7 +764,7 @@ static int8_t validate_accel_self_test(const struct bmi08_sensor_data* accel_pos
 /*!
  * @brief This API sets range in register
  */
-static int8_t set_range(struct bmi08_dev* dev)
+static int8_t set_range(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = { 0 };

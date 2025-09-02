@@ -79,7 +79,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_init(struct bmi08_dev* dev);
+    int8_t bmi08a_init(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -102,7 +102,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_load_config_file(struct bmi08_dev* dev);
+    int8_t bmi08a_load_config_file(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -130,7 +130,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t* reg_data, uint8_t len, struct bmi08_dev* dev);
+    int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t *reg_data, uint8_t len, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -156,7 +156,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+    int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiRegs
@@ -178,7 +178,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+    int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiRegs
@@ -197,7 +197,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_i2c_wdt(uint8_t* i2c_wdt_sel, uint8_t* i2c_wdt_en, struct bmi08_dev* dev);
+    int8_t bmi08a_get_i2c_wdt(uint8_t *i2c_wdt_sel, uint8_t *i2c_wdt_en, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiRegs
@@ -216,7 +216,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_dev* dev);
+    int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -259,7 +259,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_error_status(struct bmi08_err_reg* err_reg, struct bmi08_dev* dev);
+    int8_t bmi08a_get_error_status(struct bmi08_err_reg *err_reg, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -294,7 +294,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_status(uint8_t* status, struct bmi08_dev* dev);
+    int8_t bmi08a_get_status(uint8_t *status, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -317,7 +317,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_soft_reset(struct bmi08_dev* dev);
+    int8_t bmi08a_soft_reset(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -341,7 +341,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_meas_conf(struct bmi08_dev* dev);
+    int8_t bmi08a_get_meas_conf(struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiConf
@@ -384,7 +384,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_meas_conf(struct bmi08_dev* dev);
+    int8_t bmi08a_set_meas_conf(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -408,7 +408,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_power_mode(struct bmi08_dev* dev);
+    int8_t bmi08a_get_power_mode(struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiPowermode
@@ -425,7 +425,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_power_mode(struct bmi08_dev* dev);
+    int8_t bmi08a_set_power_mode(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -452,7 +452,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_data(struct bmi08_sensor_data* accel, struct bmi08_dev* dev);
+    int8_t bmi08a_get_data(struct bmi08_sensor_data *accel, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -479,7 +479,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
+    int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -507,7 +507,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_sensor_temperature(struct bmi08_dev* dev, int32_t* sensor_temp);
+    int8_t bmi08a_get_sensor_temperature(struct bmi08_dev *dev, int32_t *sensor_temp);
 
     /**
  * \ingroup bmi08ag
@@ -531,7 +531,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_sensor_time(struct bmi08_dev* dev, uint32_t* sensor_time);
+    int8_t bmi08a_get_sensor_time(struct bmi08_dev *dev, uint32_t *sensor_time);
 
     /**
  * \ingroup bmi08ag
@@ -556,7 +556,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev);
+    int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -587,9 +587,9 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data* accel,
-                                        struct bmi08_sensor_data* gyro,
-                                        struct bmi08_dev* dev);
+    int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data *accel,
+                                        struct bmi08_sensor_data *gyro,
+                                        struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -616,7 +616,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg* int_config, struct bmi08_dev* dev);
+    int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg *int_config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiInt
@@ -643,7 +643,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi08a_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev);
+    int8_t bmi08a_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev);
 
     /*********************** BMI088 Gyroscope function prototypes ****************************/
 
@@ -671,7 +671,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_init(struct bmi08_dev* dev);
+    int8_t bmi08g_init(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -697,7 +697,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+    int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiRegs
@@ -719,7 +719,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+    int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -742,7 +742,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_soft_reset(struct bmi08_dev* dev);
+    int8_t bmi08g_soft_reset(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -770,7 +770,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_get_meas_conf(struct bmi08_dev* dev);
+    int8_t bmi08g_get_meas_conf(struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiConf
@@ -793,7 +793,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_set_meas_conf(struct bmi08_dev* dev);
+    int8_t bmi08g_set_meas_conf(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -817,7 +817,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_get_power_mode(struct bmi08_dev* dev);
+    int8_t bmi08g_get_power_mode(struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiPowermode
@@ -834,7 +834,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_set_power_mode(struct bmi08_dev* dev);
+    int8_t bmi08g_set_power_mode(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -860,7 +860,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_get_data(struct bmi08_sensor_data* gyro, struct bmi08_dev* dev);
+    int8_t bmi08g_get_data(struct bmi08_sensor_data *gyro, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -887,7 +887,7 @@ extern "C"
  *  @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev);
+    int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiIntconfig
@@ -913,7 +913,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi08g_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev);
+    int8_t bmi08g_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -937,7 +937,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08g_perform_selftest(struct bmi08_dev* dev);
+    int8_t bmi08g_perform_selftest(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -961,7 +961,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config* fifo_conf, struct bmi08_dev* dev);
+    int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config *fifo_conf, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -979,7 +979,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config* fifo_conf, struct bmi08_dev* dev);
+    int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config *fifo_conf, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -997,7 +997,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config* fifo_config, struct bmi08_fifo_frame* fifo);
+    int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config *fifo_config, struct bmi08_fifo_frame *fifo);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -1017,7 +1017,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame* fifo, struct bmi08_dev* dev);
+    int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame *fifo, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -1043,10 +1043,10 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    void bmi08g_extract_gyro(struct bmi08_sensor_data* gyro_data,
-                             const uint16_t* gyro_length,
-                             const struct bmi08_gyr_fifo_config* fifo_conf,
-                             const struct bmi08_fifo_frame* fifo);
+    void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data,
+                             const uint16_t *gyro_length,
+                             const struct bmi08_gyr_fifo_config *fifo_conf,
+                             const struct bmi08_fifo_frame *fifo);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -1065,7 +1065,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi08g_get_fifo_overrun(uint8_t* fifo_overrun, struct bmi08_dev* dev);
+    int8_t bmi08g_get_fifo_overrun(uint8_t *fifo_overrun, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -1084,7 +1084,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev* dev);
+    int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev *dev);
 
     /*********************************************************************************/
     /*                              Accel APIs                                       */
@@ -1112,7 +1112,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config* config, struct bmi08_dev* dev);
+    int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiFifo
@@ -1130,7 +1130,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config* config, struct bmi08_dev* dev);
+    int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config *config, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiFifo
@@ -1150,7 +1150,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame* fifo, struct bmi08_dev* dev);
+    int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame *fifo, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiFifo
@@ -1173,7 +1173,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_fifo_length(uint16_t* fifo_length, struct bmi08_dev* dev);
+    int8_t bmi08a_get_fifo_length(uint16_t *fifo_length, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiFifo
@@ -1191,7 +1191,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_fifo_wm(uint16_t* wm, struct bmi08_dev* dev);
+    int8_t bmi08a_get_fifo_wm(uint16_t *wm, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiFifo
@@ -1209,7 +1209,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev* dev);
+    int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -1242,10 +1242,10 @@ extern "C"
  * @retval > 0 -> Warning
  *
  */
-    int8_t bmi08a_extract_accel(struct bmi08_sensor_data* accel_data,
-                                uint16_t* accel_length,
-                                struct bmi08_fifo_frame* fifo,
-                                const struct bmi08_dev* dev);
+    int8_t bmi08a_extract_accel(struct bmi08_sensor_data *accel_data,
+                                uint16_t *accel_length,
+                                struct bmi08_fifo_frame *fifo,
+                                const struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -1271,7 +1271,7 @@ extern "C"
  *
  */
 
-    int8_t bmi08a_get_fifo_down_sample(uint8_t* fifo_downs, struct bmi08_dev* dev);
+    int8_t bmi08a_get_fifo_down_sample(uint8_t *fifo_downs, struct bmi08_dev *dev);
 
     /*!
  * \ingroup bmi08aApiFIFODown
@@ -1290,7 +1290,7 @@ extern "C"
  * @retval > 0 -> Warning
  *
  */
-    int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev* dev);
+    int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev *dev);
 
 #ifdef __cplusplus
 }

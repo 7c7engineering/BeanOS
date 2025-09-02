@@ -10,16 +10,16 @@ double bmp390_pressure    = 0;
 double bmp390_temperature = 0;
 
 int8_t bmp390_address = 0x76;
-struct bmp3_dev* sensor;
-struct bmp3_settings* settings;
+struct bmp3_dev *sensor;
+struct bmp3_settings *settings;
 
-static const char* TAG = "BMP390";
+static const char *TAG = "BMP390";
 
 // Our hardware interface functions
 
-static int8_t i2c_write(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, void* intf_ptr)
+static int8_t i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    uint8_t* buf = (uint8_t*)malloc(len + 1);
+    uint8_t *buf = (uint8_t *)malloc(len + 1);
     buf[0]       = reg_addr;
     memcpy(buf + 1, reg_data, len);
     esp_err_t ret = i2c_master_write_to_device(I2C_NUM_0, bmp390_address, buf, len + 1, pdMS_TO_TICKS(1000));
@@ -31,7 +31,7 @@ static int8_t i2c_write(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len,
     return BMP3_E_COMM_FAIL;
 }
 
-static int8_t i2c_read(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, void* intf_ptr)
+static int8_t i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
     esp_err_t ret =
       i2c_master_write_read_device(I2C_NUM_0, bmp390_address, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
@@ -42,7 +42,7 @@ static int8_t i2c_read(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, void* 
     return BMP3_E_COMM_FAIL;
 }
 
-static void delay_usec(uint32_t us, void* intf_ptr)
+static void delay_usec(uint32_t us, void *intf_ptr)
 {
     ets_delay_us(us);
 }
@@ -68,7 +68,7 @@ static int8_t cal_crc(uint8_t seed, uint8_t data)
     return (int8_t)seed;
 }
 
-static int8_t validate_trimming_param(struct bmp3_dev* dev)
+static int8_t validate_trimming_param(struct bmp3_dev *dev)
 {
     int8_t rslt;
     uint8_t crc = 0xFF;
@@ -94,8 +94,8 @@ static int8_t validate_trimming_param(struct bmp3_dev* dev)
 
 esp_err_t bean_altimeter_init()
 {
-    sensor             = (struct bmp3_dev*)malloc(sizeof(struct bmp3_dev));
-    settings           = (struct bmp3_settings*)malloc(sizeof(struct bmp3_settings));
+    sensor             = (struct bmp3_dev *)malloc(sizeof(struct bmp3_dev));
+    settings           = (struct bmp3_settings *)malloc(sizeof(struct bmp3_settings));
     sensor->chip_id    = bmp390_address;
     sensor->intf       = BMP3_I2C_INTF;
     sensor->read       = &i2c_read;

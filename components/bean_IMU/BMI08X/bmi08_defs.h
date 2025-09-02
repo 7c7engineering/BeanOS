@@ -79,7 +79,7 @@
 #ifdef __cplusplus
 #define NULL 0
 #else
-#define NULL ((void*)0)
+#define NULL ((void *)0)
 #endif
 #endif
 
@@ -773,7 +773,7 @@ enum bmi08_variant
  * @retval 0 for Success
  * @retval Non-zero for Failure
  */
-typedef BMI08_INTF_RET_TYPE (*bmi08_read_fptr_t)(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, void* intf_ptr);
+typedef BMI08_INTF_RET_TYPE (*bmi08_read_fptr_t)(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr);
 
 /*!
  * @brief Bus communication function pointer which should be mapped to
@@ -789,9 +789,9 @@ typedef BMI08_INTF_RET_TYPE (*bmi08_read_fptr_t)(uint8_t reg_addr, uint8_t* reg_
  *
  */
 typedef BMI08_INTF_RET_TYPE (*bmi08_write_fptr_t)(uint8_t reg_addr,
-                                                  const uint8_t* reg_data,
+                                                  const uint8_t *reg_data,
                                                   uint32_t len,
-                                                  void* intf_ptr);
+                                                  void *intf_ptr);
 
 /*!
  * @brief Delay function pointer which should be mapped to
@@ -802,7 +802,7 @@ typedef BMI08_INTF_RET_TYPE (*bmi08_write_fptr_t)(uint8_t reg_addr,
  *                                  for interface related call backs
  *
  */
-typedef void (*bmi08_delay_us_fptr_t)(uint32_t period, void* intf_ptr);
+typedef void (*bmi08_delay_us_fptr_t)(uint32_t period, void *intf_ptr);
 
 /**\name    Structure Definitions */
 
@@ -1044,7 +1044,7 @@ struct bmi08_gyr_fifo_config
 struct bmi08_fifo_frame
 {
     /*! Pointer to FIFO data */
-    uint8_t* data;
+    uint8_t *data;
 
     /*! Number of user defined bytes of FIFO to be read */
     uint16_t length;
@@ -1111,10 +1111,10 @@ struct bmi08_dev
     uint8_t gyro_chip_id;
 
     /*! Interface function pointer used to enable the device address for I2C and chip selection for SPI */
-    void* intf_ptr_accel;
+    void *intf_ptr_accel;
 
     /*! Interface function pointer used to enable the device address for I2C and chip selection for SPI */
-    void* intf_ptr_gyro;
+    void *intf_ptr_gyro;
 
     /*! Interface Selection
      * For SPI, interface = BMI08_SPI_INTF
@@ -1138,7 +1138,7 @@ struct bmi08_dev
     struct bmi08_axes_remap remap;
 
     /*! Config stream data buffer address will be assigned */
-    const uint8_t* config_file_ptr;
+    const uint8_t *config_file_ptr;
 
     /*! Max read/write length
      * To be set by the user */

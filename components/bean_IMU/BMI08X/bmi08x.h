@@ -105,7 +105,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08xa_init(struct bmi08_dev* dev);
+    int8_t bmi08xa_init(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08xag
@@ -154,7 +154,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08xa_set_meas_conf(struct bmi08_dev* dev);
+    int8_t bmi08xa_set_meas_conf(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08xag
@@ -179,7 +179,7 @@ extern "C"
  *  @retval > 0 -> Warning
  *
  */
-    int8_t bmi08xa_perform_selftest(struct bmi08_dev* dev);
+    int8_t bmi08xa_perform_selftest(struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08xag
@@ -204,7 +204,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev);
+    int8_t bmi08xa_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev);
 
 #ifdef __cplusplus
 }

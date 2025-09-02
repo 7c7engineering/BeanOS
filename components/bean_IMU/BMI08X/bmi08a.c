@@ -59,7 +59,7 @@
  * @retval < 0 -> Fail
  *
  */
-static int8_t null_ptr_check(const struct bmi08_dev* dev);
+static int8_t null_ptr_check(const struct bmi08_dev *dev);
 
 /*!
  *  @brief This API reads the data from the given register address of accel sensor.
@@ -74,7 +74,7 @@ static int8_t null_ptr_check(const struct bmi08_dev* dev);
  * @retval < 0 -> Fail
  *
  */
-static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+static int8_t get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
 /*!
  *  @brief This API writes the given data to the register address
@@ -91,7 +91,7 @@ static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+static int8_t set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
 /*!
  * @brief This API configures the pins which fire the
@@ -105,7 +105,7 @@ static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  * @brief This API sets the data ready interrupt for accel sensor
@@ -118,7 +118,7 @@ static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg* int_c
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_accel_data_ready_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_accel_data_ready_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  * @brief This API sets the synchronized data ready interrupt for accel sensor
@@ -131,8 +131,8 @@ static int8_t set_accel_data_ready_int(const struct bmi08_accel_int_channel_cfg*
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_accel_sync_data_ready_int(const struct bmi08_accel_int_channel_cfg* int_config,
-                                            struct bmi08_dev* dev);
+static int8_t set_accel_sync_data_ready_int(const struct bmi08_accel_int_channel_cfg *int_config,
+                                            struct bmi08_dev *dev);
 
 /*!
  * @brief This API configures the given interrupt channel as input for accel sensor
@@ -145,7 +145,7 @@ static int8_t set_accel_sync_data_ready_int(const struct bmi08_accel_int_channel
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_accel_sync_input(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_accel_sync_input(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  * @brief This API writes the config stream data in memory using burst mode
@@ -159,7 +159,7 @@ static int8_t set_accel_sync_input(const struct bmi08_accel_int_channel_cfg* int
  * @retval < 0 -> Fail
  *
  */
-static int8_t stream_transfer_write(const uint8_t* stream_data, uint16_t index, struct bmi08_dev* dev);
+static int8_t stream_transfer_write(const uint8_t *stream_data, uint16_t index, struct bmi08_dev *dev);
 
 /*!
  * @brief This internal API is used to parse accelerometer data from the FIFO
@@ -175,9 +175,9 @@ static int8_t stream_transfer_write(const uint8_t* stream_data, uint16_t index, 
  * @retval None
  *
  */
-static void unpack_accel_data(struct bmi08_sensor_data* acc,
+static void unpack_accel_data(struct bmi08_sensor_data *acc,
                               uint16_t data_start_index,
-                              const struct bmi08_fifo_frame* fifo);
+                              const struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API is used to parse the accelerometer data from the
@@ -201,11 +201,11 @@ static void unpack_accel_data(struct bmi08_sensor_data* acc,
  * @retval > 0 -> Warning
  *
  */
-static int8_t unpack_accel_frame(struct bmi08_sensor_data* acc,
-                                 uint16_t* idx,
-                                 uint16_t* acc_idx,
+static int8_t unpack_accel_frame(struct bmi08_sensor_data *acc,
+                                 uint16_t *idx,
+                                 uint16_t *acc_idx,
                                  uint16_t frame,
-                                 const struct bmi08_fifo_frame* fifo);
+                                 const struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API is used to parse and store the skipped frame count
@@ -221,7 +221,7 @@ static int8_t unpack_accel_frame(struct bmi08_sensor_data* acc,
  * @retval > 0 -> Warning
  *
  */
-static int8_t unpack_skipped_frame(uint16_t* data_index, struct bmi08_fifo_frame* fifo);
+static int8_t unpack_skipped_frame(uint16_t *data_index, struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API is used to move the data index ahead of the
@@ -239,7 +239,7 @@ static int8_t unpack_skipped_frame(uint16_t* data_index, struct bmi08_fifo_frame
  * @retval > 0 -> Warning
  *
  */
-static int8_t move_next_frame(uint16_t* data_index, uint8_t current_frame_length, const struct bmi08_fifo_frame* fifo);
+static int8_t move_next_frame(uint16_t *data_index, uint8_t current_frame_length, const struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API is used to parse and store the sensor time from the
@@ -254,7 +254,7 @@ static int8_t move_next_frame(uint16_t* data_index, uint8_t current_frame_length
  * @retval > 0 -> Warning
  *
  */
-static int8_t unpack_sensortime_frame(uint16_t* data_index, struct bmi08_fifo_frame* fifo);
+static int8_t unpack_sensortime_frame(uint16_t *data_index, struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API is used to reset the FIFO related configurations
@@ -267,7 +267,7 @@ static int8_t unpack_sensortime_frame(uint16_t* data_index, struct bmi08_fifo_fr
  * @retval None
  *
  */
-static void reset_fifo_frame_structure(struct bmi08_fifo_frame* fifo);
+static void reset_fifo_frame_structure(struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API is used to parse accelerometer data from the FIFO
@@ -284,9 +284,9 @@ static void reset_fifo_frame_structure(struct bmi08_fifo_frame* fifo);
  * @retval > 0 -> Warning
  *
  */
-static int8_t extract_acc_header_mode(struct bmi08_sensor_data* acc,
-                                      uint16_t* accel_length,
-                                      struct bmi08_fifo_frame* fifo);
+static int8_t extract_acc_header_mode(struct bmi08_sensor_data *acc,
+                                      uint16_t *accel_length,
+                                      struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This API sets the FIFO watermark interrupt for accel sensor
@@ -299,7 +299,7 @@ static int8_t extract_acc_header_mode(struct bmi08_sensor_data* acc,
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_fifo_wm_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_fifo_wm_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  * @brief This API sets the FIFO full interrupt for accel sensor
@@ -312,7 +312,7 @@ static int8_t set_fifo_wm_int(const struct bmi08_accel_int_channel_cfg* int_conf
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_fifo_full_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_fifo_full_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /****************************************************************************/
 
@@ -324,7 +324,7 @@ static int8_t set_fifo_full_int(const struct bmi08_accel_int_channel_cfg* int_co
  *  It performs the selection of I2C/SPI read mechanism according to the
  *  selected interface and reads the chip-id of accel sensor.
  */
-int8_t bmi08a_init(struct bmi08_dev* dev)
+int8_t bmi08a_init(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t chip_id = 0;
@@ -361,7 +361,7 @@ int8_t bmi08a_init(struct bmi08_dev* dev)
 /*!
  *  @brief This API uploads the bmi08 config file onto the device.
  */
-int8_t bmi08a_load_config_file(struct bmi08_dev* dev)
+int8_t bmi08a_load_config_file(struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -429,7 +429,7 @@ int8_t bmi08a_load_config_file(struct bmi08_dev* dev)
 /*!
  *  @brief This API writes the feature configuration to the accel sensor.
  */
-int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t* reg_data, uint8_t len, struct bmi08_dev* dev)
+int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t *reg_data, uint8_t len, struct bmi08_dev *dev)
 {
 
     int8_t rslt;
@@ -462,7 +462,7 @@ int8_t bmi08a_write_feature_config(uint8_t reg_addr, const uint16_t* reg_data, u
 /*!
  *  @brief This API reads the data from the given register address of accel sensor.
  */
-int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -488,7 +488,7 @@ int8_t bmi08a_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
  *  @brief This API writes the given data to the register address
  *  of accel sensor.
  */
-int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -525,7 +525,7 @@ int8_t bmi08a_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
 /*!
  *  @brief This API reads the error status from the accel sensor.
  */
-int8_t bmi08a_get_error_status(struct bmi08_err_reg* err_reg, struct bmi08_dev* dev)
+int8_t bmi08a_get_error_status(struct bmi08_err_reg *err_reg, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0;
@@ -557,7 +557,7 @@ int8_t bmi08a_get_error_status(struct bmi08_err_reg* err_reg, struct bmi08_dev* 
 /*!
  *  @brief This API reads the status of the accel sensor.
  */
-int8_t bmi08a_get_status(uint8_t* status, struct bmi08_dev* dev)
+int8_t bmi08a_get_status(uint8_t *status, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0;
@@ -584,7 +584,7 @@ int8_t bmi08a_get_status(uint8_t* status, struct bmi08_dev* dev)
 /*!
  *  @brief This API resets the accel sensor.
  */
-int8_t bmi08a_soft_reset(struct bmi08_dev* dev)
+int8_t bmi08a_soft_reset(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data;
@@ -621,7 +621,7 @@ int8_t bmi08a_soft_reset(struct bmi08_dev* dev)
  * store it in the bmi08_dev structure instance passed by the user.
  *
  */
-int8_t bmi08a_get_meas_conf(struct bmi08_dev* dev)
+int8_t bmi08a_get_meas_conf(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data[2];
@@ -647,7 +647,7 @@ int8_t bmi08a_get_meas_conf(struct bmi08_dev* dev)
  * @brief This API sets the output data rate and bandwidth
  * of accel sensor.
  */
-int8_t bmi08a_set_meas_conf(struct bmi08_dev* dev)
+int8_t bmi08a_set_meas_conf(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t bw, odr;
@@ -704,7 +704,7 @@ int8_t bmi08a_set_meas_conf(struct bmi08_dev* dev)
  * @brief This API reads the accel power mode from the sensor, store it in the bmi08_dev structure
  * instance passed by the user.
  */
-int8_t bmi08a_get_power_mode(struct bmi08_dev* dev)
+int8_t bmi08a_get_power_mode(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data;
@@ -728,7 +728,7 @@ int8_t bmi08a_get_power_mode(struct bmi08_dev* dev)
 /*!
  * @brief This API sets the power mode of the accel sensor.
  */
-int8_t bmi08a_set_power_mode(struct bmi08_dev* dev)
+int8_t bmi08a_set_power_mode(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t power_mode;
@@ -780,7 +780,7 @@ int8_t bmi08a_set_power_mode(struct bmi08_dev* dev)
  * store it in the bmi08_sensor_data structure instance
  * passed by the user.
  */
-int8_t bmi08a_get_data(struct bmi08_sensor_data* accel, struct bmi08_dev* dev)
+int8_t bmi08a_get_data(struct bmi08_sensor_data *accel, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data[6];
@@ -823,7 +823,7 @@ int8_t bmi08a_get_data(struct bmi08_sensor_data* accel, struct bmi08_dev* dev)
  * based on the user settings in the bmi08x_int_cfg
  * structure instance.
  */
-int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -872,7 +872,7 @@ int8_t bmi08a_set_int_config(const struct bmi08_accel_int_channel_cfg* int_confi
 /*!
  * @brief This API reads the temperature of the sensor in degree Celcius.
  */
-int8_t bmi08a_get_sensor_temperature(struct bmi08_dev* dev, int32_t* sensor_temp)
+int8_t bmi08a_get_sensor_temperature(struct bmi08_dev *dev, int32_t *sensor_temp)
 {
     int8_t rslt;
     uint8_t data[2] = { 0 };
@@ -913,7 +913,7 @@ int8_t bmi08a_get_sensor_temperature(struct bmi08_dev* dev, int32_t* sensor_temp
 /*!
  *  @brief This API reads the sensor time of the accel sensor.
  */
-int8_t bmi08a_get_sensor_time(struct bmi08_dev* dev, uint32_t* sensor_time)
+int8_t bmi08a_get_sensor_time(struct bmi08_dev *dev, uint32_t *sensor_time)
 {
     int8_t rslt;
     uint8_t data[3] = { 0 };
@@ -945,7 +945,7 @@ int8_t bmi08a_get_sensor_time(struct bmi08_dev* dev, uint32_t* sensor_time)
 /*!
  * @brief This API sets the FIFO configuration in the sensor.
  */
-int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config* config, struct bmi08_dev* dev)
+int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config *config, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -986,7 +986,7 @@ int8_t bmi08a_set_fifo_config(const struct bmi08_accel_fifo_config* config, stru
 /*!
  * @brief This API reads the FIFO configuration from the sensor.
  */
-int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config* config, struct bmi08_dev* dev)
+int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config *config, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1022,7 +1022,7 @@ int8_t bmi08a_get_fifo_config(struct bmi08_accel_fifo_config* config, struct bmi
 /*!
  * @brief This API reads the FIFO data.
  */
-int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame* fifo, struct bmi08_dev* dev)
+int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame *fifo, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1085,7 +1085,7 @@ int8_t bmi08a_read_fifo_data(struct bmi08_fifo_frame* fifo, struct bmi08_dev* de
  * @brief This API gets the length of FIFO data available in the sensor in
  * bytes.
  */
-int8_t bmi08a_get_fifo_length(uint16_t* fifo_length, struct bmi08_dev* dev)
+int8_t bmi08a_get_fifo_length(uint16_t *fifo_length, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1115,7 +1115,7 @@ int8_t bmi08a_get_fifo_length(uint16_t* fifo_length, struct bmi08_dev* dev)
 /*!
  * @brief This API sets the FIFO water-mark level in the sensor.
  */
-int8_t bmi08a_get_fifo_wm(uint16_t* wm, struct bmi08_dev* dev)
+int8_t bmi08a_get_fifo_wm(uint16_t *wm, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -1138,7 +1138,7 @@ int8_t bmi08a_get_fifo_wm(uint16_t* wm, struct bmi08_dev* dev)
 /*!
  * @brief This API sets the FIFO water-mark level in the sensor.
  */
-int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev* dev)
+int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1167,10 +1167,10 @@ int8_t bmi08a_set_fifo_wm(uint16_t wm, struct bmi08_dev* dev)
  * read by the "bmi08x_read_fifo_data" API and stores it in the "accel_data"
  * structure instance.
  */
-int8_t bmi08a_extract_accel(struct bmi08_sensor_data* accel_data,
-                            uint16_t* accel_length,
-                            struct bmi08_fifo_frame* fifo,
-                            const struct bmi08_dev* dev)
+int8_t bmi08a_extract_accel(struct bmi08_sensor_data *accel_data,
+                            uint16_t *accel_length,
+                            struct bmi08_fifo_frame *fifo,
+                            const struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1199,7 +1199,7 @@ int8_t bmi08a_extract_accel(struct bmi08_sensor_data* accel_data,
  * @brief This API reads the down sampling rates which is configured for
  * accelerometer FIFO data.
  */
-int8_t bmi08a_get_fifo_down_sample(uint8_t* fifo_downs, struct bmi08_dev* dev)
+int8_t bmi08a_get_fifo_down_sample(uint8_t *fifo_downs, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1228,7 +1228,7 @@ int8_t bmi08a_get_fifo_down_sample(uint8_t* fifo_downs, struct bmi08_dev* dev)
  *
  * @note Reduction of sample rate by a factor 2**fifo_downs
  */
-int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev* dev)
+int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1253,7 +1253,7 @@ int8_t bmi08a_set_fifo_down_sample(uint8_t fifo_downs, struct bmi08_dev* dev)
 /*!
  * @brief This API reads the i2c_wdt_sel and i2c_wdt_en information
  */
-int8_t bmi08a_get_i2c_wdt(uint8_t* i2c_wdt_sel, uint8_t* i2c_wdt_en, struct bmi08_dev* dev)
+int8_t bmi08a_get_i2c_wdt(uint8_t *i2c_wdt_sel, uint8_t *i2c_wdt_en, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1280,7 +1280,7 @@ int8_t bmi08a_get_i2c_wdt(uint8_t* i2c_wdt_sel, uint8_t* i2c_wdt_en, struct bmi0
 /*!
  * @brief This API sets the 2c_wdt_sel and i2c_wdt_en information
  */
-int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_dev* dev)
+int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_dev *dev)
 {
     /* Variable to define error */
     int8_t rslt;
@@ -1308,7 +1308,7 @@ int8_t bmi08a_set_i2c_wdt(uint8_t i2c_wdt_sel, uint8_t i2c_wdt_en, struct bmi08_
  *  @brief This API is used to enable/disable and configure the data synchronization
  *  feature.
  */
-int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev* dev)
+int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint16_t data[BMI08_ACCEL_DATA_SYNC_LEN];
@@ -1362,9 +1362,9 @@ int8_t bmi08a_configure_data_synchronization(struct bmi08_data_sync_cfg sync_cfg
  *  store it in the bmi08_sensor_data structure instance
  *  passed by the user.
  */
-int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data* accel,
-                                    struct bmi08_sensor_data* gyro,
-                                    struct bmi08_dev* dev)
+int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data *accel,
+                                    struct bmi08_sensor_data *gyro,
+                                    struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t reg_addr, data[6];
@@ -1414,7 +1414,7 @@ int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data* accel,
  *  based on the user settings in the bmi08x_int_cfg
  *  structure instance.
  */
-int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg* int_config, struct bmi08_dev* dev)
+int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -1441,7 +1441,7 @@ int8_t bmi08a_set_data_sync_int_config(const struct bmi08_int_cfg* int_config, s
 /*!
  * @brief This internal API gets accel feature interrupt status
  */
-int8_t bmi08a_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev)
+int8_t bmi08a_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t status = 0;
@@ -1472,7 +1472,7 @@ int8_t bmi08a_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev)
  * @brief This API is used to validate the device structure pointer for
  * null conditions.
  */
-static int8_t null_ptr_check(const struct bmi08_dev* dev)
+static int8_t null_ptr_check(const struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -1490,7 +1490,7 @@ static int8_t null_ptr_check(const struct bmi08_dev* dev)
 /*!
  * @brief This API reads the data from the given register address.
  */
-static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+static int8_t get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt = BMI08_OK;
     uint16_t index;
@@ -1519,7 +1519,7 @@ static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
 /*!
  * @brief This API writes the data to the given register address.
  */
-static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+static int8_t set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt = BMI08_OK;
 
@@ -1543,7 +1543,7 @@ static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
  * @brief This API configures the pins which fire the
  * interrupt signal when any interrupt occurs.
  */
-static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t reg_addr = 0, data, is_channel_invalid = FALSE;
@@ -1597,7 +1597,7 @@ static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg* int_c
 /*!
  * @brief This API sets the data ready interrupt for accel sensor.
  */
-static int8_t set_accel_data_ready_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_accel_data_ready_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0, conf;
@@ -1643,7 +1643,7 @@ static int8_t set_accel_data_ready_int(const struct bmi08_accel_int_channel_cfg*
 /*!
  * @brief This API sets the synchronized data ready interrupt for accel sensor
  */
-static int8_t set_accel_sync_data_ready_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_accel_sync_data_ready_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data, reg_addr = 0;
@@ -1689,7 +1689,7 @@ static int8_t set_accel_sync_data_ready_int(const struct bmi08_accel_int_channel
 /*!
  * @brief This API configures the given interrupt channel as input for accel sensor
  */
-static int8_t set_accel_sync_input(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_accel_sync_input(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -1706,7 +1706,7 @@ static int8_t set_accel_sync_input(const struct bmi08_accel_int_channel_cfg* int
 /*!
  *  @brief This API writes the config stream data in memory using burst mode.
  */
-static int8_t stream_transfer_write(const uint8_t* stream_data, uint16_t index, struct bmi08_dev* dev)
+static int8_t stream_transfer_write(const uint8_t *stream_data, uint16_t index, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t asic_msb = (uint8_t)((index / 2) >> 4);
@@ -1720,7 +1720,7 @@ static int8_t stream_transfer_write(const uint8_t* stream_data, uint16_t index, 
 
         if (rslt == BMI08_OK) {
             /* Write to feature config registers */
-            rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t*)stream_data, dev->read_write_len, dev);
+            rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t *)stream_data, dev->read_write_len, dev);
         }
     }
 
@@ -1731,7 +1731,7 @@ static int8_t stream_transfer_write(const uint8_t* stream_data, uint16_t index, 
  * @brief This internal API is used to parse and store the skipped frame count
  * from the FIFO data.
  */
-static int8_t unpack_skipped_frame(uint16_t* data_index, struct bmi08_fifo_frame* fifo)
+static int8_t unpack_skipped_frame(uint16_t *data_index, struct bmi08_fifo_frame *fifo)
 {
     /* Variables to define error */
     int8_t rslt = BMI08_OK;
@@ -1761,7 +1761,7 @@ static int8_t unpack_skipped_frame(uint16_t* data_index, struct bmi08_fifo_frame
  * @brief This internal API is used to reset the FIFO related configurations in
  * the FIFO frame structure for the next FIFO read.
  */
-static void reset_fifo_frame_structure(struct bmi08_fifo_frame* fifo)
+static void reset_fifo_frame_structure(struct bmi08_fifo_frame *fifo)
 {
     /* Reset FIFO data structure */
     fifo->acc_byte_start_idx  = 0;
@@ -1773,9 +1773,9 @@ static void reset_fifo_frame_structure(struct bmi08_fifo_frame* fifo)
  * @brief This internal API is used to parse accelerometer data from the
  * FIFO data.
  */
-static void unpack_accel_data(struct bmi08_sensor_data* acc,
+static void unpack_accel_data(struct bmi08_sensor_data *acc,
                               uint16_t data_start_index,
-                              const struct bmi08_fifo_frame* fifo)
+                              const struct bmi08_fifo_frame *fifo)
 {
     /* Variables to store LSB value */
     uint16_t data_lsb;
@@ -1804,11 +1804,11 @@ static void unpack_accel_data(struct bmi08_sensor_data* acc,
  * FIFO data in header mode. It updates the current data
  * byte to be parsed.
  */
-static int8_t unpack_accel_frame(struct bmi08_sensor_data* acc,
-                                 uint16_t* idx,
-                                 uint16_t* acc_idx,
+static int8_t unpack_accel_frame(struct bmi08_sensor_data *acc,
+                                 uint16_t *idx,
+                                 uint16_t *acc_idx,
                                  uint16_t frame,
-                                 const struct bmi08_fifo_frame* fifo)
+                                 const struct bmi08_fifo_frame *fifo)
 {
     /* Variable to define error */
     int8_t rslt = BMI08_OK;
@@ -1855,7 +1855,7 @@ static int8_t unpack_accel_frame(struct bmi08_sensor_data* acc,
  * current_frame_length parameter when unnecessary FIFO data appears while
  * extracting the user specified data.
  */
-static int8_t move_next_frame(uint16_t* data_index, uint8_t current_frame_length, const struct bmi08_fifo_frame* fifo)
+static int8_t move_next_frame(uint16_t *data_index, uint8_t current_frame_length, const struct bmi08_fifo_frame *fifo)
 {
     /* Variables to define error */
     int8_t rslt = BMI08_OK;
@@ -1879,7 +1879,7 @@ static int8_t move_next_frame(uint16_t* data_index, uint8_t current_frame_length
  * @brief This internal API is used to parse and store the sensor time from the
  * FIFO data.
  */
-static int8_t unpack_sensortime_frame(uint16_t* data_index, struct bmi08_fifo_frame* fifo)
+static int8_t unpack_sensortime_frame(uint16_t *data_index, struct bmi08_fifo_frame *fifo)
 {
     /* Variables to define error */
     int8_t rslt = BMI08_OK;
@@ -1916,9 +1916,9 @@ static int8_t unpack_sensortime_frame(uint16_t* data_index, struct bmi08_fifo_fr
  * @brief This internal API is used to parse the accelerometer data from the
  * FIFO in header mode.
  */
-static int8_t extract_acc_header_mode(struct bmi08_sensor_data* acc,
-                                      uint16_t* accel_length,
-                                      struct bmi08_fifo_frame* fifo)
+static int8_t extract_acc_header_mode(struct bmi08_sensor_data *acc,
+                                      uint16_t *accel_length,
+                                      struct bmi08_fifo_frame *fifo)
 {
     /* Variable to define error */
     int8_t rslt = BMI08_OK;
@@ -2007,7 +2007,7 @@ static int8_t extract_acc_header_mode(struct bmi08_sensor_data* acc,
 /*!
  * @brief This API sets the FIFO water mark interrupt for accel sensor.
  */
-static int8_t set_fifo_wm_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_fifo_wm_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0, conf;
@@ -2053,7 +2053,7 @@ static int8_t set_fifo_wm_int(const struct bmi08_accel_int_channel_cfg* int_conf
 /*!
  * @brief This API sets the FIFO full interrupt for accel sensor.
  */
-static int8_t set_fifo_full_int(const struct bmi08_accel_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_fifo_full_int(const struct bmi08_accel_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0, conf;

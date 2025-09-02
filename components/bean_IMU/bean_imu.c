@@ -8,31 +8,31 @@ Description: BMI088 driver for ESP32-S3 using BMI08X library from Bosch Sensorte
 
 static float lsb_to_mps2(int16_t val, float g_range, uint8_t bit_width);
 static float lsb_to_dps(int16_t val, float dps, uint8_t bit_width);
-static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, void* intf_ptr);
-static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, void* intf_ptr);
-static void delay_us(uint32_t period, void* intf_ptr);
+static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr);
+static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr);
+static void delay_us(uint32_t period, void *intf_ptr);
 
 #define GRAVITY_EARTH (9.80665f)
 
-static char* TAG = "BMI088";
-static struct bmi08_dev* sensor;
-static struct bmi08_sensor_data* accel_data;
-static struct bmi08_sensor_data* gyro_data;
-static struct bmi08_sensor_data_f* accel_data_f;
-static struct bmi08_sensor_data_f* gyro_data_f;
-const uint8_t* config_file_ptr;
+static char *TAG = "BMI088";
+static struct bmi08_dev *sensor;
+static struct bmi08_sensor_data *accel_data;
+static struct bmi08_sensor_data *gyro_data;
+static struct bmi08_sensor_data_f *accel_data_f;
+static struct bmi08_sensor_data_f *gyro_data_f;
+const uint8_t *config_file_ptr;
 uint8_t acc_dev_addr = BMI088_ACC_I2C_ADDR;
 uint8_t gyr_dev_addr = BMI088_GYR_I2C_ADDR;
 
 uint8_t accel_range = 0;
 uint16_t gyro_range = 0;
 
-static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, void* intf_ptr)
+static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    uint8_t* buf = (uint8_t*)malloc(len + 1);
+    uint8_t *buf = (uint8_t *)malloc(len + 1);
     buf[0]       = reg_addr;
     memcpy(buf + 1, reg_data, len);
-    uint8_t dev_addr = *(uint8_t*)intf_ptr;
+    uint8_t dev_addr = *(uint8_t *)intf_ptr;
 
     esp_err_t ret = i2c_master_write_to_device(I2C_NUM_0, dev_addr, buf, len + 1, pdMS_TO_TICKS(1000));
     free(buf);
@@ -44,9 +44,9 @@ static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t* 
     return BMI08_INTF_RET_SUCCESS;
 }
 
-static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, void* intf_ptr)
+static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    uint8_t dev_addr = *(uint8_t*)intf_ptr;
+    uint8_t dev_addr = *(uint8_t *)intf_ptr;
 
     esp_err_t ret = i2c_master_write_read_device(I2C_NUM_0, dev_addr, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
 
@@ -57,19 +57,19 @@ static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t* reg_dat
     return BMI08_INTF_RET_SUCCESS;
 }
 
-static void delay_us(uint32_t period, void* intf_ptr)
+static void delay_us(uint32_t period, void *intf_ptr)
 {
     ets_delay_us(period);
 }
 
 esp_err_t bean_imu_init()
 {
-    sensor          = (struct bmi08_dev*)malloc(sizeof(struct bmi08_dev));
-    config_file_ptr = (uint8_t*)malloc(sizeof(uint8_t));
-    accel_data      = (struct bmi08_sensor_data*)malloc(sizeof(struct bmi08_sensor_data));
-    gyro_data       = (struct bmi08_sensor_data*)malloc(sizeof(struct bmi08_sensor_data));
-    accel_data_f    = (struct bmi08_sensor_data_f*)malloc(sizeof(struct bmi08_sensor_data_f));
-    gyro_data_f     = (struct bmi08_sensor_data_f*)malloc(sizeof(struct bmi08_sensor_data_f));
+    sensor          = (struct bmi08_dev *)malloc(sizeof(struct bmi08_dev));
+    config_file_ptr = (uint8_t *)malloc(sizeof(uint8_t));
+    accel_data      = (struct bmi08_sensor_data *)malloc(sizeof(struct bmi08_sensor_data));
+    gyro_data       = (struct bmi08_sensor_data *)malloc(sizeof(struct bmi08_sensor_data));
+    accel_data_f    = (struct bmi08_sensor_data_f *)malloc(sizeof(struct bmi08_sensor_data_f));
+    gyro_data_f     = (struct bmi08_sensor_data_f *)malloc(sizeof(struct bmi08_sensor_data_f));
 
     sensor->intf_ptr_accel = &acc_dev_addr;
     sensor->intf_ptr_gyro  = &gyr_dev_addr;
