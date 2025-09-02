@@ -66,7 +66,7 @@
  * @retval < 0 -> Fail
  *
  */
-static int8_t null_ptr_check(const struct bmi08_dev* dev);
+static int8_t null_ptr_check(const struct bmi08_dev *dev);
 
 /*!
  *  @brief This API reads the data from the given register address of gyro sensor.
@@ -81,7 +81,7 @@ static int8_t null_ptr_check(const struct bmi08_dev* dev);
  * @retval < 0 -> Fail
  *
  */
-static int8_t get_regs(uint8_t reg_addr, uint8_t* data, uint32_t len, struct bmi08_dev* dev);
+static int8_t get_regs(uint8_t reg_addr, uint8_t *data, uint32_t len, struct bmi08_dev *dev);
 
 /*!
  *  @brief This API writes the given data to the register address
@@ -98,7 +98,7 @@ static int8_t get_regs(uint8_t reg_addr, uint8_t* data, uint32_t len, struct bmi
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev);
+static int8_t set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev);
 
 /*!
  * @brief This API sets the data ready interrupt for gyro sensor.
@@ -111,7 +111,7 @@ static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  * @brief This API sets the FIFO full, FIFO watermark interrupts for gyro sensor
@@ -124,7 +124,7 @@ static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg* i
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  * @brief This API configures the pins which fire the
@@ -138,7 +138,7 @@ static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg* int_config, 
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev);
+static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev);
 
 /*!
  *  @brief This API enables or disables the Gyro Self test feature in the
@@ -158,7 +158,7 @@ static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg* int_co
  * @retval < 0 -> Fail
  *
  */
-static int8_t set_gyro_selftest(uint8_t selftest, struct bmi08_dev* dev);
+static int8_t set_gyro_selftest(uint8_t selftest, struct bmi08_dev *dev);
 
 /*!
  * @brief This internal API is used to get fifo data byte count
@@ -169,7 +169,7 @@ static int8_t set_gyro_selftest(uint8_t selftest, struct bmi08_dev* dev);
  * @param[out] fifo_data_byte : Stores the number of bytes to be read
  *
  */
-static void get_fifo_data_length(const struct bmi08_gyr_fifo_config* fifo, int8_t frame_size, uint16_t* fifo_data_byte);
+static void get_fifo_data_length(const struct bmi08_gyr_fifo_config *fifo, int8_t frame_size, uint16_t *fifo_data_byte);
 
 /*!
  * @brief This internal API computes the number of bytes of gyroscope FIFO data
@@ -181,10 +181,10 @@ static void get_fifo_data_length(const struct bmi08_gyr_fifo_config* fifo, int8_
  * @param[in]  fifo        : Structure instance of bmi08x_fifo_frame.
  *
  */
-static void parse_fifo_gyro_len(uint16_t* len,
-                                const uint16_t* gyr_count,
-                                const struct bmi08_gyr_fifo_config* fifo_conf,
-                                const struct bmi08_fifo_frame* fifo);
+static void parse_fifo_gyro_len(uint16_t *len,
+                                const uint16_t *gyr_count,
+                                const struct bmi08_gyr_fifo_config *fifo_conf,
+                                const struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API computes the number of bytes of gyroscope FIFO data
@@ -195,10 +195,10 @@ static void parse_fifo_gyro_len(uint16_t* len,
  * @param[in]  fifo_conf      : Structure instance of bmi08x_gyr_fifo_config.
  * @param[in]  fifo           : Structure instance of bmi08x_fifo_frame.
  */
-static void unpack_gyro_data(struct bmi08_sensor_data* gyro,
-                             uint16_t* data_index,
-                             const struct bmi08_gyr_fifo_config* fifo_conf,
-                             const struct bmi08_fifo_frame* fifo);
+static void unpack_gyro_data(struct bmi08_sensor_data *gyro,
+                             uint16_t *data_index,
+                             const struct bmi08_gyr_fifo_config *fifo_conf,
+                             const struct bmi08_fifo_frame *fifo);
 
 /****************************************************************************/
 
@@ -220,7 +220,7 @@ static void unpack_gyro_data(struct bmi08_sensor_data* gyro,
  *  It performs the selection of I2C/SPI read mechanism according to the
  *  selected interface and reads the chip-id of gyro sensor.
  */
-int8_t bmi08g_init(struct bmi08_dev* dev)
+int8_t bmi08g_init(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t chip_id = 0;
@@ -229,17 +229,22 @@ int8_t bmi08g_init(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         dev->gyro_chip_id = 0;
 
         /* Read gyro chip id */
         rslt = get_regs(BMI08_REG_GYRO_CHIP_ID, &chip_id, 1, dev);
 
-        if (rslt == BMI08_OK) {
-            if (chip_id == BMI08_GYRO_CHIP_ID) {
+        if (rslt == BMI08_OK)
+        {
+            if (chip_id == BMI08_GYRO_CHIP_ID)
+            {
                 /* Store the chip ID in dev structure */
                 dev->gyro_chip_id = chip_id;
-            } else {
+            }
+            else
+            {
                 rslt = BMI08_E_DEV_NOT_FOUND;
             }
         }
@@ -252,7 +257,7 @@ int8_t bmi08g_init(struct bmi08_dev* dev)
  * @brief This API reads the data from the given register address
  * of gyro sensor.
  */
-int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -260,14 +265,20 @@ int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if ((rslt == BMI08_OK) && (reg_data != NULL)) {
-        if (len > 0) {
+    if ((rslt == BMI08_OK) && (reg_data != NULL))
+    {
+        if (len > 0)
+        {
             /* Reading from the register */
             rslt = get_regs(reg_addr, reg_data, len, dev);
-        } else {
+        }
+        else
+        {
             rslt = BMI08_E_RD_WR_LENGTH_INVALID;
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -278,7 +289,7 @@ int8_t bmi08g_get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
  * @brief This API writes the given data to the register address
  * of gyro sensor.
  */
-int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -286,26 +297,36 @@ int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if ((rslt == BMI08_OK) && (reg_data != NULL)) {
-        if (len > 0) {
+    if ((rslt == BMI08_OK) && (reg_data != NULL))
+    {
+        if (len > 0)
+        {
             /* Writing to the register */
             rslt = set_regs(reg_addr, reg_data, len, dev);
 
             /* Delay for suspended mode of the sensor is 450 us */
-            if (dev->gyro_cfg.power == BMI08_GYRO_PM_SUSPEND || dev->gyro_cfg.power == BMI08_GYRO_PM_DEEP_SUSPEND) {
+            if (dev->gyro_cfg.power == BMI08_GYRO_PM_SUSPEND || dev->gyro_cfg.power == BMI08_GYRO_PM_DEEP_SUSPEND)
+            {
                 dev->delay_us(450, dev->intf_ptr_gyro);
             }
             /* Delay for Normal mode of the sensor is 2 us */
-            else if (dev->gyro_cfg.power == BMI08_GYRO_PM_NORMAL) {
+            else if (dev->gyro_cfg.power == BMI08_GYRO_PM_NORMAL)
+            {
                 dev->delay_us(2, dev->intf_ptr_gyro);
-            } else {
+            }
+            else
+            {
                 /* Invalid power input */
                 rslt = BMI08_E_INVALID_INPUT;
             }
-        } else {
+        }
+        else
+        {
             rslt = BMI08_E_RD_WR_LENGTH_INVALID;
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -315,7 +336,7 @@ int8_t bmi08g_set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
 /*!
  * @brief This API resets the gyro sensor.
  */
-int8_t bmi08g_soft_reset(struct bmi08_dev* dev)
+int8_t bmi08g_soft_reset(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data;
@@ -324,12 +345,14 @@ int8_t bmi08g_soft_reset(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         /* Reset gyro device */
         data = BMI08_SOFT_RESET_CMD;
         rslt = bmi08g_set_regs(BMI08_REG_GYRO_SOFTRESET, &data, 1, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             /* delay 30 ms after writing reset value to its register */
             dev->delay_us(BMI08_MS_TO_US(BMI08_GYRO_SOFTRESET_DELAY), dev->intf_ptr_gyro);
         }
@@ -342,7 +365,7 @@ int8_t bmi08g_soft_reset(struct bmi08_dev* dev)
  * @brief This API reads the gyro odr and range from the sensor, store it in the bmi08x_dev
  * structure instance passed by the user.
  */
-int8_t bmi08g_get_meas_conf(struct bmi08_dev* dev)
+int8_t bmi08g_get_meas_conf(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data[2];
@@ -351,13 +374,15 @@ int8_t bmi08g_get_meas_conf(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_RANGE, data, 2, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             dev->gyro_cfg.range = data[0];
-            dev->gyro_cfg.odr   = (data[1] & BMI08_GYRO_BW_MASK);
-            dev->gyro_cfg.bw    = dev->gyro_cfg.odr;
+            dev->gyro_cfg.odr = (data[1] & BMI08_GYRO_BW_MASK);
+            dev->gyro_cfg.bw = dev->gyro_cfg.odr;
         }
     }
 
@@ -368,7 +393,7 @@ int8_t bmi08g_get_meas_conf(struct bmi08_dev* dev)
  * @brief This API sets the output data rate, range and bandwidth
  * of gyro sensor.
  */
-int8_t bmi08g_set_meas_conf(struct bmi08_dev* dev)
+int8_t bmi08g_set_meas_conf(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data;
@@ -379,49 +404,59 @@ int8_t bmi08g_set_meas_conf(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
-        odr   = dev->gyro_cfg.odr;
+    if (rslt == BMI08_OK)
+    {
+        odr = dev->gyro_cfg.odr;
         range = dev->gyro_cfg.range;
 
-        if (odr > BMI08_GYRO_BW_32_ODR_100_HZ) {
+        if (odr > BMI08_GYRO_BW_32_ODR_100_HZ)
+        {
             /* Updating the status */
             is_odr_invalid = TRUE;
         }
 
-        if (range > BMI08_GYRO_RANGE_125_DPS) {
+        if (range > BMI08_GYRO_RANGE_125_DPS)
+        {
             /* Updating the status */
             is_range_invalid = TRUE;
         }
 
         /* If ODR and Range is valid, write it to gyro config. registers */
-        if ((!is_odr_invalid) && (!is_range_invalid)) {
+        if ((!is_odr_invalid) && (!is_range_invalid))
+        {
             /* Read range value from the range register */
             rslt = bmi08g_get_regs(BMI08_REG_GYRO_BANDWIDTH, &data, 1, dev);
 
-            if (rslt == BMI08_OK) {
+            if (rslt == BMI08_OK)
+            {
                 data = BMI08_SET_BITS_POS_0(data, BMI08_GYRO_BW, odr);
 
                 /* Write odr value to odr register */
                 rslt = bmi08g_set_regs(BMI08_REG_GYRO_BANDWIDTH, &data, 1, dev);
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     /* Read range value from the range register */
                     rslt = bmi08g_get_regs(BMI08_REG_GYRO_RANGE, &data, 1, dev);
                 }
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     data = BMI08_SET_BITS_POS_0(data, BMI08_GYRO_RANGE, range);
 
                     /* Write range value to range register */
                     rslt = bmi08g_set_regs(BMI08_REG_GYRO_RANGE, &data, 1, dev);
                 }
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     /* Delay required to set configurations */
                     dev->delay_us(BMI08_GYRO_SET_CONFIG_DELAY * 1000, dev->intf_ptr_gyro);
                 }
             }
-        } else {
+        }
+        else
+        {
             /* Invalid configuration present in ODR, Range */
             rslt = BMI08_E_INVALID_CONFIG;
         }
@@ -436,7 +471,7 @@ int8_t bmi08g_set_meas_conf(struct bmi08_dev* dev)
  * passed by the user.
  *
  */
-int8_t bmi08g_get_power_mode(struct bmi08_dev* dev)
+int8_t bmi08g_get_power_mode(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data;
@@ -445,10 +480,12 @@ int8_t bmi08g_get_power_mode(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_LPM1, &data, 1, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             /* Updating the power mode in the dev structure */
             dev->gyro_cfg.power = data;
         }
@@ -460,7 +497,7 @@ int8_t bmi08g_get_power_mode(struct bmi08_dev* dev)
 /*!
  * @brief This API sets the power mode of the gyro sensor.
  */
-int8_t bmi08g_set_power_mode(struct bmi08_dev* dev)
+int8_t bmi08g_set_power_mode(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t power_mode, data;
@@ -470,37 +507,45 @@ int8_t bmi08g_set_power_mode(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         /*read the previous power state*/
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_LPM1, &data, 1, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             power_mode = dev->gyro_cfg.power;
 
             /* Switching between normal mode and the suspend modes is allowed, it is not possible to switch
              * between suspend and deep suspend and vice versa. Check for invalid power switching,
              * (i.e) deep suspend to suspend */
-            if ((power_mode == BMI08_GYRO_PM_SUSPEND) && (data == BMI08_GYRO_PM_DEEP_SUSPEND)) {
+            if ((power_mode == BMI08_GYRO_PM_SUSPEND) && (data == BMI08_GYRO_PM_DEEP_SUSPEND))
+            {
                 /* Updating the status */
                 is_power_switching_mode_valid = FALSE;
             }
 
             /* Check for invalid power switching (i.e) from suspend to deep suspend */
-            if ((power_mode == BMI08_GYRO_PM_DEEP_SUSPEND) && (data == BMI08_GYRO_PM_SUSPEND)) {
+            if ((power_mode == BMI08_GYRO_PM_DEEP_SUSPEND) && (data == BMI08_GYRO_PM_SUSPEND))
+            {
                 /* Updating the status */
                 is_power_switching_mode_valid = FALSE;
             }
 
             /* Check if power switching mode is valid*/
-            if (is_power_switching_mode_valid) {
+            if (is_power_switching_mode_valid)
+            {
                 /* Write power to power register */
                 rslt = bmi08g_set_regs(BMI08_REG_GYRO_LPM1, &power_mode, 1, dev);
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     /* Time required to switch the power mode */
                     dev->delay_us(BMI08_MS_TO_US(BMI08_GYRO_POWER_MODE_CONFIG_DELAY), dev->intf_ptr_gyro);
                 }
-            } else {
+            }
+            else
+            {
                 /* Updating the error */
                 rslt = BMI08_E_INVALID_INPUT;
             }
@@ -515,7 +560,7 @@ int8_t bmi08g_set_power_mode(struct bmi08_dev* dev)
  * store it in the bmi08x_sensor_data structure instance
  * passed by the user.
  */
-int8_t bmi08g_get_data(struct bmi08_sensor_data* gyro, struct bmi08_dev* dev)
+int8_t bmi08g_get_data(struct bmi08_sensor_data *gyro, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data[6];
@@ -526,27 +571,31 @@ int8_t bmi08g_get_data(struct bmi08_sensor_data* gyro, struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if ((rslt == BMI08_OK) && (gyro != NULL)) {
+    if ((rslt == BMI08_OK) && (gyro != NULL))
+    {
         /* read gyro sensor data */
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_X_LSB, data, 6, dev);
 
-        if (rslt == BMI08_OK) {
-            lsb     = data[0];
-            msb     = data[1];
-            msblsb  = (msb << 8) | lsb;
+        if (rslt == BMI08_OK)
+        {
+            lsb = data[0];
+            msb = data[1];
+            msblsb = (msb << 8) | lsb;
             gyro->x = (int16_t)msblsb; /* Data in X axis */
 
-            lsb     = data[2];
-            msb     = data[3];
-            msblsb  = (msb << 8) | lsb;
+            lsb = data[2];
+            msb = data[3];
+            msblsb = (msb << 8) | lsb;
             gyro->y = (int16_t)msblsb; /* Data in Y axis */
 
-            lsb     = data[4];
-            msb     = data[5];
-            msblsb  = (msb << 8) | lsb;
+            lsb = data[4];
+            msb = data[5];
+            msblsb = (msb << 8) | lsb;
             gyro->z = (int16_t)msblsb; /* Data in Z axis */
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -558,7 +607,7 @@ int8_t bmi08g_get_data(struct bmi08_sensor_data* gyro, struct bmi08_dev* dev)
  * based on the user settings in the bmi08x_int_cfg
  * structure instance.
  */
-int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev)
+int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
 
@@ -566,26 +615,30 @@ int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg* int_config
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if ((rslt == BMI08_OK) && (int_config != NULL)) {
+    if ((rslt == BMI08_OK) && (int_config != NULL))
+    {
 
-        switch (int_config->int_type) {
-        case BMI08_GYRO_INT_DATA_RDY:
+        switch (int_config->int_type)
+        {
+            case BMI08_GYRO_INT_DATA_RDY:
 
-            /* Data ready interrupt */
-            rslt = set_gyro_data_ready_int(int_config, dev);
-            break;
-        case BMI08_GYRO_INT_FIFO_WM:
-        case BMI08_GYRO_INT_FIFO_FULL:
+                /* Data ready interrupt */
+                rslt = set_gyro_data_ready_int(int_config, dev);
+                break;
+            case BMI08_GYRO_INT_FIFO_WM:
+            case BMI08_GYRO_INT_FIFO_FULL:
 
-            /* FIFO interrupt */
-            rslt = set_fifo_int(int_config, dev);
-            break;
+                /* FIFO interrupt */
+                rslt = set_fifo_int(int_config, dev);
+                break;
 
-        default:
-            rslt = BMI08_E_INVALID_CONFIG;
-            break;
+            default:
+                rslt = BMI08_E_INVALID_CONFIG;
+                break;
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -596,7 +649,7 @@ int8_t bmi08g_set_int_config(const struct bmi08_gyro_int_channel_cfg* int_config
  *  @brief This API checks whether the self test functionality of the
  *  gyro sensor is working or not.
  */
-int8_t bmi08g_perform_selftest(struct bmi08_dev* dev)
+int8_t bmi08g_perform_selftest(struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0, loop_break = 1;
@@ -605,41 +658,51 @@ int8_t bmi08g_perform_selftest(struct bmi08_dev* dev)
     rslt = null_ptr_check(dev);
 
     /* Proceed if null check is fine */
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         /* Enable the gyro self-test */
         rslt = set_gyro_selftest(BMI08_ENABLE, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             /* Loop till self-test ready bit is set */
-            while (loop_break) {
+            while (loop_break)
+            {
                 /* Read self-test register to check if self-test ready bit is set */
                 rslt = bmi08g_get_regs(BMI08_REG_GYRO_SELF_TEST, &data, 1, dev);
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     data = BMI08_GET_BITS(data, BMI08_GYRO_SELF_TEST_RDY);
 
-                    if (data) {
+                    if (data)
+                    {
                         /* If self-test ready bit is set, exit the loop */
                         loop_break = 0;
                     }
-                } else {
+                }
+                else
+                {
                     /* Exit the loop in case of communication failure */
                     loop_break = 0;
                 }
             }
 
-            if (rslt == BMI08_OK) {
+            if (rslt == BMI08_OK)
+            {
                 /* Read self-test register to check for self-test Ok bit */
                 rslt = bmi08g_get_regs(BMI08_REG_GYRO_SELF_TEST, &data, 1, dev);
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     data = BMI08_GET_BITS(data, BMI08_GYRO_SELF_TEST_RESULT);
 
                     rslt = bmi08g_soft_reset(dev);
 
-                    if (rslt == BMI08_OK) {
+                    if (rslt == BMI08_OK)
+                    {
                         /* Updating the self test result */
-                        rslt = (int8_t)data;
+                        rslt = (int8_t) data;
                     }
                 }
             }
@@ -652,17 +715,21 @@ int8_t bmi08g_perform_selftest(struct bmi08_dev* dev)
 /*!
  * @brief This internal API gets gyro data ready interrupt status
  */
-int8_t bmi08g_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev)
+int8_t bmi08g_get_data_int_status(uint8_t *int_status, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t status = 0;
 
-    if (int_status != NULL) {
+    if (int_status != NULL)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_INT_STAT_1, &status, 1, dev);
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             (*int_status) = status;
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -672,18 +739,22 @@ int8_t bmi08g_get_data_int_status(uint8_t* int_status, struct bmi08_dev* dev)
 /*!
  *  @brief This API is used to get fifo overrun.
  */
-int8_t bmi08g_get_fifo_overrun(uint8_t* fifo_overrun, struct bmi08_dev* dev)
+int8_t bmi08g_get_fifo_overrun(uint8_t *fifo_overrun, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t reg_data = 0;
 
-    if (fifo_overrun != NULL) {
+    if (fifo_overrun != NULL)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_FIFO_STATUS, &reg_data, 1, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             *fifo_overrun = BMI08_GET_BITS(reg_data, BMI08_GYRO_FIFO_OVERRUN);
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -693,19 +764,22 @@ int8_t bmi08g_get_fifo_overrun(uint8_t* fifo_overrun, struct bmi08_dev* dev)
 /*!
  *  @brief This API is used to get fifo configuration of the sensor.
  */
-int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config* fifo_conf, struct bmi08_dev* dev)
+int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config *fifo_conf, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t fifo_config[2] = { 0 };
-    uint8_t reg_data       = 0;
+    uint8_t reg_data = 0;
 
-    if (fifo_conf != NULL) {
+    if (fifo_conf != NULL)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_FIFO_CONFIG0, fifo_config, 2, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             rslt = bmi08g_get_regs(BMI08_REG_GYRO_FIFO_STATUS, &reg_data, 1, dev);
 
-            if (rslt == BMI08_OK) {
+            if (rslt == BMI08_OK)
+            {
                 fifo_conf->tag = BMI08_GET_BITS(fifo_config[0], BMI08_GYRO_FIFO_TAG);
 
                 fifo_conf->wm_level = BMI08_GET_BITS_POS_0(fifo_config[0], BMI08_GYRO_FIFO_WM_LEVEL);
@@ -717,7 +791,9 @@ int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config* fifo_conf, struct bm
                 fifo_conf->frame_count = BMI08_GET_BITS_POS_0(reg_data, BMI08_GYRO_FIFO_FRAME_COUNT);
             }
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -727,15 +803,17 @@ int8_t bmi08g_get_fifo_config(struct bmi08_gyr_fifo_config* fifo_conf, struct bm
 /*!
  *  @brief This API is used to get fifo configuration of the sensor.
  */
-int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config* fifo_conf, struct bmi08_dev* dev)
+int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config *fifo_conf, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t fifo_config[2] = { 0 };
 
-    if (fifo_conf != NULL) {
+    if (fifo_conf != NULL)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_FIFO_CONFIG0, fifo_config, 2, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             fifo_config[0] = BMI08_SET_BITS(fifo_config[0], BMI08_GYRO_FIFO_TAG, fifo_conf->tag);
 
             fifo_config[0] = BMI08_SET_BITS_POS_0(fifo_config[0], BMI08_GYRO_FIFO_WM_LEVEL, fifo_conf->wm_level);
@@ -746,7 +824,9 @@ int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config* fifo_conf, str
 
             rslt = bmi08g_set_regs(BMI08_REG_GYRO_FIFO_CONFIG0, fifo_config, 2, dev);
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -757,22 +837,29 @@ int8_t bmi08g_set_fifo_config(const struct bmi08_gyr_fifo_config* fifo_conf, str
  * @brief This API gets the length of FIFO data available in the sensor in
  * bytes.
  */
-int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config* fifo_config, struct bmi08_fifo_frame* fifo)
+int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config *fifo_config, struct bmi08_fifo_frame *fifo)
 {
-    int8_t rslt                   = BMI08_OK;
+    int8_t rslt = BMI08_OK;
     uint16_t fifo_data_byte_count = 0;
 
-    if ((fifo != NULL) && (fifo_config != NULL)) {
-        if (fifo_config->data_select == BMI08_GYRO_FIFO_XYZ_AXIS_ENABLED) {
+    if ((fifo != NULL) && (fifo_config != NULL))
+    {
+        if (fifo_config->data_select == BMI08_GYRO_FIFO_XYZ_AXIS_ENABLED)
+        {
             get_fifo_data_length(fifo_config, BMI08_GYRO_FIFO_XYZ_AXIS_FRAME_SIZE, &fifo_data_byte_count);
-        } else {
+        }
+        else
+        {
             get_fifo_data_length(fifo_config, BMI08_GYRO_FIFO_SINGLE_AXIS_FRAME_SIZE, &fifo_data_byte_count);
         }
 
-        if (fifo->length > fifo_data_byte_count) {
+        if (fifo->length > fifo_data_byte_count)
+        {
             fifo->length = fifo_data_byte_count;
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -782,13 +869,16 @@ int8_t bmi08g_get_fifo_length(const struct bmi08_gyr_fifo_config* fifo_config, s
 /*!
  *  @brief This API is used to read the fifo data from the sensor.
  */
-int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame* fifo, struct bmi08_dev* dev)
+int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame *fifo, struct bmi08_dev *dev)
 {
     int8_t rslt = BMI08_OK;
 
-    if (fifo != NULL) {
+    if (fifo != NULL)
+    {
         rslt = bmi08g_get_regs(BMI08_REG_GYRO_FIFO_DATA, fifo->data, fifo->length, dev);
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_NULL_PTR;
     }
 
@@ -798,35 +888,39 @@ int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame* fifo, struct bmi08_d
 /*!
  *  @brief This API is used to extract gyroscope data from fifo.
  */
-void bmi08g_extract_gyro(struct bmi08_sensor_data* gyro_data,
-                         const uint16_t* gyro_length,
-                         const struct bmi08_gyr_fifo_config* fifo_conf,
-                         const struct bmi08_fifo_frame* fifo)
+void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data,
+                         const uint16_t *gyro_length,
+                         const struct bmi08_gyr_fifo_config *fifo_conf,
+                         const struct bmi08_fifo_frame *fifo)
 {
-    uint16_t data_index       = 0;
-    uint16_t gyro_index       = 0;
+    uint16_t data_index = 0;
+    uint16_t gyro_index = 0;
     uint16_t data_read_length = 0;
 
     /* Get the number of gyro bytes to be read */
     parse_fifo_gyro_len(&data_read_length, gyro_length, fifo_conf, fifo);
 
-    for (; data_index < data_read_length;) {
+    for (; data_index < data_read_length;)
+    {
         unpack_gyro_data(&gyro_data[gyro_index], &data_index, fifo_conf, fifo);
         gyro_index++;
     }
 }
 
-int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev* dev)
+int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t reg_data;
 
-    if (enable) {
+    if (enable)
+    {
         reg_data = BMI08_GYRO_FIFO_WM_ENABLE_VAL;
-        rslt     = bmi08g_set_regs(BMI08_REG_GYRO_FIFO_WM_ENABLE, &reg_data, 1, dev);
-    } else {
+        rslt = bmi08g_set_regs(BMI08_REG_GYRO_FIFO_WM_ENABLE, &reg_data, 1, dev);
+    }
+    else
+    {
         reg_data = BMI08_GYRO_FIFO_WM_DISABLE_VAL;
-        rslt     = bmi08g_set_regs(BMI08_REG_GYRO_FIFO_WM_ENABLE, &reg_data, 1, dev);
+        rslt = bmi08g_set_regs(BMI08_REG_GYRO_FIFO_WM_ENABLE, &reg_data, 1, dev);
     }
 
     return rslt;
@@ -844,14 +938,17 @@ int8_t bmi08g_enable_watermark(uint8_t enable, struct bmi08_dev* dev)
  * @brief This API is used to validate the device structure pointer for
  * null conditions.
  */
-static int8_t null_ptr_check(const struct bmi08_dev* dev)
+static int8_t null_ptr_check(const struct bmi08_dev *dev)
 {
     int8_t rslt;
 
-    if ((dev == NULL) || (dev->read == NULL) || (dev->write == NULL) || (dev->delay_us == NULL)) {
+    if ((dev == NULL) || (dev->read == NULL) || (dev->write == NULL) || (dev->delay_us == NULL))
+    {
         /* Device structure pointer is not valid */
         rslt = BMI08_E_NULL_PTR;
-    } else {
+    }
+    else
+    {
         /* Device structure is fine */
         rslt = BMI08_OK;
     }
@@ -862,11 +959,12 @@ static int8_t null_ptr_check(const struct bmi08_dev* dev)
 /*!
  * @brief This API reads the data from the given register address of gyro sensor.
  */
-static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+static int8_t get_regs(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
     int8_t rslt = BMI08_OK;
 
-    if (dev->intf == BMI08_SPI_INTF) {
+    if (dev->intf == BMI08_SPI_INTF)
+    {
         /* Configuring reg_addr for SPI Interface */
         reg_addr = (reg_addr | BMI08_SPI_RD_MASK);
     }
@@ -874,7 +972,8 @@ static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
     /* Read gyro register */
     dev->intf_rslt = dev->read(reg_addr, reg_data, len, dev->intf_ptr_gyro);
 
-    if (dev->intf_rslt != BMI08_INTF_RET_SUCCESS) {
+    if (dev->intf_rslt != BMI08_INTF_RET_SUCCESS)
+    {
         /* Updating the error */
         rslt = BMI08_E_COM_FAIL;
     }
@@ -885,12 +984,13 @@ static int8_t get_regs(uint8_t reg_addr, uint8_t* reg_data, uint32_t len, struct
 /*!
  * @brief This API writes the given data to the register address of gyro sensor.
  */
-static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, struct bmi08_dev* dev)
+static int8_t set_regs(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, struct bmi08_dev *dev)
 {
-    int8_t rslt   = BMI08_OK;
+    int8_t rslt = BMI08_OK;
     uint8_t count = 0;
 
-    if (dev->intf == BMI08_SPI_INTF) {
+    if (dev->intf == BMI08_SPI_INTF)
+    {
         /* Configuring reg_addr for SPI Interface */
         reg_addr = (reg_addr & BMI08_SPI_WR_MASK);
     }
@@ -898,10 +998,12 @@ static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
     /* SPI write requires to set The MSB of reg_addr as 0
      * but in default the MSB is always 0
      */
-    if (len == 1) {
+    if (len == 1)
+    {
         dev->intf_rslt = dev->write(reg_addr, reg_data, len, dev->intf_ptr_gyro);
 
-        if (dev->intf_rslt != BMI08_INTF_RET_SUCCESS) {
+        if (dev->intf_rslt != BMI08_INTF_RET_SUCCESS)
+        {
             /* Failure case */
             rslt = BMI08_E_COM_FAIL;
         }
@@ -911,13 +1013,16 @@ static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
      * into single byte writes Thus user can write multiple bytes
      * with ease
      */
-    if (len > 1) {
-        for (count = 0; count < len; count++) {
+    if (len > 1)
+    {
+        for (count = 0; count < len; count++)
+        {
             dev->intf_rslt = dev->write(reg_addr, &reg_data[count], 1, dev->intf_ptr_gyro);
 
             reg_addr++;
 
-            if (dev->intf_rslt != BMI08_INTF_RET_SUCCESS) {
+            if (dev->intf_rslt != BMI08_INTF_RET_SUCCESS)
+            {
                 /* Failure case */
                 rslt = BMI08_E_COM_FAIL;
                 break;
@@ -931,7 +1036,7 @@ static int8_t set_regs(uint8_t reg_addr, const uint8_t* reg_data, uint32_t len, 
 /*!
  * @brief This API sets the data ready interrupt for gyro sensor.
  */
-static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t conf, data[2] = { 0 };
@@ -939,46 +1044,54 @@ static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg* i
     /* read interrupt map register */
     rslt = get_regs(BMI08_REG_GYRO_INT3_INT4_IO_MAP, &data[0], 1, dev);
 
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         conf = int_config->int_pin_cfg.enable_int_pin;
 
-        switch (int_config->int_channel) {
-        case BMI08_INT_CHANNEL_3:
+        switch (int_config->int_channel)
+        {
+            case BMI08_INT_CHANNEL_3:
 
-            /* Data to enable new data ready interrupt */
-            data[0] = BMI08_SET_BITS_POS_0(data[0], BMI08_GYRO_INT3_MAP, conf);
-            break;
+                /* Data to enable new data ready interrupt */
+                data[0] = BMI08_SET_BITS_POS_0(data[0], BMI08_GYRO_INT3_MAP, conf);
+                break;
 
-        case BMI08_INT_CHANNEL_4:
+            case BMI08_INT_CHANNEL_4:
 
-            /* Data to enable new data ready interrupt */
-            data[0] = BMI08_SET_BITS(data[0], BMI08_GYRO_INT4_MAP, conf);
-            break;
+                /* Data to enable new data ready interrupt */
+                data[0] = BMI08_SET_BITS(data[0], BMI08_GYRO_INT4_MAP, conf);
+                break;
 
-        default:
-            rslt = BMI08_E_INVALID_INPUT;
-            break;
+            default:
+                rslt = BMI08_E_INVALID_INPUT;
+                break;
         }
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             /*condition to check disabling the interrupt in single channel when both
              * interrupts channels are enabled*/
-            if (data[0] & BMI08_GYRO_MAP_DRDY_TO_BOTH_INT3_INT4) {
+            if (data[0] & BMI08_GYRO_MAP_DRDY_TO_BOTH_INT3_INT4)
+            {
                 /* Updating the data */
                 /* Data to enable new data ready interrupt */
                 data[1] = BMI08_GYRO_DRDY_INT_ENABLE_VAL;
-            } else {
+            }
+            else
+            {
                 data[1] = BMI08_GYRO_DRDY_INT_DISABLE_VAL;
             }
 
             /* write data to interrupt map register */
             rslt = bmi08g_set_regs(BMI08_REG_GYRO_INT3_INT4_IO_MAP, &data[0], 1, dev);
 
-            if (rslt == BMI08_OK) {
+            if (rslt == BMI08_OK)
+            {
                 /* Configure interrupt pin */
                 rslt = set_int_pin_config(int_config, dev);
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     /* Write data to interrupt control register */
                     rslt = bmi08g_set_regs(BMI08_REG_GYRO_INT_CTRL, &data[1], 1, dev);
                 }
@@ -992,7 +1105,7 @@ static int8_t set_gyro_data_ready_int(const struct bmi08_gyro_int_channel_cfg* i
 /*!
  * @brief This API sets the data ready interrupt for gyro sensor.
  */
-static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t conf, data[2] = { 0 };
@@ -1000,46 +1113,54 @@ static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg* int_config, 
     /* Read interrupt map register */
     rslt = get_regs(BMI08_REG_GYRO_INT3_INT4_IO_MAP, &data[0], 1, dev);
 
-    if (rslt == BMI08_OK) {
+    if (rslt == BMI08_OK)
+    {
         conf = int_config->int_pin_cfg.enable_int_pin;
 
-        switch (int_config->int_channel) {
-        case BMI08_INT_CHANNEL_3:
+        switch (int_config->int_channel)
+        {
+            case BMI08_INT_CHANNEL_3:
 
-            /* Data to enable new data ready interrupt */
-            data[0] = BMI08_SET_BITS(data[0], BMI08_GYRO_FIFO_INT3, conf);
-            break;
+                /* Data to enable new data ready interrupt */
+                data[0] = BMI08_SET_BITS(data[0], BMI08_GYRO_FIFO_INT3, conf);
+                break;
 
-        case BMI08_INT_CHANNEL_4:
+            case BMI08_INT_CHANNEL_4:
 
-            /* Data to enable new data ready interrupt */
-            data[0] = BMI08_SET_BITS(data[0], BMI08_GYRO_FIFO_INT4, conf);
-            break;
+                /* Data to enable new data ready interrupt */
+                data[0] = BMI08_SET_BITS(data[0], BMI08_GYRO_FIFO_INT4, conf);
+                break;
 
-        default:
-            rslt = BMI08_E_INVALID_INPUT;
-            break;
+            default:
+                rslt = BMI08_E_INVALID_INPUT;
+                break;
         }
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             /* Condition to check disabling the interrupt in single channel when both
              * interrupts channels are enabled*/
-            if (data[0] & BMI08_GYRO_MAP_FIFO_BOTH_INT3_INT4) {
+            if (data[0] & BMI08_GYRO_MAP_FIFO_BOTH_INT3_INT4)
+            {
                 /* Updating the data */
                 /* Data to enable new data ready interrupt */
                 data[1] = BMI08_GYRO_FIFO_INT_ENABLE_VAL;
-            } else {
+            }
+            else
+            {
                 data[1] = BMI08_GYRO_FIFO_INT_DISABLE_VAL;
             }
 
             /* write data to interrupt map register */
             rslt = bmi08g_set_regs(BMI08_REG_GYRO_INT3_INT4_IO_MAP, &data[0], 1, dev);
 
-            if (rslt == BMI08_OK) {
+            if (rslt == BMI08_OK)
+            {
                 /* Configure interrupt pin */
                 rslt = set_int_pin_config(int_config, dev);
 
-                if (rslt == BMI08_OK) {
+                if (rslt == BMI08_OK)
+                {
                     /* write data to interrupt control register */
                     rslt = bmi08g_set_regs(BMI08_REG_GYRO_INT_CTRL, &data[1], 1, dev);
                 }
@@ -1054,7 +1175,7 @@ static int8_t set_fifo_int(const struct bmi08_gyro_int_channel_cfg* int_config, 
  * @brief This API configures the pins which fire the
  * interrupt signal when any interrupt occurs.
  */
-static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg* int_config, struct bmi08_dev* dev)
+static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg *int_config, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data;
@@ -1062,25 +1183,27 @@ static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg* int_co
     /* Read interrupt configuration register */
     rslt = get_regs(BMI08_REG_GYRO_INT3_INT4_IO_CONF, &data, 1, dev);
 
-    if (rslt == BMI08_OK) {
-        switch (int_config->int_channel) {
-        /* Interrupt pin or channel 3 */
-        case BMI08_INT_CHANNEL_3:
+    if (rslt == BMI08_OK)
+    {
+        switch (int_config->int_channel)
+        {
+            /* Interrupt pin or channel 3 */
+            case BMI08_INT_CHANNEL_3:
 
-            /* Update data with user configured bmi08x_int_cfg structure */
-            data = BMI08_SET_BITS_POS_0(data, BMI08_GYRO_INT3_LVL, int_config->int_pin_cfg.lvl);
-            data = BMI08_SET_BITS(data, BMI08_GYRO_INT3_OD, int_config->int_pin_cfg.output_mode);
-            break;
+                /* Update data with user configured bmi08x_int_cfg structure */
+                data = BMI08_SET_BITS_POS_0(data, BMI08_GYRO_INT3_LVL, int_config->int_pin_cfg.lvl);
+                data = BMI08_SET_BITS(data, BMI08_GYRO_INT3_OD, int_config->int_pin_cfg.output_mode);
+                break;
 
-        case BMI08_INT_CHANNEL_4:
+            case BMI08_INT_CHANNEL_4:
 
-            /* Update data with user configured bmi08x_int_cfg structure */
-            data = BMI08_SET_BITS(data, BMI08_GYRO_INT4_LVL, int_config->int_pin_cfg.lvl);
-            data = BMI08_SET_BITS(data, BMI08_GYRO_INT4_OD, int_config->int_pin_cfg.output_mode);
-            break;
+                /* Update data with user configured bmi08x_int_cfg structure */
+                data = BMI08_SET_BITS(data, BMI08_GYRO_INT4_LVL, int_config->int_pin_cfg.lvl);
+                data = BMI08_SET_BITS(data, BMI08_GYRO_INT4_OD, int_config->int_pin_cfg.output_mode);
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
 
         /* write to interrupt configuration register */
@@ -1094,24 +1217,28 @@ static int8_t set_int_pin_config(const struct bmi08_gyro_int_channel_cfg* int_co
  *  @brief This API enables or disables the Gyro Self test feature in the
  *  sensor.
  */
-static int8_t set_gyro_selftest(uint8_t selftest, struct bmi08_dev* dev)
+static int8_t set_gyro_selftest(uint8_t selftest, struct bmi08_dev *dev)
 {
     int8_t rslt;
     uint8_t data = 0;
 
     /* Check for valid selftest input */
-    if ((selftest == BMI08_ENABLE) || (selftest == BMI08_DISABLE)) {
+    if ((selftest == BMI08_ENABLE) || (selftest == BMI08_DISABLE))
+    {
         /* Read self test register */
         rslt = get_regs(BMI08_REG_GYRO_SELF_TEST, &data, 1, dev);
 
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             /* Enable self-test */
             data = BMI08_SET_BITS_POS_0(data, BMI08_GYRO_SELF_TEST_EN, selftest);
 
             /* write self test input value to self-test register */
             rslt = bmi08g_set_regs(BMI08_REG_GYRO_SELF_TEST, &data, 1, dev);
         }
-    } else {
+    }
+    else
+    {
         rslt = BMI08_E_INVALID_INPUT;
     }
 
@@ -1121,11 +1248,14 @@ static int8_t set_gyro_selftest(uint8_t selftest, struct bmi08_dev* dev)
 /*!
  *  @brief This internal API is used to get fifo data length.
  */
-static void get_fifo_data_length(const struct bmi08_gyr_fifo_config* fifo, int8_t frame_size, uint16_t* fifo_data_byte)
+static void get_fifo_data_length(const struct bmi08_gyr_fifo_config *fifo, int8_t frame_size, uint16_t *fifo_data_byte)
 {
-    if (fifo->tag) {
+    if (fifo->tag)
+    {
         *fifo_data_byte = (uint16_t)(fifo->frame_count * (frame_size + 2));
-    } else {
+    }
+    else
+    {
         *fifo_data_byte = (uint16_t)(fifo->frame_count * frame_size);
     }
 }
@@ -1133,17 +1263,23 @@ static void get_fifo_data_length(const struct bmi08_gyr_fifo_config* fifo, int8_
 /*!
  *  @brief This internal API is used to get length of gyroscope data in fifo.
  */
-static void parse_fifo_gyro_len(uint16_t* len,
-                                const uint16_t* gyr_count,
-                                const struct bmi08_gyr_fifo_config* fifo_conf,
-                                const struct bmi08_fifo_frame* fifo)
+static void parse_fifo_gyro_len(uint16_t *len,
+                                const uint16_t *gyr_count,
+                                const struct bmi08_gyr_fifo_config *fifo_conf,
+                                const struct bmi08_fifo_frame *fifo)
 {
-    if (fifo_conf->tag == 0) {
+    if (fifo_conf->tag == 0)
+    {
         *len = fifo->length;
-    } else if ((fifo_conf->tag == 1)) {
-        if (fifo_conf->data_select == BMI08_GYRO_FIFO_XYZ_AXIS_ENABLED) {
+    }
+    else if ((fifo_conf->tag == 1))
+    {
+        if (fifo_conf->data_select == BMI08_GYRO_FIFO_XYZ_AXIS_ENABLED)
+        {
             *len = (uint16_t)((*gyr_count) * BMI08_GYRO_FIFO_XYZ_AXIS_FRAME_SIZE);
-        } else {
+        }
+        else
+        {
             *len = (uint16_t)((*gyr_count) * BMI08_GYRO_FIFO_SINGLE_AXIS_FRAME_SIZE);
         }
     }
@@ -1152,10 +1288,10 @@ static void parse_fifo_gyro_len(uint16_t* len,
 /*!
  *  @brief This internal API is used to unpack the gyroscope data.
  */
-static void unpack_gyro_data(struct bmi08_sensor_data* gyro,
-                             uint16_t* data_index,
-                             const struct bmi08_gyr_fifo_config* fifo_conf,
-                             const struct bmi08_fifo_frame* fifo)
+static void unpack_gyro_data(struct bmi08_sensor_data *gyro,
+                             uint16_t *data_index,
+                             const struct bmi08_gyr_fifo_config *fifo_conf,
+                             const struct bmi08_fifo_frame *fifo)
 {
     /* Variables to store LSB value */
     uint16_t data_lsb;
@@ -1170,19 +1306,20 @@ static void unpack_gyro_data(struct bmi08_sensor_data* gyro,
     /* Gyroscope x data */
     data_lsb = fifo->data[idx++];
     data_msb = fifo->data[idx++];
-    gyro->x  = (int16_t)((data_msb << 8) | data_lsb);
+    gyro->x = (int16_t)((data_msb << 8) | data_lsb);
 
     /* Gyroscope y data */
     data_lsb = fifo->data[idx++];
     data_msb = fifo->data[idx++];
-    gyro->y  = (int16_t)((data_msb << 8) | data_lsb);
+    gyro->y = (int16_t)((data_msb << 8) | data_lsb);
 
     /* Gyroscope z data */
     data_lsb = fifo->data[idx++];
     data_msb = fifo->data[idx++];
-    gyro->z  = (int16_t)((data_msb << 8) | data_lsb);
+    gyro->z = (int16_t)((data_msb << 8) | data_lsb);
 
-    if (fifo_conf->tag == 1) {
+    if (fifo_conf->tag == 1)
+    {
         idx += 2;
     }
 

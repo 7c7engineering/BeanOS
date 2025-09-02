@@ -1,11 +1,11 @@
 #pragma once
-#include "bmp3.h"
+#include <stdio.h>
 #include "driver/i2c.h"
 #include "esp_err.h"
-#include "rom/ets_sys.h"
 #include "string.h"
+#include "rom/ets_sys.h"
+#include "bmp3.h"
 #include <esp_log.h>
-#include <stdio.h>
 
 #define BMP3_DOUBLE_PRECISION_COMPENSATION
 

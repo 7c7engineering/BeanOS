@@ -1,13 +1,13 @@
 #pragma once
-#include "bmi088_mm.h"
-#include "bmi08x.h"
+#include "esp_types.h"
 #include "driver/i2c.h"
 #include "esp_log.h"
-#include "esp_types.h"
+#include "bmi08x.h"
 #include "rom/ets_sys.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include "bmi088_mm.h"
 
 #define BMI088_ACC_I2C_ADDR BMI08_ACCEL_I2C_ADDR_PRIMARY
 #define BMI088_GYR_I2C_ADDR BMI08_GYRO_I2C_ADDR_PRIMARY
