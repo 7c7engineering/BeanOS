@@ -27,8 +27,4 @@ static const gpio_num_t PIN_PYRO_0     = GPIO_NUM_38;
 static const gpio_num_t PIN_I2C_SDA    = GPIO_NUM_47;
 static const gpio_num_t PIN_I2C_SCL    = GPIO_NUM_48;
 
-
-
-
-
 //esp_err_t bean_context_init();
