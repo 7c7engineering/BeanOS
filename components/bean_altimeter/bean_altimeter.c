@@ -6,12 +6,12 @@ uint8_t _i2caddr;
 int32_t _sensorID;
 int8_t _cs;
 
-double bmp390_pressure = 0;
+double bmp390_pressure    = 0;
 double bmp390_temperature = 0;
 
 int8_t bmp390_address = 0x76;
-struct bmp3_dev * sensor;
-struct bmp3_settings * settings;
+struct bmp3_dev *sensor;
+struct bmp3_settings *settings;
 
 static const char *TAG = "BMP390";
 
@@ -20,11 +20,12 @@ static const char *TAG = "BMP390";
 static int8_t i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
     uint8_t *buf = (uint8_t *)malloc(len + 1);
-    buf[0] = reg_addr;
+    buf[0]       = reg_addr;
     memcpy(buf + 1, reg_data, len);
     esp_err_t ret = i2c_master_write_to_device(I2C_NUM_0, bmp390_address, buf, len + 1, pdMS_TO_TICKS(1000));
     free(buf);
-    if(ret == ESP_OK){
+    if (ret == ESP_OK)
+    {
         return BMP3_OK;
     }
     ESP_LOGE(TAG, "I2C write failed with error %d", ret);
@@ -33,8 +34,10 @@ static int8_t i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len,
 
 static int8_t i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    esp_err_t ret = i2c_master_write_read_device(I2C_NUM_0, bmp390_address, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
-    if(ret == ESP_OK){
+    esp_err_t ret =
+      i2c_master_write_read_device(I2C_NUM_0, bmp390_address, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
+    if (ret == ESP_OK)
+    {
         return BMP3_OK;
     }
     ESP_LOGE(TAG, "I2C read failed with error %d", ret);
@@ -87,7 +90,7 @@ static int8_t validate_trimming_param(struct bmp3_dev *dev)
             crc = (uint8_t)cal_crc(crc, trim_param[i]);
         }
 
-        crc = (crc ^ 0xFF);
+        crc  = (crc ^ 0xFF);
         rslt = bmp3_get_regs(0x30, &stored_crc, 1, dev);
         if (stored_crc != crc)
         {
@@ -100,14 +103,14 @@ static int8_t validate_trimming_param(struct bmp3_dev *dev)
 
 esp_err_t bean_altimeter_init()
 {
-    sensor = (struct bmp3_dev *) malloc(sizeof(struct bmp3_dev));
-    settings = (struct bmp3_settings *) malloc(sizeof(struct bmp3_settings));
-    sensor->chip_id = bmp390_address;
-    sensor->intf = BMP3_I2C_INTF;
-    sensor->read = &i2c_read;
-    sensor->write = &i2c_write;
-    sensor->delay_us = &delay_usec;
-    sensor->intf_ptr = &i2c_write;
+    sensor             = (struct bmp3_dev *)malloc(sizeof(struct bmp3_dev));
+    settings           = (struct bmp3_settings *)malloc(sizeof(struct bmp3_settings));
+    sensor->chip_id    = bmp390_address;
+    sensor->intf       = BMP3_I2C_INTF;
+    sensor->read       = &i2c_read;
+    sensor->write      = &i2c_write;
+    sensor->delay_us   = &delay_usec;
+    sensor->intf_ptr   = &i2c_write;
     sensor->dummy_byte = 0x00;
 
     int8_t rslt = BMP3_OK;
@@ -179,7 +182,7 @@ esp_err_t bean_altimeter_update()
         return ESP_FAIL;
     }
     settings->op_mode = BMP3_MODE_FORCED;
-    rslt = bmp3_set_op_mode(settings, sensor);
+    rslt              = bmp3_set_op_mode(settings, sensor);
     if (rslt != BMP3_OK)
     {
         ESP_LOGE(TAG, "BMP3 set operation mode failed");
@@ -193,7 +196,7 @@ esp_err_t bean_altimeter_update()
         return ESP_FAIL;
     }
 
-    bmp390_pressure = data.pressure;
+    bmp390_pressure    = data.pressure;
     bmp390_temperature = data.temperature;
     return ESP_OK;
 }
@@ -270,6 +273,6 @@ esp_err_t setOutputDataRate(uint8_t odr)
     }
 
     settings->odr_filter.odr = odr;
-    _ODREnabled = true;
+    _ODREnabled              = true;
     return ESP_OK;
 }

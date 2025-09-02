@@ -1,0 +1,35 @@
+Language: Cpp
+# Use C-style code formatting
+BasedOnStyle: Mozilla
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+IndentCaseLabels: false
+NamespaceIndentation: None
+ColumnLimit: 120
+
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+
+CommentPragmas:  '.*'
+ReflowComments:  false
+AlignTrailingComments: false
+PenaltyBreakComment: 0
+AlignConsecutiveMacros: true
+
+BreakBeforeBraces: Allman
+
+AlignConsecutiveAssignments:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionPointers: false
+  PadOperators:    true
+
+SortIncludes: false
+
+PointerAlignment: Right
+

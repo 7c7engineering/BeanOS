@@ -4,7 +4,8 @@
 esp_err_t bean_beep_init();
 esp_err_t bean_beep_sound(uint32_t frequency, uint32_t duration_ms);
 
-enum notes {
+enum notes
+{
     NOTE_C4 = 261,
     NOTE_D4 = 294,
     NOTE_E4 = 329,
