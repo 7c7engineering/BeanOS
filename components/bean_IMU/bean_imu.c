@@ -37,7 +37,8 @@ static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t *
     esp_err_t ret = i2c_master_write_to_device(I2C_NUM_0, dev_addr, buf, len + 1, pdMS_TO_TICKS(1000));
     free(buf);
 
-    if (ret != ESP_OK) {
+    if (ret != ESP_OK)
+    {
         ESP_LOGE(TAG, "I2C write error");
         return BMI08_E_COM_FAIL;
     }
@@ -50,7 +51,8 @@ static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t *reg_dat
 
     esp_err_t ret = i2c_master_write_read_device(I2C_NUM_0, dev_addr, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
 
-    if (ret != ESP_OK) {
+    if (ret != ESP_OK)
+    {
         ESP_LOGE(TAG, "I2C write error");
         return BMI08_E_COM_FAIL;
     }
@@ -88,37 +90,44 @@ esp_err_t bean_imu_init()
     sensor->delay_us = &delay_us;
 
     int8_t rslt = bmi088_mma_init(sensor); //accel init
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel init error");
         return ESP_FAIL;
     }
 
     rslt = bmi08g_init(sensor); //gyro init
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro init error");
         return ESP_FAIL;
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         rslt = bmi08a_soft_reset(sensor);
-        if (rslt == BMI08_OK) {
+        if (rslt == BMI08_OK)
+        {
             break;
         }
         vTaskDelay(pdMS_TO_TICKS(100));
     }
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel soft reset error");
         return ESP_FAIL;
     }
 
     sensor->accel_cfg.power = BMI08_ACCEL_PM_ACTIVE;
     rslt                    = bmi08a_set_power_mode(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set power mode error");
         return ESP_FAIL;
     }
     sensor->gyro_cfg.power = BMI08_GYRO_PM_NORMAL;
     rslt                   = bmi08g_set_power_mode(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set power mode error");
         return ESP_FAIL;
     }
@@ -130,13 +139,15 @@ esp_err_t bean_imu_init()
     sensor->accel_cfg.bw    = BMI08_ACCEL_BW_NORMAL; /* Bandwidth and OSR are same */
 
     rslt = bmi08a_set_power_mode(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set power mode error");
         return ESP_FAIL;
     }
 
     rslt = bmi088_mma_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set meas conf error");
         return ESP_FAIL;
     }
@@ -148,13 +159,15 @@ esp_err_t bean_imu_init()
     sensor->gyro_cfg.power = BMI08_GYRO_PM_NORMAL;
 
     rslt = bmi08g_set_power_mode(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set power mode error");
         return ESP_FAIL;
     }
 
     rslt = bmi08g_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set power mode error");
         return ESP_FAIL;
     }
@@ -167,7 +180,8 @@ esp_err_t set_accel_odr(uint8_t odr)
 {
     sensor->accel_cfg.odr = odr;
     int8_t rslt           = bmi088_mma_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set odr error");
         return ESP_FAIL;
     }
@@ -177,21 +191,31 @@ esp_err_t set_accel_odr(uint8_t odr)
 esp_err_t set_accel_range(uint8_t range)
 {
     sensor->accel_cfg.range = range;
-    if (range == BMI088_ACCEL_RANGE_24G) {
+    if (range == BMI088_ACCEL_RANGE_24G)
+    {
         accel_range = 24;
-    } else if (range == BMI088_ACCEL_RANGE_12G) {
+    }
+    else if (range == BMI088_ACCEL_RANGE_12G)
+    {
         accel_range = 16;
-    } else if (range == BMI088_ACCEL_RANGE_6G) {
+    }
+    else if (range == BMI088_ACCEL_RANGE_6G)
+    {
         accel_range = 6;
-    } else if (range == BMI088_ACCEL_RANGE_3G) {
+    }
+    else if (range == BMI088_ACCEL_RANGE_3G)
+    {
         accel_range = 3;
-    } else {
+    }
+    else
+    {
         ESP_LOGE(TAG, "BMI088 accel range not valid");
         return ESP_FAIL;
     }
 
     int8_t rslt = bmi088_mma_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set range error");
         return ESP_FAIL;
     }
@@ -202,7 +226,8 @@ esp_err_t set_accel_bw(uint8_t bw)
 {
     sensor->accel_cfg.bw = bw;
     int8_t rslt          = bmi088_mma_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set bw error");
         return ESP_FAIL;
     }
@@ -213,7 +238,8 @@ esp_err_t set_accel_power_mode(uint8_t power_mode)
 {
     sensor->accel_cfg.power = power_mode;
     int8_t rslt             = bmi08a_set_power_mode(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel set power mode error");
         return ESP_FAIL;
     }
@@ -224,7 +250,8 @@ esp_err_t set_gyro_odr(uint8_t odr)
 {
     sensor->gyro_cfg.odr = odr;
     int8_t rslt          = bmi08g_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set odr error");
         return ESP_FAIL;
     }
@@ -234,20 +261,30 @@ esp_err_t set_gyro_odr(uint8_t odr)
 esp_err_t set_gyro_range(uint8_t range)
 {
     sensor->gyro_cfg.range = range;
-    if (range == BMI08_GYRO_RANGE_250_DPS) {
+    if (range == BMI08_GYRO_RANGE_250_DPS)
+    {
         gyro_range = 250;
-    } else if (range == BMI08_GYRO_RANGE_500_DPS) {
+    }
+    else if (range == BMI08_GYRO_RANGE_500_DPS)
+    {
         gyro_range = 500;
-    } else if (range == BMI08_GYRO_RANGE_1000_DPS) {
+    }
+    else if (range == BMI08_GYRO_RANGE_1000_DPS)
+    {
         gyro_range = 1000;
-    } else if (range == BMI08_GYRO_RANGE_2000_DPS) {
+    }
+    else if (range == BMI08_GYRO_RANGE_2000_DPS)
+    {
         gyro_range = 2000;
-    } else {
+    }
+    else
+    {
         ESP_LOGE(TAG, "BMI088 gyro range not valid");
         return ESP_FAIL;
     }
     int8_t rslt = bmi08g_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set range error");
         return ESP_FAIL;
     }
@@ -258,7 +295,8 @@ esp_err_t set_gyro_bw(uint8_t bw)
 {
     sensor->gyro_cfg.bw = bw;
     int8_t rslt         = bmi08g_set_meas_conf(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set bw error");
         return ESP_FAIL;
     }
@@ -269,7 +307,8 @@ esp_err_t set_gyro_power_mode(uint8_t power_mode)
 {
     sensor->gyro_cfg.power = power_mode;
     int8_t rslt            = bmi08g_set_power_mode(sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro set power mode error");
         return ESP_FAIL;
     }
@@ -307,13 +346,15 @@ static float lsb_to_dps(int16_t val, float dps, uint8_t bit_width)
 esp_err_t bean_imu_update_accel()
 {
     //set_accel_power_mode(BMI08_ACCEL_PM_ACTIVE);
-    if (accel_range == 0) {
+    if (accel_range == 0)
+    {
         ESP_LOGE(TAG, "BMI088 accel range not set, cant measure yet");
         return ESP_FAIL;
     }
 
     int8_t rslt = bmi088_mma_get_data(accel_data, sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 accel update accel data error");
         return ESP_FAIL;
     }
@@ -330,7 +371,8 @@ esp_err_t bean_imu_update_accel()
 esp_err_t bean_imu_update_gyro()
 {
     int8_t rslt = bmi08g_get_data(gyro_data, sensor);
-    if (rslt != BMI08_OK) {
+    if (rslt != BMI08_OK)
+    {
         ESP_LOGE(TAG, "BMI088 gyro get data error");
         return ESP_FAIL;
     }

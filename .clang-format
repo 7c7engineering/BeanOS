@@ -19,27 +19,7 @@ AlignTrailingComments: false
 PenaltyBreakComment: 0
 AlignConsecutiveMacros: true
 
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterCaseLabel:  false
-  AfterClass:      true
-  AfterControlStatement: Never
-  AfterEnum:       true
-  AfterExternBlock: true
-  AfterFunction:   true
-  AfterNamespace:  false
-  AfterObjCDeclaration: false
-  AfterStruct:     true
-  AfterUnion:      true
-  BeforeCatch:     false
-  BeforeElse:      false
-  BeforeLambdaBody: false
-  BeforeWhile:     false
-  IndentBraces:    false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: true
-
+BreakBeforeBraces: Allman
 
 AlignConsecutiveAssignments:
   Enabled:         true

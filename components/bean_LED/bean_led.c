@@ -71,7 +71,8 @@ esp_err_t bean_led_set_color(led_select_t led, led_color_rgb_t color)
     ledc_channel_t r_channel, g_channel, b_channel;
     esp_err_t ret = ESP_OK;
 
-    switch (led) {
+    switch (led)
+    {
     case LED_L1:
         r_channel = LEDC_CHANNEL_RED1;
         g_channel = LEDC_CHANNEL_GREEN1;
@@ -85,7 +86,8 @@ esp_err_t bean_led_set_color(led_select_t led, led_color_rgb_t color)
     case LED_BOTH:
         // Set both LEDs by calling this function recursively
         ret = bean_led_set_color(LED_L1, color);
-        if (ret != ESP_OK) {
+        if (ret != ESP_OK)
+        {
             return ret;
         }
         ret = bean_led_set_color(LED_L2, color);

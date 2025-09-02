@@ -58,7 +58,8 @@ static esp_flash_t *init_ext_flash(void)
 
     // Probe the Flash chip and initialize it
     esp_err_t err = esp_flash_init(ext_flash);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         ESP_LOGE(TAG, "Failed to initialize external Flash: %s (0x%x)", esp_err_to_name(err), err);
         return NULL;
     }
@@ -100,7 +101,8 @@ static bool mount_fatfs(const char *partition_label)
                                                       .format_if_mount_failed = true,
                                                       .allocation_unit_size   = CONFIG_WL_SECTOR_SIZE };
     esp_err_t err = esp_vfs_fat_spiflash_mount_rw_wl(base_path, partition_label, &mount_config, &s_wl_handle);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         ESP_LOGE(TAG, "Failed to mount FATFS (%s)", esp_err_to_name(err));
         return false;
     }
@@ -111,14 +113,16 @@ esp_err_t bean_storage_init(void)
 {
     // Set up SPI bus and initialize the external SPI Flash chip
     flash = init_ext_flash();
-    if (flash == NULL) {
+    if (flash == NULL)
+    {
         ESP_LOGE(TAG, "Failed to initialize external Flash");
         return ESP_FAIL;
     }
 
     add_partition(flash, partition_label);
 
-    if (!mount_fatfs(partition_label)) {
+    if (!mount_fatfs(partition_label))
+    {
         ESP_LOGE(TAG, "Failed to mount FATFS");
         return ESP_FAIL;
     }
@@ -132,7 +136,8 @@ esp_err_t storage_write_file(char *filename, const char *data)
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
     FILE *f = fopen(abs_filename, "wb");
-    if (f == NULL) {
+    if (f == NULL)
+    {
         ESP_LOGE(TAG, "Failed to open file for writing");
         free(abs_filename);
         return ESP_FAIL;
@@ -150,7 +155,8 @@ esp_err_t storage_append_file(char *filename, const char *data)
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
     FILE *f = fopen(abs_filename, "a");
-    if (f == NULL) {
+    if (f == NULL)
+    {
         ESP_LOGE(TAG, "Failed to open file for writing (append))");
         free(abs_filename);
         return ESP_FAIL;
@@ -166,12 +172,14 @@ esp_err_t storage_list_files()
     DIR *dir;
     struct dirent *pDirent;
     dir = opendir(base_path);
-    if (dir == NULL) {
+    if (dir == NULL)
+    {
         ESP_LOGE(TAG, "Failed to open directory");
         return ESP_FAIL;
     }
 
-    while ((pDirent = readdir(dir)) != NULL) {
+    while ((pDirent = readdir(dir)) != NULL)
+    {
         ESP_LOGI(TAG, "File: %s", pDirent->d_name);
     }
     closedir(dir);
@@ -184,7 +192,8 @@ esp_err_t storage_delete_file(char *filename)
     strcpy(abs_filename, base_path);
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
-    if (unlink(abs_filename) != 0) {
+    if (unlink(abs_filename) != 0)
+    {
         ESP_LOGE(TAG, "Failed to delete file");
         free(abs_filename);
         return ESP_FAIL;
@@ -200,13 +209,15 @@ esp_err_t storage_read_file(char *filename)
     strcat(abs_filename, "/");
     strcat(abs_filename, filename);
     FILE *f = fopen(abs_filename, "rb");
-    if (f == NULL) {
+    if (f == NULL)
+    {
         ESP_LOGE(TAG, "Failed to open file for reading");
         free(abs_filename);
         return ESP_FAIL;
     }
     char data[64];
-    while (fgets(data, 64, f) != NULL) {
+    while (fgets(data, 64, f) != NULL)
+    {
         printf("%s", data);
     }
     fclose(f);
