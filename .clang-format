@@ -17,6 +17,7 @@ CommentPragmas:  '.*'
 ReflowComments:  false
 AlignTrailingComments: false
 PenaltyBreakComment: 0
+AlignConsecutiveMacros: true
 
 BreakBeforeBraces: Custom
 BraceWrapping:

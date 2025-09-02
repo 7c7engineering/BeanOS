@@ -11,7 +11,7 @@
 #include "esp_vfs_fat.h"
 #include "esp_system.h"
 
-#define HOST_ID SPI2_HOST //SPI3_HOST
+#define HOST_ID      SPI2_HOST //SPI3_HOST
 #define SPI_DMA_CHAN SPI_DMA_CH_AUTO
 
 static esp_flash_t* flash;

@@ -5,7 +5,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#define BEEP_MCPWM_UNIT MCPWM_UNIT_0
+#define BEEP_MCPWM_UNIT  MCPWM_UNIT_0
 #define BEEP_MCPWM_TIMER MCPWM_TIMER_0
 
 esp_err_t bean_beep_init()

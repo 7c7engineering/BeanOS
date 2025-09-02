@@ -62,14 +62,14 @@ extern "C"
 /*********************************************************************/
 
 /**\name    BMI085 Accel Range */
-#define BMI085_ACCEL_RANGE_2G UINT8_C(0x00)
-#define BMI085_ACCEL_RANGE_4G UINT8_C(0x01)
-#define BMI085_ACCEL_RANGE_8G UINT8_C(0x02)
+#define BMI085_ACCEL_RANGE_2G  UINT8_C(0x00)
+#define BMI085_ACCEL_RANGE_4G  UINT8_C(0x01)
+#define BMI085_ACCEL_RANGE_8G  UINT8_C(0x02)
 #define BMI085_ACCEL_RANGE_16G UINT8_C(0x03)
 
 /**\name  BMI088 Accel Range */
-#define BMI088_ACCEL_RANGE_3G UINT8_C(0x00)
-#define BMI088_ACCEL_RANGE_6G UINT8_C(0x01)
+#define BMI088_ACCEL_RANGE_3G  UINT8_C(0x00)
+#define BMI088_ACCEL_RANGE_6G  UINT8_C(0x01)
 #define BMI088_ACCEL_RANGE_12G UINT8_C(0x02)
 #define BMI088_ACCEL_RANGE_24G UINT8_C(0x03)
 
