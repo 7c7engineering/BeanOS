@@ -45,7 +45,7 @@ void app_main()
     if (bean_init() != ESP_OK)
     {
         ESP_LOGE(TAG, "Bean Init failed");
-        bean_led_set_color(LED_BOTH, (led_color_rgb_t){255, 0, 0});
+        bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 0, 0 });
         return;
     }
 
@@ -55,19 +55,22 @@ void app_main()
     bean_beep_sound(NOTE_C5, 100);
     bean_beep_sound(NOTE_E5, 100);
 
-    bean_led_set_color(LED_BOTH, (led_color_rgb_t){255, 255, 255});
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
     vTaskDelay(3000 / portTICK_PERIOD_MS);
-    bean_led_set_color(LED_BOTH, (led_color_rgb_t){0, 0, 0});
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
 
     while (1)
     {
         vTaskDelay(5000 / portTICK_PERIOD_MS);
-        bean_led_set_color(LED_L1, (led_color_rgb_t){0, 50, 0});
+        bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 50, 0 });
         vTaskDelay(5000 / portTICK_PERIOD_MS);
-        bean_led_set_color(LED_L1, (led_color_rgb_t){0, 0, 0});
+        bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 0, 0 });
         if (bean_altimeter_update() == ESP_OK)
         {
-            ESP_LOGI(TAG, "Pressure: %.2f Pa, Temperature: %.2f C", bean_altimeter_get_pressure(), bean_altimeter_get_temperature());
+            ESP_LOGI(TAG,
+                     "Pressure: %.2f Pa, Temperature: %.2f C",
+                     bean_altimeter_get_pressure(),
+                     bean_altimeter_get_temperature());
         }
         else
         {
@@ -75,7 +78,11 @@ void app_main()
         }
         if (bean_imu_update_accel() == ESP_OK)
         {
-            ESP_LOGI(TAG, "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2", get_x_accel_data(), get_y_accel_data(), get_z_accel_data());
+            ESP_LOGI(TAG,
+                     "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2",
+                     get_x_accel_data(),
+                     get_y_accel_data(),
+                     get_z_accel_data());
         }
         else
         {
@@ -83,7 +90,11 @@ void app_main()
         }
         if (bean_imu_update_gyro() == ESP_OK)
         {
-            ESP_LOGI(TAG, "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s", get_x_gyro_data(), get_y_gyro_data(), get_z_gyro_data());
+            ESP_LOGI(TAG,
+                     "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s",
+                     get_x_gyro_data(),
+                     get_y_gyro_data(),
+                     get_z_gyro_data());
         }
         else
         {
