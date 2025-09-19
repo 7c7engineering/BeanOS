@@ -51,7 +51,7 @@
  ****************************************************************************/
 
 /**\name    Value of LSB_PER_G = (power(2, BMI088_MM_16_BIT_RESOLUTION) / (2 * range)) */
-#define LSB_PER_G  UINT32_C(1365) /* for the 16-bit resolution and 24g range */
+#define LSB_PER_G UINT32_C(1365) /* for the 16-bit resolution and 24g range */
 
 /****************************************************************************/
 
@@ -684,10 +684,12 @@ int8_t bmi088_mma_init(struct bmi08_dev *dev)
     if (rslt == BMI08_OK)
     {
         /* Structure to define the default values for axes re-mapping */
-        struct bmi08_axes_remap axes_remap = {
-            .x_axis = BMI088_MM_MAP_X_AXIS, .x_axis_sign = BMI088_MM_MAP_POSITIVE, .y_axis = BMI088_MM_MAP_Y_AXIS,
-            .y_axis_sign = BMI088_MM_MAP_POSITIVE, .z_axis = BMI088_MM_MAP_Z_AXIS, .z_axis_sign = BMI088_MM_MAP_POSITIVE
-        };
+        struct bmi08_axes_remap axes_remap = { .x_axis      = BMI088_MM_MAP_X_AXIS,
+                                               .x_axis_sign = BMI088_MM_MAP_POSITIVE,
+                                               .y_axis      = BMI088_MM_MAP_Y_AXIS,
+                                               .y_axis_sign = BMI088_MM_MAP_POSITIVE,
+                                               .z_axis      = BMI088_MM_MAP_Z_AXIS,
+                                               .z_axis_sign = BMI088_MM_MAP_POSITIVE };
 
         /* Check for chip id validity */
         if ((dev->accel_chip_id == BMI088_MM_ACCEL_CHIP_ID_PRIM) || (dev->accel_chip_id == BMI088_MM_ACCEL_CHIP_ID_SEC))
@@ -777,20 +779,20 @@ int8_t bmi088_mma_get_data(struct bmi08_sensor_data *accel, struct bmi08_dev *de
 
         if (rslt == BMI08_OK)
         {
-            lsb = data[0];
-            msb = data[1];
-            msblsb = (msb << 8) | lsb;
-            accel->x = ((int16_t) msblsb); /* Data in X axis */
+            lsb      = data[0];
+            msb      = data[1];
+            msblsb   = (msb << 8) | lsb;
+            accel->x = ((int16_t)msblsb); /* Data in X axis */
 
-            lsb = data[2];
-            msb = data[3];
-            msblsb = (msb << 8) | lsb;
-            accel->y = ((int16_t) msblsb); /* Data in Y axis */
+            lsb      = data[2];
+            msb      = data[3];
+            msblsb   = (msb << 8) | lsb;
+            accel->y = ((int16_t)msblsb); /* Data in Y axis */
 
-            lsb = data[4];
-            msb = data[5];
-            msblsb = (msb << 8) | lsb;
-            accel->z = ((int16_t) msblsb); /* Data in Z axis */
+            lsb      = data[4];
+            msb      = data[5];
+            msblsb   = (msb << 8) | lsb;
+            accel->z = ((int16_t)msblsb); /* Data in Z axis */
 
             /* Get the re-mapped accelerometer data */
             get_remapped_data(accel, dev);
@@ -820,53 +822,53 @@ int8_t bmi088_mma_set_int_config(const struct bmi08_accel_int_channel_cfg *int_c
     {
         switch (int_type)
         {
-            case BMI088_MM_ACCEL_DATA_RDY_INT:
-            case BMI088_MM_ACCEL_SYNC_DATA_RDY_INT:
-            case BMI088_MM_ACCEL_SYNC_INPUT:
-            case BMI088_MM_ACCEL_INT_FIFO_WM:
-            case BMI088_MM_ACCEL_INT_FIFO_FULL:
-                rslt = bmi08a_set_int_config(int_config, dev);
-                break;
+        case BMI088_MM_ACCEL_DATA_RDY_INT:
+        case BMI088_MM_ACCEL_SYNC_DATA_RDY_INT:
+        case BMI088_MM_ACCEL_SYNC_INPUT:
+        case BMI088_MM_ACCEL_INT_FIFO_WM:
+        case BMI088_MM_ACCEL_INT_FIFO_FULL:
+            rslt = bmi08a_set_int_config(int_config, dev);
+            break;
 
-            case BMI088_MM_ANYMOTION_INT:
+        case BMI088_MM_ANYMOTION_INT:
 
-                /* Anymotion interrupt */
-                rslt = set_accel_anymotion_int(int_config, int_type, dev);
-                break;
+            /* Anymotion interrupt */
+            rslt = set_accel_anymotion_int(int_config, int_type, dev);
+            break;
 
-            case BMI088_MM_HIGH_G_INT:
+        case BMI088_MM_HIGH_G_INT:
 
-                /* High-g interrupt */
-                rslt = set_accel_high_g_int(int_config, int_type, dev);
-                break;
+            /* High-g interrupt */
+            rslt = set_accel_high_g_int(int_config, int_type, dev);
+            break;
 
-            case BMI088_MM_LOW_G_INT:
+        case BMI088_MM_LOW_G_INT:
 
-                /* Low-g interrupt */
-                rslt = set_accel_low_g_int(int_config, int_type, dev);
-                break;
+            /* Low-g interrupt */
+            rslt = set_accel_low_g_int(int_config, int_type, dev);
+            break;
 
-            case BMI088_MM_ORIENT_INT:
+        case BMI088_MM_ORIENT_INT:
 
-                /* Orientation interrupt */
-                rslt = set_accel_orient_int(int_config, int_type, dev);
-                break;
+            /* Orientation interrupt */
+            rslt = set_accel_orient_int(int_config, int_type, dev);
+            break;
 
-            case BMI088_MM_NO_MOTION_INT:
+        case BMI088_MM_NO_MOTION_INT:
 
-                /* No-motion interrupt */
-                rslt = set_accel_no_motion_int(int_config, int_type, dev);
-                break;
+            /* No-motion interrupt */
+            rslt = set_accel_no_motion_int(int_config, int_type, dev);
+            break;
 
-            case BMI088_MM_ERROR_INT:
+        case BMI088_MM_ERROR_INT:
 
-                /* Error interrupt */
-                rslt = set_accel_err_int(int_config, int_type, dev);
-                break;
+            /* Error interrupt */
+            rslt = set_accel_err_int(int_config, int_type, dev);
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_CONFIG;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_CONFIG;
+            break;
         }
     }
     else
@@ -894,9 +896,8 @@ int8_t bmi088_mma_configure_anymotion(struct bmi088_mm_anymotion_cfg anymotion_c
     {
         /* Enable data synchronization */
         data[0] = (anymotion_cfg.threshold & BMI088_MM_ACCEL_ANYMOTION_THRESHOLD_MASK);
-        data[0] |=
-            ((anymotion_cfg.enable << BMI088_MM_ACCEL_ANYMOTION_NOMOTION_SEL_SHIFT) &
-             BMI088_MM_ACCEL_ANYMOTION_NOMOTION_SEL_MASK);
+        data[0] |= ((anymotion_cfg.enable << BMI088_MM_ACCEL_ANYMOTION_NOMOTION_SEL_SHIFT) &
+                    BMI088_MM_ACCEL_ANYMOTION_NOMOTION_SEL_MASK);
         data[1] = (anymotion_cfg.duration & BMI088_MM_ACCEL_ANYMOTION_DURATION_MASK);
         data[1] |= ((anymotion_cfg.x_en << BMI088_MM_ACCEL_ANYMOTION_X_EN_SHIFT) & BMI088_MM_ACCEL_ANYMOTION_X_EN_MASK);
         data[1] |= ((anymotion_cfg.y_en << BMI088_MM_ACCEL_ANYMOTION_Y_EN_SHIFT) & BMI088_MM_ACCEL_ANYMOTION_Y_EN_MASK);
@@ -929,9 +930,8 @@ int8_t bmi088_mma_set_high_g_config(const struct bmi088_mm_high_g_cfg *config, s
         feature_config[idx] = BMI08_SET_BITS_POS_0(feature_config[idx], BMI088_MM_HIGH_G_THRES, config->threshold);
 
         /* Set hysteresis */
-        feature_config[idx + 1] = BMI08_SET_BITS_POS_0(feature_config[idx + 1],
-                                                       BMI088_MM_HIGH_G_HYST,
-                                                       config->hysteresis);
+        feature_config[idx + 1] =
+          BMI08_SET_BITS_POS_0(feature_config[idx + 1], BMI088_MM_HIGH_G_HYST, config->hysteresis);
 
         /* Set x-select */
         feature_config[idx + 1] = BMI08_SET_BITS(feature_config[idx + 1], BMI088_MM_HIGH_G_X_SEL, config->select_x);
@@ -948,7 +948,7 @@ int8_t bmi088_mma_set_high_g_config(const struct bmi088_mm_high_g_cfg *config, s
         /* Set duration */
         feature_config[idx + 2] = BMI08_SET_BITS_POS_0(feature_config[idx + 2], BMI088_MM_HIGH_G_DUR, config->duration);
 
-        rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t*) feature_config, 32, dev);
+        rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t *)feature_config, 32, dev);
     }
 
     return rslt;
@@ -1020,8 +1020,8 @@ int8_t bmi088_mma_set_low_g_config(const struct bmi088_mm_low_g_cfg *config, str
         feature_config[idx] = BMI08_SET_BITS_POS_0(feature_config[idx], BMI088_MM_LOW_G_THRES, config->threshold);
 
         /* Set hysteresis */
-        feature_config[idx +
-                       1] = BMI08_SET_BITS_POS_0(feature_config[idx + 1], BMI088_MM_LOW_G_HYST, config->hysteresis);
+        feature_config[idx + 1] =
+          BMI08_SET_BITS_POS_0(feature_config[idx + 1], BMI088_MM_LOW_G_HYST, config->hysteresis);
 
         /* Low-g enable */
         feature_config[idx + 1] = BMI08_SET_BITS(feature_config[idx + 1], BMI088_MM_LOW_G_ENABLE, config->enable);
@@ -1029,7 +1029,7 @@ int8_t bmi088_mma_set_low_g_config(const struct bmi088_mm_low_g_cfg *config, str
         /* Set duration */
         feature_config[idx + 2] = BMI08_SET_BITS_POS_0(feature_config[idx + 2], BMI088_MM_LOW_G_DUR, config->duration);
 
-        rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t*) feature_config, sizeof(feature_config), dev);
+        rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t *)feature_config, sizeof(feature_config), dev);
     }
 
     return rslt;
@@ -1065,7 +1065,6 @@ int8_t bmi088_mma_get_low_g_config(struct bmi088_mm_low_g_cfg *config, struct bm
 
         /* Get duration */
         config->duration = BMI08_GET_BITS_POS_0(feature_config[idx + 2], BMI088_MM_LOW_G_DUR);
-
     }
 
     return rslt;
@@ -1107,12 +1106,10 @@ int8_t bmi088_mma_set_orient_config(const struct bmi088_mm_orient_cfg *config, s
         feature_config[idx] = BMI08_SET_BITS(feature_config[idx], BMI088_MM_ORIENT_THETA, config->theta);
 
         /* Set hysteresis */
-        feature_config[idx + 1] = BMI08_SET_BITS_POS_0(feature_config[idx + 1],
-                                                       BMI088_MM_ORIENT_HYST,
-                                                       config->hysteresis);
+        feature_config[idx + 1] =
+          BMI08_SET_BITS_POS_0(feature_config[idx + 1], BMI088_MM_ORIENT_HYST, config->hysteresis);
 
         rslt = bmi08a_set_regs(BMI08_REG_ACCEL_FEATURE_CFG, (uint8_t *)feature_config, sizeof(feature_config), dev);
-
     }
 
     return rslt;
@@ -1180,13 +1177,12 @@ int8_t bmi088_mma_set_no_motion_config(const struct bmi088_mm_no_motion_cfg *con
         uint8_t idx = BMI088_MM_NO_MOTION_START_ADR;
 
         feature_config[idx] =
-            BMI08_SET_BITS_POS_0(feature_config[idx], BMI088_MM_NO_MOTION_THRESHOLD, config->threshold);
+          BMI08_SET_BITS_POS_0(feature_config[idx], BMI088_MM_NO_MOTION_THRESHOLD, config->threshold);
 
         feature_config[idx] = BMI08_SET_BITS(feature_config[idx], BMI088_MM_NO_MOTION_SEL, config->enable);
 
-        feature_config[idx + 1] = BMI08_SET_BITS_POS_0(feature_config[idx + 1],
-                                                       BMI088_MM_NO_MOTION_DURATION,
-                                                       config->duration);
+        feature_config[idx + 1] =
+          BMI08_SET_BITS_POS_0(feature_config[idx + 1], BMI088_MM_NO_MOTION_DURATION, config->duration);
 
         feature_config[idx + 1] = BMI08_SET_BITS(feature_config[idx + 1], BMI088_MM_NO_MOTION_X_EN, config->select_x);
 
@@ -1226,7 +1222,6 @@ int8_t bmi088_mma_get_no_motion_config(struct bmi088_mm_no_motion_cfg *config, s
         config->select_y = BMI08_GET_BITS(feature_config[idx + 1], BMI088_MM_NO_MOTION_Y_EN);
 
         config->select_z = BMI08_GET_BITS(feature_config[idx + 1], BMI088_MM_NO_MOTION_Z_EN);
-
     }
 
     return rslt;
@@ -1246,7 +1241,7 @@ int8_t bmi088_mma_get_orient_output(struct bmi088_mm_orient_out *orient_out, str
     if (rslt == BMI08_OK)
     {
         orient_out->portrait_landscape = BMI08_GET_BITS_POS_0(data, BMI088_MM_ORIENT_PORTRAIT_LANDSCAPE);
-        orient_out->faceup_down = BMI08_GET_BITS(data, BMI088_MM_ORIENT_FACEUP_DOWN);
+        orient_out->faceup_down        = BMI08_GET_BITS(data, BMI088_MM_ORIENT_FACEUP_DOWN);
     }
 
     return rslt;
@@ -1264,9 +1259,9 @@ int8_t bmi088_mma_get_high_g_output(struct bmi088_mm_high_g_out *high_g_out, str
     rslt = bmi08a_get_regs(BMI088_MM_REG_ORIENT_HIGHG_OUT, &data, 1, dev);
     if (rslt == BMI08_OK)
     {
-        high_g_out->x = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_X);
-        high_g_out->y = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_Y);
-        high_g_out->z = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_Z);
+        high_g_out->x         = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_X);
+        high_g_out->y         = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_Y);
+        high_g_out->z         = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_Z);
         high_g_out->direction = BMI08_GET_BITS(data, BMI088_MM_HIGH_G_AXIS_DIRECTION);
     }
 
@@ -1516,19 +1511,19 @@ static int8_t set_int_pin_config(const struct bmi08_accel_int_channel_cfg *int_c
 
     switch (int_config->int_channel)
     {
-        case BMI08_INT_CHANNEL_1:
+    case BMI08_INT_CHANNEL_1:
 
-            /* Update reg_addr based on channel inputs */
-            reg_addr = BMI08_REG_ACCEL_INT1_IO_CONF;
-            break;
-        case BMI08_INT_CHANNEL_2:
+        /* Update reg_addr based on channel inputs */
+        reg_addr = BMI08_REG_ACCEL_INT1_IO_CONF;
+        break;
+    case BMI08_INT_CHANNEL_2:
 
-            /* Update reg_addr based on channel inputs */
-            reg_addr = BMI08_REG_ACCEL_INT2_IO_CONF;
-            break;
-        default:
-            is_channel_invalid = TRUE;
-            break;
+        /* Update reg_addr based on channel inputs */
+        reg_addr = BMI08_REG_ACCEL_INT2_IO_CONF;
+        break;
+    default:
+        is_channel_invalid = TRUE;
+        break;
     }
 
     if (!is_channel_invalid)
@@ -1584,17 +1579,17 @@ static int8_t set_accel_anymotion_int(const struct bmi08_accel_int_channel_cfg *
 
         switch (int_config->int_channel)
         {
-            case BMI08_INT_CHANNEL_1:
-                reg_addr = BMI08_REG_ACCEL_INT1_MAP;
-                break;
+        case BMI08_INT_CHANNEL_1:
+            reg_addr = BMI08_REG_ACCEL_INT1_MAP;
+            break;
 
-            case BMI08_INT_CHANNEL_2:
-                reg_addr = BMI08_REG_ACCEL_INT2_MAP;
-                break;
+        case BMI08_INT_CHANNEL_2:
+            reg_addr = BMI08_REG_ACCEL_INT2_MAP;
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_INPUT;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_INPUT;
+            break;
         }
 
         if (rslt == BMI08_OK)
@@ -1646,17 +1641,17 @@ static int8_t set_accel_high_g_int(const struct bmi08_accel_int_channel_cfg *int
 
         switch (int_config->int_channel)
         {
-            case BMI08_INT_CHANNEL_1:
-                reg_addr = BMI08_REG_ACCEL_INT1_MAP;
-                break;
+        case BMI08_INT_CHANNEL_1:
+            reg_addr = BMI08_REG_ACCEL_INT1_MAP;
+            break;
 
-            case BMI08_INT_CHANNEL_2:
-                reg_addr = BMI08_REG_ACCEL_INT2_MAP;
-                break;
+        case BMI08_INT_CHANNEL_2:
+            reg_addr = BMI08_REG_ACCEL_INT2_MAP;
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_INPUT;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_INPUT;
+            break;
         }
 
         if (rslt == BMI08_OK)
@@ -1708,17 +1703,17 @@ static int8_t set_accel_low_g_int(const struct bmi08_accel_int_channel_cfg *int_
 
         switch (int_config->int_channel)
         {
-            case BMI08_INT_CHANNEL_1:
-                reg_addr = BMI08_REG_ACCEL_INT1_MAP;
-                break;
+        case BMI08_INT_CHANNEL_1:
+            reg_addr = BMI08_REG_ACCEL_INT1_MAP;
+            break;
 
-            case BMI08_INT_CHANNEL_2:
-                reg_addr = BMI08_REG_ACCEL_INT2_MAP;
-                break;
+        case BMI08_INT_CHANNEL_2:
+            reg_addr = BMI08_REG_ACCEL_INT2_MAP;
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_INPUT;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_INPUT;
+            break;
         }
 
         if (rslt == BMI08_OK)
@@ -1770,17 +1765,17 @@ static int8_t set_accel_orient_int(const struct bmi08_accel_int_channel_cfg *int
 
         switch (int_config->int_channel)
         {
-            case BMI08_INT_CHANNEL_1:
-                reg_addr = BMI08_REG_ACCEL_INT1_MAP;
-                break;
+        case BMI08_INT_CHANNEL_1:
+            reg_addr = BMI08_REG_ACCEL_INT1_MAP;
+            break;
 
-            case BMI08_INT_CHANNEL_2:
-                reg_addr = BMI08_REG_ACCEL_INT2_MAP;
-                break;
+        case BMI08_INT_CHANNEL_2:
+            reg_addr = BMI08_REG_ACCEL_INT2_MAP;
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_INPUT;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_INPUT;
+            break;
         }
 
         if (rslt == BMI08_OK)
@@ -1832,17 +1827,17 @@ static int8_t set_accel_no_motion_int(const struct bmi08_accel_int_channel_cfg *
 
         switch (int_config->int_channel)
         {
-            case BMI08_INT_CHANNEL_1:
-                reg_addr = BMI08_REG_ACCEL_INT1_MAP;
-                break;
+        case BMI08_INT_CHANNEL_1:
+            reg_addr = BMI08_REG_ACCEL_INT1_MAP;
+            break;
 
-            case BMI08_INT_CHANNEL_2:
-                reg_addr = BMI08_REG_ACCEL_INT2_MAP;
-                break;
+        case BMI08_INT_CHANNEL_2:
+            reg_addr = BMI08_REG_ACCEL_INT2_MAP;
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_INPUT;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_INPUT;
+            break;
         }
 
         if (rslt == BMI08_OK)
@@ -1894,17 +1889,17 @@ static int8_t set_accel_err_int(const struct bmi08_accel_int_channel_cfg *int_co
 
         switch (int_config->int_channel)
         {
-            case BMI08_INT_CHANNEL_1:
-                reg_addr = BMI08_REG_ACCEL_INT1_MAP;
-                break;
+        case BMI08_INT_CHANNEL_1:
+            reg_addr = BMI08_REG_ACCEL_INT1_MAP;
+            break;
 
-            case BMI08_INT_CHANNEL_2:
-                reg_addr = BMI08_REG_ACCEL_INT2_MAP;
-                break;
+        case BMI08_INT_CHANNEL_2:
+            reg_addr = BMI08_REG_ACCEL_INT2_MAP;
+            break;
 
-            default:
-                rslt = BMI08_E_INVALID_INPUT;
-                break;
+        default:
+            rslt = BMI08_E_INVALID_INPUT;
+            break;
         }
 
         if (rslt == BMI08_OK)
@@ -2067,7 +2062,7 @@ static int8_t get_remap_axes(struct bmi08_axes_remap *remap_data, struct bmi08_d
 static void get_remapped_data(struct bmi08_sensor_data *data, const struct bmi08_dev *dev)
 {
     /* Array to defined the re-mapped sensor data */
-    int16_t remap_data[3] = { 0 };
+    int16_t remap_data[3]  = { 0 };
     int16_t pos_multiplier = INT16_C(1);
     int16_t neg_multiplier = INT16_C(-1);
 
@@ -2118,23 +2113,23 @@ static void assign_remap_axis(uint8_t remap_axis, uint8_t *axis, uint8_t *sign)
 
     switch (axis_val)
     {
-        case BMI088_MM_X:
+    case BMI088_MM_X:
 
-            /* If mapped to x-axis */
-            (*axis) = BMI088_MM_MAP_X_AXIS;
-            break;
-        case BMI088_MM_Y:
+        /* If mapped to x-axis */
+        (*axis) = BMI088_MM_MAP_X_AXIS;
+        break;
+    case BMI088_MM_Y:
 
-            /* If mapped to y-axis */
-            (*axis) = BMI088_MM_MAP_Y_AXIS;
-            break;
-        case BMI088_MM_Z:
+        /* If mapped to y-axis */
+        (*axis) = BMI088_MM_MAP_Y_AXIS;
+        break;
+    case BMI088_MM_Z:
 
-            /* If mapped to z-axis */
-            (*axis) = BMI088_MM_MAP_Z_AXIS;
-            break;
-        default:
-            break;
+        /* If mapped to z-axis */
+        (*axis) = BMI088_MM_MAP_Z_AXIS;
+        break;
+    default:
+        break;
     }
 
     /* Store the re-mapped axis sign in the device structure */
@@ -2159,23 +2154,23 @@ static void receive_remap_axis(uint8_t remap_axis, uint8_t remap_sign, uint8_t *
     /* Get the re-mapped axis value from device structure */
     switch (remap_axis)
     {
-        case BMI088_MM_MAP_X_AXIS:
+    case BMI088_MM_MAP_X_AXIS:
 
-            /* If mapped to x-axis */
-            (*axis) = BMI088_MM_X;
-            break;
-        case BMI088_MM_MAP_Y_AXIS:
+        /* If mapped to x-axis */
+        (*axis) = BMI088_MM_X;
+        break;
+    case BMI088_MM_MAP_Y_AXIS:
 
-            /* If mapped to y-axis */
-            (*axis) = BMI088_MM_Y;
-            break;
-        case BMI088_MM_MAP_Z_AXIS:
+        /* If mapped to y-axis */
+        (*axis) = BMI088_MM_Y;
+        break;
+    case BMI088_MM_MAP_Z_AXIS:
 
-            /* If mapped to z-axis */
-            (*axis) = BMI088_MM_Z;
-            break;
-        default:
-            break;
+        /* If mapped to z-axis */
+        (*axis) = BMI088_MM_Z;
+        break;
+    default:
+        break;
     }
 
     /* Get the re-mapped axis sign from device structure */
@@ -2195,7 +2190,7 @@ static int8_t enable_self_test(struct bmi08_dev *dev)
 
     /* Configuring sensors to perform accel self-test */
     dev->accel_cfg.odr = BMI08_ACCEL_ODR_1600_HZ;
-    dev->accel_cfg.bw = BMI08_ACCEL_BW_NORMAL;
+    dev->accel_cfg.bw  = BMI08_ACCEL_BW_NORMAL;
 
     /* Check the chip id of the accel variant and assign the range */
 
@@ -2260,7 +2255,7 @@ static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct
         {
             /* Disable self-test */
             reg_data = BMI08_ACCEL_SWITCH_OFF_SELF_TEST;
-            rslt = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
+            rslt     = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
         }
     }
 
@@ -2313,13 +2308,13 @@ static void convert_lsb_g(const struct bmi088_mm_selftest_delta_limit *accel_dat
                           struct bmi088_mm_selftest_delta_limit *accel_data_diff_mg)
 {
     /* Accel x value in mg */
-    accel_data_diff_mg->x = (int16_t) ((accel_data_diff->x / (int32_t)LSB_PER_G) * 1000);
+    accel_data_diff_mg->x = (int16_t)((accel_data_diff->x / (int32_t)LSB_PER_G) * 1000);
 
     /* Accel y value in mg */
-    accel_data_diff_mg->y = (int16_t) ((accel_data_diff->y / (int32_t)LSB_PER_G) * 1000);
+    accel_data_diff_mg->y = (int16_t)((accel_data_diff->y / (int32_t)LSB_PER_G) * 1000);
 
     /* Accel z value in mg */
-    accel_data_diff_mg->z = (int16_t) ((accel_data_diff->z / (int32_t)LSB_PER_G) * 1000);
+    accel_data_diff_mg->z = (int16_t)((accel_data_diff->z / (int32_t)LSB_PER_G) * 1000);
 }
 
 /*!
