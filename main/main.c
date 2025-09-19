@@ -22,17 +22,23 @@
 #include "bean_imu.h"
 #include "bean_beep.h"
 #include "bean_storage.h"
+#include "bean_battery.h"
+#include "bean_context.h"
 
 static char TAG[] = "MAIN";
 
+static bean_context_t *bean_context = NULL; // The main bean context that is shared between components
+
 esp_err_t bean_init()
 {
-    ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
-    ESP_RETURN_ON_ERROR(bean_led_init(), TAG, "LEDs Init failed");
-    ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
-    ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
-    ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
-    ESP_RETURN_ON_ERROR(bean_storage_init(), TAG, "Storage Init failed");
+    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context),    TAG, "Bean Context Init failed");
+    ESP_RETURN_ON_ERROR(io_init(),                          TAG, "IO Init failed");
+    ESP_RETURN_ON_ERROR(bean_led_init(),                    TAG, "LEDs Init failed");
+    ESP_RETURN_ON_ERROR(bean_battery_init(bean_context),    TAG, "Battery Init failed");
+    ESP_RETURN_ON_ERROR(bean_altimeter_init(),              TAG, "BMP390 Init failed");
+    ESP_RETURN_ON_ERROR(bean_imu_init(),                    TAG, "BMI088 Init failed");
+    ESP_RETURN_ON_ERROR(bean_beep_init(),                   TAG, "Beep Init failed");
+    ESP_RETURN_ON_ERROR(bean_storage_init(),                TAG, "Storage Init failed");
     return ESP_OK;
 }
 
@@ -61,10 +67,12 @@ void app_main()
 
     while (1)
     {
+
         vTaskDelay(5000 / portTICK_PERIOD_MS);
         bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 50, 0 });
         vTaskDelay(5000 / portTICK_PERIOD_MS);
         bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 0, 0 });
+
         if (bean_altimeter_update() == ESP_OK)
         {
             ESP_LOGI(TAG,
