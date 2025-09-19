@@ -70,7 +70,7 @@ esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)
         .measurement_value = voltage_mv
     };
     if (xQueueSend(ctx->data_log_queue, &log_data, pdMS_TO_TICKS(100)) != pdPASS) {
-        ESP_LOGE(TAG, "Failed to enqueue battery voltage");
+        ESP_LOGW(TAG, "Failed to enqueue battery voltage");
         return ESP_FAIL;
     }
     return ESP_OK;
@@ -111,10 +111,10 @@ void vtask_battery_monitor(void *pvParameter)
             xEventGroupClearBits(ctx->system_event_group, BEAN_SYSTEM_USB_POWERED);
         }
         // there needs to be more logic for the charging. Because the skybean can start-up without battery and then the CHRG_STAT is LOW.
-        int chrg_stat = gpio_get_level(PIN_CHRG_STAT);
-        ESP_LOGI(TAG, "Charge status: %d", chrg_stat);
+        //int chrg_stat = gpio_get_level(PIN_CHRG_STAT);
+        //ESP_LOGI(TAG, "Charge status: %d", chrg_stat);
 
         // Delay before the next reading
-        vTaskDelay(pdMS_TO_TICKS(2000));
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
