@@ -14,7 +14,7 @@ static void delay_us(uint32_t period, void *intf_ptr);
 
 #define GRAVITY_EARTH (9.80665f)
 
-static char *TAG = "BMI088";
+const static char *TAG = "BMI088";
 static struct bmi08_dev *sensor;
 static struct bmi08_sensor_data *accel_data;
 static struct bmi08_sensor_data *gyro_data;

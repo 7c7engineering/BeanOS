@@ -14,7 +14,7 @@
 #include "esp_adc/adc_cali_scheme.h"
 
 
-const char TAG[] = "bean_battery";
+const static char TAG[] = "bean_battery";
 
 const float resistor_voltage_divider = 2.0f; // Could later be part of the configuration.
 

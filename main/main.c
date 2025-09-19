@@ -24,6 +24,8 @@
 #include "bean_storage.h"
 #include "bean_battery.h"
 #include "bean_context.h"
+#include "bean_core.h"
+#include "esp_timer.h"
 
 static char TAG[] = "MAIN";
 
@@ -39,6 +41,7 @@ esp_err_t bean_init()
     ESP_RETURN_ON_ERROR(bean_imu_init(),                    TAG, "BMI088 Init failed");
     ESP_RETURN_ON_ERROR(bean_beep_init(),                   TAG, "Beep Init failed");
     ESP_RETURN_ON_ERROR(bean_storage_init(),                TAG, "Storage Init failed");
+    ESP_RETURN_ON_ERROR(bean_core_init(bean_context),       TAG, "Core Init failed");
     return ESP_OK;
 }
 
@@ -68,45 +71,8 @@ void app_main()
     while (1)
     {
 
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-        bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 50, 0 });
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-        bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 0, 0 });
-
-        if (bean_altimeter_update() == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Pressure: %.2f Pa, Temperature: %.2f C",
-                     bean_altimeter_get_pressure(),
-                     bean_altimeter_get_temperature());
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to read from altimeter");
-        }
-        if (bean_imu_update_accel() == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2",
-                     get_x_accel_data(),
-                     get_y_accel_data(),
-                     get_z_accel_data());
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to update accelerometer data");
-        }
-        if (bean_imu_update_gyro() == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s",
-                     get_x_gyro_data(),
-                     get_y_gyro_data(),
-                     get_z_gyro_data());
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to update gyroscope data");
-        }
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        ESP_LOGI(TAG, "Uptime: %lld seconds", esp_timer_get_time() / 1000000);
+        
     }
 }
