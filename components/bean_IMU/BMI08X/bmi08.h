@@ -587,9 +587,7 @@ extern "C"
  * @retval < 0 -> Fail
  *
  */
-    int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data *accel,
-                                        struct bmi08_sensor_data *gyro,
-                                        struct bmi08_dev *dev);
+    int8_t bmi08a_get_synchronized_data(struct bmi08_sensor_data *accel, struct bmi08_sensor_data *gyro, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag
@@ -1043,10 +1041,7 @@ extern "C"
  * @retval >0 -> Warning
  * @retval <0 -> Fail
  */
-    void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data,
-                             const uint16_t *gyro_length,
-                             const struct bmi08_gyr_fifo_config *fifo_conf,
-                             const struct bmi08_fifo_frame *fifo);
+    void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data, const uint16_t *gyro_length, const struct bmi08_gyr_fifo_config *fifo_conf, const struct bmi08_fifo_frame *fifo);
 
     /*!
  * \ingroup bmi08gApiFIFO
@@ -1242,10 +1237,7 @@ extern "C"
  * @retval > 0 -> Warning
  *
  */
-    int8_t bmi08a_extract_accel(struct bmi08_sensor_data *accel_data,
-                                uint16_t *accel_length,
-                                struct bmi08_fifo_frame *fifo,
-                                const struct bmi08_dev *dev);
+    int8_t bmi08a_extract_accel(struct bmi08_sensor_data *accel_data, uint16_t *accel_length, struct bmi08_fifo_frame *fifo, const struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi08ag

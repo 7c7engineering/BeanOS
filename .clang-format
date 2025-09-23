@@ -8,7 +8,7 @@ TabWidth: 4
 UseTab: Never
 IndentCaseLabels: false
 NamespaceIndentation: None
-ColumnLimit: 120
+ColumnLimit: 180
 
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None

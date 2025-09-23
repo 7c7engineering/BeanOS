@@ -34,8 +34,7 @@ static int8_t i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len,
 
 static int8_t i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    esp_err_t ret =
-      i2c_master_write_read_device(I2C_NUM_0, bmp390_address, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
+    esp_err_t ret = i2c_master_write_read_device(I2C_NUM_0, bmp390_address, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
     if (ret == ESP_OK)
     {
         return BMP3_OK;

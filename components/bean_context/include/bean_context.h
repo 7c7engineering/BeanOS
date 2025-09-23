@@ -9,7 +9,6 @@
 #include "bean_bits.h"
 #include "pins.h"
 
-
 typedef struct bean_context
 {
     EventGroupHandle_t system_event_group;

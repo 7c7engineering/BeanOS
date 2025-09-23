@@ -3,4 +3,3 @@
 #include "bean_context.h"
 
 esp_err_t bean_battery_init(bean_context_t *ctx);
-

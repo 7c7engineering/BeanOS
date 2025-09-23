@@ -41,12 +41,7 @@ static esp_flash_t *init_ext_flash(void)
 
     ESP_LOGI(TAG, "Initializing external SPI Flash");
     ESP_LOGI(TAG, "Pin assignments:");
-    ESP_LOGI(TAG,
-             "MOSI: %2d   MISO: %2d   SCLK: %2d   CS: %2d",
-             bus_config.mosi_io_num,
-             bus_config.miso_io_num,
-             bus_config.sclk_io_num,
-             device_config.cs_io_num);
+    ESP_LOGI(TAG, "MOSI: %2d   MISO: %2d   SCLK: %2d   CS: %2d", bus_config.mosi_io_num, bus_config.miso_io_num, bus_config.sclk_io_num, device_config.cs_io_num);
 
     // Initialize the SPI bus
     ESP_LOGI(TAG, "DMA CHANNEL: %d", SPI_DMA_CHAN);
@@ -74,19 +69,10 @@ static esp_flash_t *init_ext_flash(void)
 
 static const esp_partition_t *add_partition(esp_flash_t *ext_flash, const char *partition_label)
 {
-    ESP_LOGI(TAG,
-             "Adding external Flash as a partition, label=\"%s\", size=%" PRIu32 " KB",
-             partition_label,
-             ext_flash->size / 1024);
+    ESP_LOGI(TAG, "Adding external Flash as a partition, label=\"%s\", size=%" PRIu32 " KB", partition_label, ext_flash->size / 1024);
     const esp_partition_t *fat_partition;
     const size_t offset = 0;
-    ESP_ERROR_CHECK(esp_partition_register_external(ext_flash,
-                                                    offset,
-                                                    ext_flash->size,
-                                                    partition_label,
-                                                    ESP_PARTITION_TYPE_DATA,
-                                                    ESP_PARTITION_SUBTYPE_DATA_FAT,
-                                                    &fat_partition));
+    ESP_ERROR_CHECK(esp_partition_register_external(ext_flash, offset, ext_flash->size, partition_label, ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_FAT, &fat_partition));
 
     // Erase space of partition on the external flash chip
     //ESP_LOGI(TAG, "Erasing partition range, offset=%u size=%" PRIu32 " KB", offset, ext_flash->size / 1024);
@@ -97,10 +83,8 @@ static const esp_partition_t *add_partition(esp_flash_t *ext_flash, const char *
 static bool mount_fatfs(const char *partition_label)
 {
     ESP_LOGI(TAG, "Mounting FAT filesystem");
-    const esp_vfs_fat_mount_config_t mount_config = { .max_files              = 4,
-                                                      .format_if_mount_failed = true,
-                                                      .allocation_unit_size   = CONFIG_WL_SECTOR_SIZE };
-    esp_err_t err = esp_vfs_fat_spiflash_mount_rw_wl(base_path, partition_label, &mount_config, &s_wl_handle);
+    const esp_vfs_fat_mount_config_t mount_config = { .max_files = 4, .format_if_mount_failed = true, .allocation_unit_size = CONFIG_WL_SECTOR_SIZE };
+    esp_err_t err                                 = esp_vfs_fat_spiflash_mount_rw_wl(base_path, partition_label, &mount_config, &s_wl_handle);
     if (err != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to mount FATFS (%s)", esp_err_to_name(err));

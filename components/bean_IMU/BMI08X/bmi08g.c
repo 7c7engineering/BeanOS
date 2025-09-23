@@ -181,10 +181,7 @@ static void get_fifo_data_length(const struct bmi08_gyr_fifo_config *fifo, int8_
  * @param[in]  fifo        : Structure instance of bmi08x_fifo_frame.
  *
  */
-static void parse_fifo_gyro_len(uint16_t *len,
-                                const uint16_t *gyr_count,
-                                const struct bmi08_gyr_fifo_config *fifo_conf,
-                                const struct bmi08_fifo_frame *fifo);
+static void parse_fifo_gyro_len(uint16_t *len, const uint16_t *gyr_count, const struct bmi08_gyr_fifo_config *fifo_conf, const struct bmi08_fifo_frame *fifo);
 
 /*!
  * @brief This internal API computes the number of bytes of gyroscope FIFO data
@@ -195,10 +192,7 @@ static void parse_fifo_gyro_len(uint16_t *len,
  * @param[in]  fifo_conf      : Structure instance of bmi08x_gyr_fifo_config.
  * @param[in]  fifo           : Structure instance of bmi08x_fifo_frame.
  */
-static void unpack_gyro_data(struct bmi08_sensor_data *gyro,
-                             uint16_t *data_index,
-                             const struct bmi08_gyr_fifo_config *fifo_conf,
-                             const struct bmi08_fifo_frame *fifo);
+static void unpack_gyro_data(struct bmi08_sensor_data *gyro, uint16_t *data_index, const struct bmi08_gyr_fifo_config *fifo_conf, const struct bmi08_fifo_frame *fifo);
 
 /****************************************************************************/
 
@@ -888,10 +882,7 @@ int8_t bmi08g_read_fifo_data(const struct bmi08_fifo_frame *fifo, struct bmi08_d
 /*!
  *  @brief This API is used to extract gyroscope data from fifo.
  */
-void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data,
-                         const uint16_t *gyro_length,
-                         const struct bmi08_gyr_fifo_config *fifo_conf,
-                         const struct bmi08_fifo_frame *fifo)
+void bmi08g_extract_gyro(struct bmi08_sensor_data *gyro_data, const uint16_t *gyro_length, const struct bmi08_gyr_fifo_config *fifo_conf, const struct bmi08_fifo_frame *fifo)
 {
     uint16_t data_index       = 0;
     uint16_t gyro_index       = 0;
@@ -1263,10 +1254,7 @@ static void get_fifo_data_length(const struct bmi08_gyr_fifo_config *fifo, int8_
 /*!
  *  @brief This internal API is used to get length of gyroscope data in fifo.
  */
-static void parse_fifo_gyro_len(uint16_t *len,
-                                const uint16_t *gyr_count,
-                                const struct bmi08_gyr_fifo_config *fifo_conf,
-                                const struct bmi08_fifo_frame *fifo)
+static void parse_fifo_gyro_len(uint16_t *len, const uint16_t *gyr_count, const struct bmi08_gyr_fifo_config *fifo_conf, const struct bmi08_fifo_frame *fifo)
 {
     if (fifo_conf->tag == 0)
     {
@@ -1288,10 +1276,7 @@ static void parse_fifo_gyro_len(uint16_t *len,
 /*!
  *  @brief This internal API is used to unpack the gyroscope data.
  */
-static void unpack_gyro_data(struct bmi08_sensor_data *gyro,
-                             uint16_t *data_index,
-                             const struct bmi08_gyr_fifo_config *fifo_conf,
-                             const struct bmi08_fifo_frame *fifo)
+static void unpack_gyro_data(struct bmi08_sensor_data *gyro, uint16_t *data_index, const struct bmi08_gyr_fifo_config *fifo_conf, const struct bmi08_fifo_frame *fifo)
 {
     /* Variables to store LSB value */
     uint16_t data_lsb;

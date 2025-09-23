@@ -25,22 +25,17 @@ esp_err_t bean_led_init()
 {
     esp_err_t ret = ESP_OK;
 
-    ledc_timer_config_t ledc_timer = { .speed_mode      = LEDC_LOW_SPEED_MODE,
-                                       .duty_resolution = LEDC_TIMER_13_BIT,
-                                       .timer_num       = LEDC_TIMER_0,
-                                       .freq_hz         = 1000,
-                                       .clk_cfg         = LEDC_AUTO_CLK };
-    ret                            = ledc_timer_config(&ledc_timer);
+    ledc_timer_config_t ledc_timer = {
+        .speed_mode = LEDC_LOW_SPEED_MODE, .duty_resolution = LEDC_TIMER_13_BIT, .timer_num = LEDC_TIMER_0, .freq_hz = 1000, .clk_cfg = LEDC_AUTO_CLK
+    };
+    ret = ledc_timer_config(&ledc_timer);
     ESP_RETURN_ON_ERROR(ret, tag, "Error configuring LEDC timer: %s", esp_err_to_name(ret));
 
-    ledc_channel_config_t ledc_conf = { .channel    = LEDC_CHANNEL_0,
-                                        .duty       = 0,
-                                        .gpio_num   = PIN_LEDR1,
-                                        .intr_type  = LEDC_INTR_DISABLE,
-                                        .speed_mode = LEDC_LOW_SPEED_MODE,
-                                        .timer_sel  = LEDC_TIMER_0 };
-    ledc_conf.flags.output_invert   = 1;
-    ret                             = ledc_channel_config(&ledc_conf);
+    ledc_channel_config_t ledc_conf = {
+        .channel = LEDC_CHANNEL_0, .duty = 0, .gpio_num = PIN_LEDR1, .intr_type = LEDC_INTR_DISABLE, .speed_mode = LEDC_LOW_SPEED_MODE, .timer_sel = LEDC_TIMER_0
+    };
+    ledc_conf.flags.output_invert = 1;
+    ret                           = ledc_channel_config(&ledc_conf);
     ESP_RETURN_ON_ERROR(ret, tag, "Error configuring LEDC channel 0: %s", esp_err_to_name(ret));
     ledc_conf.channel  = LEDC_CHANNEL_1;
     ledc_conf.gpio_num = PIN_LEDG1;

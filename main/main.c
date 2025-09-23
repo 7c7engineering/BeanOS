@@ -26,22 +26,21 @@
 #include "bean_battery.h"
 #include "bean_context.h"
 
-
 static char TAG[] = "MAIN";
 
 static bean_context_t *bean_context = NULL; // The main bean context that is shared between components
 
 esp_err_t bean_init()
 {
-    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context),    TAG, "Bean Context Init failed");
-    ESP_RETURN_ON_ERROR(io_init(),                          TAG, "IO Init failed");
-    ESP_RETURN_ON_ERROR(bean_led_init(),                    TAG, "LEDs Init failed");
-    ESP_RETURN_ON_ERROR(bean_battery_init(bean_context),    TAG, "Battery Init failed");
-    ESP_RETURN_ON_ERROR(bean_altimeter_init(),              TAG, "BMP390 Init failed");
-    ESP_RETURN_ON_ERROR(bean_imu_init(),                    TAG, "BMI088 Init failed");
-    ESP_RETURN_ON_ERROR(bean_beep_init(),                   TAG, "Beep Init failed");
+    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context), TAG, "Bean Context Init failed");
+    ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
+    ESP_RETURN_ON_ERROR(bean_led_init(), TAG, "LEDs Init failed");
+    ESP_RETURN_ON_ERROR(bean_battery_init(bean_context), TAG, "Battery Init failed");
+    ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
+    ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
+    ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
     ESP_RETURN_ON_ERROR(bean_pyro_init(), TAG, "Pyro Init failed");
-    ESP_RETURN_ON_ERROR(bean_storage_init(),                TAG, "Storage Init failed");
+    ESP_RETURN_ON_ERROR(bean_storage_init(), TAG, "Storage Init failed");
     return ESP_OK;
 }
 
@@ -78,10 +77,7 @@ void app_main()
 
         if (bean_altimeter_update() == ESP_OK)
         {
-            ESP_LOGI(TAG,
-                     "Pressure: %.2f Pa, Temperature: %.2f C",
-                     bean_altimeter_get_pressure(),
-                     bean_altimeter_get_temperature());
+            ESP_LOGI(TAG, "Pressure: %.2f Pa, Temperature: %.2f C", bean_altimeter_get_pressure(), bean_altimeter_get_temperature());
         }
         else
         {
@@ -89,11 +85,7 @@ void app_main()
         }
         if (bean_imu_update_accel() == ESP_OK)
         {
-            ESP_LOGI(TAG,
-                     "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2",
-                     get_x_accel_data(),
-                     get_y_accel_data(),
-                     get_z_accel_data());
+            ESP_LOGI(TAG, "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2", get_x_accel_data(), get_y_accel_data(), get_z_accel_data());
         }
         else
         {
@@ -101,11 +93,7 @@ void app_main()
         }
         if (bean_imu_update_gyro() == ESP_OK)
         {
-            ESP_LOGI(TAG,
-                     "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s",
-                     get_x_gyro_data(),
-                     get_y_gyro_data(),
-                     get_z_gyro_data());
+            ESP_LOGI(TAG, "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s", get_x_gyro_data(), get_y_gyro_data(), get_z_gyro_data());
         }
         else
         {

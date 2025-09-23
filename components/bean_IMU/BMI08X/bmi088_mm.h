@@ -587,9 +587,7 @@ extern "C"
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-    int8_t bmi088_mma_set_int_config(const struct bmi08_accel_int_channel_cfg *int_config,
-                                     enum bmi088_mm_accel_int_types int_type,
-                                     struct bmi08_dev *dev);
+    int8_t bmi088_mma_set_int_config(const struct bmi08_accel_int_channel_cfg *int_config, enum bmi088_mm_accel_int_types int_type, struct bmi08_dev *dev);
 
     /**
  * \ingroup bmi088_mm

@@ -5,19 +5,21 @@
 #include <stdbool.h>
 
 // Pyro channel enumeration
-typedef enum {
-    PYRO_0 = 0,
-    PYRO_1 = 1,
-    PYRO_2 = 2,
-    PYRO_3 = 3,
-    PYRO_ALL = 4  // Special case for firing all channels
+typedef enum
+{
+    PYRO_0   = 0,
+    PYRO_1   = 1,
+    PYRO_2   = 2,
+    PYRO_3   = 3,
+    PYRO_ALL = 4 // Special case for firing all channels
 } pyro_channel_t;
 
 // Pyro channel status structure
-typedef struct {
+typedef struct
+{
     bool fired;
-    uint32_t fire_time;  // Timestamp when fired (in ms since boot)
-    uint32_t duration;   // Duration the channel was fired (in ms)
+    uint32_t fire_time; // Timestamp when fired (in ms since boot)
+    uint32_t duration; // Duration the channel was fired (in ms)
 } pyro_channel_status_t;
 
 // Initialize the pyro component and configure GPIO pins
