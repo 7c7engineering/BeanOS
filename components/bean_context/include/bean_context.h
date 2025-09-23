@@ -1,34 +1,44 @@
 #pragma once
 
 #include "esp_err.h"
-#include "soc/gpio_num.h"
 
-// GPIO pins
-static const gpio_num_t PIN_VBAT_ADC   = GPIO_NUM_1;
-static const gpio_num_t PIN_USB_DET    = GPIO_NUM_6;
-static const gpio_num_t PIN_BUZ_P      = GPIO_NUM_7;
-static const gpio_num_t PIN_BUZ_N      = GPIO_NUM_8;
-static const gpio_num_t PIN_FLASH_CS   = GPIO_NUM_10;
-static const gpio_num_t PIN_FLASH_MISO = GPIO_NUM_11;
-static const gpio_num_t PIN_FLASH_CLK  = GPIO_NUM_12;
-static const gpio_num_t PIN_FLASH_MOSI = GPIO_NUM_13;
-static const gpio_num_t PIN_PYRO_2     = GPIO_NUM_14;
-static const gpio_num_t PIN_PYRO_3     = GPIO_NUM_15;
-static const gpio_num_t PIN_LEDG2      = GPIO_NUM_16;
-static const gpio_num_t PIN_LEDB2      = GPIO_NUM_17;
-static const gpio_num_t PIN_LEDR2      = GPIO_NUM_18;
-static const gpio_num_t PIN_SERVO1     = GPIO_NUM_21;
-static const gpio_num_t PIN_LEDR1      = GPIO_NUM_33;
-static const gpio_num_t PIN_LEDG1      = GPIO_NUM_34;
-static const gpio_num_t PIN_LEDB1      = GPIO_NUM_35;
-static const gpio_num_t PIN_SERVO2     = GPIO_NUM_36;
-static const gpio_num_t PIN_PYRO_1     = GPIO_NUM_37;
-static const gpio_num_t PIN_PYRO_0     = GPIO_NUM_38;
-static const gpio_num_t PIN_I2C_SDA    = GPIO_NUM_47;
-static const gpio_num_t PIN_I2C_SCL    = GPIO_NUM_48;
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "freertos/event_groups.h"
+
+#include "bean_bits.h"
+#include "pins.h"
 
 
+typedef struct bean_context
+{
+    EventGroupHandle_t system_event_group;
+    QueueHandle_t event_queue;
+    QueueHandle_t data_log_queue;
+} bean_context_t;
 
+typedef enum measurement_type
+{
+    MEASUREMENT_TYPE_TEMPERATURE,
+    MEASUREMENT_TYPE_PRESSURE,
+    MEASUREMENT_TYPE_ALTITUDE,
+    MEASUREMENT_TYPE_ACCELERATION,
+    MEASUREMENT_TYPE_GYROSCOPE,
+    MEASUREMENT_TYPE_BATTERY_VOLTAGE
+} measurement_type_t;
 
+typedef struct event_data
+{
+    int event_id;
+    uint32_t timestamp;
+    char *event_data;
+} event_data_t;
 
-//esp_err_t bean_context_init();
+typedef struct log_data
+{
+    measurement_type_t measurement_type;
+    uint32_t timestamp;
+    int32_t measurement_value;
+} log_data_t;
+
+esp_err_t bean_context_init(bean_context_t **ctx);

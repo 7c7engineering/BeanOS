@@ -649,7 +649,7 @@ static int8_t enable_self_test(struct bmi08_dev *dev)
 
     /* Configuring sensors to perform accel self test */
     dev->accel_cfg.odr = BMI08_ACCEL_ODR_1600_HZ;
-    dev->accel_cfg.bw = BMI08_ACCEL_BW_NORMAL;
+    dev->accel_cfg.bw  = BMI08_ACCEL_BW_NORMAL;
 
     /*check the chip id of the accel variant and assign the range */
     if (dev->variant == BMI085_VARIANT)
@@ -720,7 +720,7 @@ static int8_t negative_excited_accel(struct bmi08_sensor_data *accel_neg, struct
         {
             /* Disable self test */
             reg_data = BMI08_ACCEL_SWITCH_OFF_SELF_TEST;
-            rslt = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
+            rslt     = bmi08a_set_regs(BMI08_REG_ACCEL_SELF_TEST, &reg_data, 1, dev);
         }
     }
 
