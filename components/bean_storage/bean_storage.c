@@ -12,6 +12,7 @@
 #include "esp_vfs_fat.h"
 #include "bean_storage_usb.h"
 #include "sys/dirent.h"
+#include "bean_storage_data_logger.h"
 
 #define HOST_ID      SPI2_HOST //SPI3_HOST
 #define SPI_DMA_CHAN SPI_DMA_CH_AUTO
@@ -22,6 +23,8 @@ const char *partition_label = "storage";
 static const char *TAG         = "BEAN_STORAGE";
 const char *base_path          = STORAGE_BASE_PATH;
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
+
+TaskHandle_t storage_data_logger_task_handle;
 
 static esp_flash_t *init_ext_flash(void)
 {
@@ -111,7 +114,7 @@ static bool mount_fatfs(const char *partition_label)
     return true;
 }
 
-esp_err_t bean_storage_init(void)
+esp_err_t bean_storage_init(bean_context_t *ctx)
 {
     // Set up SPI bus and initialize the external SPI Flash chip
     flash = init_ext_flash();
@@ -128,6 +131,13 @@ esp_err_t bean_storage_init(void)
         ESP_LOGE(TAG, "Failed to mount FATFS");
         return ESP_FAIL;
     }
+
+    xTaskCreate(&vtask_data_log_handler,
+                "data_log_handler",
+                4096,
+                (void *)ctx,
+                tskIDLE_PRIORITY,
+                &storage_data_logger_task_handle);
     return ESP_OK;
 }
 
@@ -228,7 +238,7 @@ esp_err_t storage_read_file(char *filename)
 
 esp_err_t storage_enable_usb_msc(void)
 {
-    ESP_LOGI(TAG, "ENABLING USB MSC......");
+    ESP_LOGI(TAG, "Enabling USB MSC");
     bean_storage_usb_init(s_wl_handle);
     return ESP_OK;
 }

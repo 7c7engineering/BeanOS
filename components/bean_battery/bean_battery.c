@@ -1,14 +1,13 @@
 #include <stdio.h>
+#include "driver/adc_types_legacy.h"
 #include "esp_log.h"
 #include "esp_check.h"
 #include "bean_battery.h"
 #include "driver/gpio.h"
-#include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
 
-#include "driver/adc.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"

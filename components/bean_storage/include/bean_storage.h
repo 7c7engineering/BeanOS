@@ -1,7 +1,10 @@
 #pragma once
+#include "bean_context.h"
 #include "esp_err.h"
 
-esp_err_t bean_storage_init(void);
+#define STORAGE_BASE_PATH "/extflash"
+
+esp_err_t bean_storage_init(bean_context_t *ctx);
 esp_err_t storage_write_file(char *filename, const char *data);
 esp_err_t storage_list_files();
 esp_err_t storage_read_file(char *filename);
