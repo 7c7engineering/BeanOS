@@ -114,6 +114,18 @@ esp_err_t bean_storage_usb_init(wl_handle_t s_wl_handle)
     return ESP_OK;
 }
 
+/**
+ * @brief Expose the storage device to USB host for mass storage access
+ * 
+ * This function makes the storage device available to the connected USB host
+ * (computer) as a mass storage device. Once exposed, the host can read/write
+ * files directly to the storage, but the application loses access until
+ * storage_hide_usb() is called.
+ * 
+ * @return ESP_OK on success
+ * @return ESP_FAIL if USB MSC not initialized
+ * @return Other ESP error codes from underlying storage operations
+ */
 esp_err_t storage_expose_usb(void)
 {
     if (!usb_msc_enabled)
@@ -140,6 +152,17 @@ esp_err_t storage_expose_usb(void)
     return ESP_OK;
 }
 
+/**
+ * @brief Hide the storage device from USB host and restore application access
+ * 
+ * This function removes the storage device from USB host access and remounts
+ * it for application use. The storage will no longer appear as a drive on the
+ * host computer, but the application can resume file operations.
+ * 
+ * @return ESP_OK on success
+ * @return ESP_FAIL if USB MSC not initialized
+ * @return Other ESP error codes from underlying storage operations
+ */
 esp_err_t storage_hide_usb(void)
 {
     if (!usb_msc_enabled)
