@@ -2,21 +2,13 @@
 #include <esp_log.h>
 #include "esp_check.h"
 #include "esp_event.h"
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include <freertos/task.h>
 #include "systemio.h"
-#include "sdkconfig.h"
 #include "bean_altimeter.h"
 #include "bean_storage.h"
-#include "esp_console.h"
-#include "linenoise/linenoise.h"
 #include <string.h>
-#include "driver/uart.h"
-#include "esp_vfs_fat.h"
-#include "esp_system.h"
-#include "argtable3/argtable3.h"
 #include "nvs_flash.h"
 #include "bean_led.h"
 #include "bean_imu.h"
@@ -31,14 +23,14 @@ static bean_context_t *bean_context = NULL; // The main bean context that is sha
 
 esp_err_t bean_init()
 {
-    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context),    TAG, "Bean Context Init failed");
-    ESP_RETURN_ON_ERROR(io_init(),                          TAG, "IO Init failed");
-    ESP_RETURN_ON_ERROR(bean_led_init(),                    TAG, "LEDs Init failed");
-    ESP_RETURN_ON_ERROR(bean_battery_init(bean_context),    TAG, "Battery Init failed");
-    ESP_RETURN_ON_ERROR(bean_altimeter_init(),              TAG, "BMP390 Init failed");
-    ESP_RETURN_ON_ERROR(bean_imu_init(),                    TAG, "BMI088 Init failed");
-    ESP_RETURN_ON_ERROR(bean_beep_init(),                   TAG, "Beep Init failed");
-    ESP_RETURN_ON_ERROR(bean_storage_init(),                TAG, "Storage Init failed");
+    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context), TAG, "Bean Context Init failed");
+    ESP_RETURN_ON_ERROR(io_init(), TAG, "IO Init failed");
+    ESP_RETURN_ON_ERROR(bean_led_init(), TAG, "LEDs Init failed");
+    ESP_RETURN_ON_ERROR(bean_battery_init(bean_context), TAG, "Battery Init failed");
+    ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
+    ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
+    ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
+    ESP_RETURN_ON_ERROR(bean_storage_init(), TAG, "Storage Init failed");
     return ESP_OK;
 }
 
@@ -64,6 +56,23 @@ void app_main()
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
     vTaskDelay(3000 / portTICK_PERIOD_MS);
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+
+    if (bean_battery_is_usb_powered())
+    {
+        ESP_LOGI(TAG, "Powered by USB: switching to MSC mode");
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        storage_enable_usb_msc();
+        // Prevent it from continuing in the code
+        // The device should now only work as an USB MSC device
+        while (1)
+        {
+            // Display slow flashing soft white LED
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 50, 50, 50 });
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+        }
+    }
 
     while (1)
     {
