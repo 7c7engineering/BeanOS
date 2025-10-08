@@ -16,6 +16,7 @@
 #include "bean_storage.h"
 #include "bean_battery.h"
 #include "bean_context.h"
+#include "hal/usb_serial_jtag_ll.h"
 
 static char TAG[] = "MAIN";
 
@@ -30,7 +31,7 @@ esp_err_t bean_init()
     ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
     ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
     ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
-    ESP_RETURN_ON_ERROR(bean_storage_init(), TAG, "Storage Init failed");
+    ESP_RETURN_ON_ERROR(bean_storage_init(bean_context), TAG, "Storage Init failed");
     return ESP_OK;
 }
 
@@ -57,7 +58,8 @@ void app_main()
     vTaskDelay(3000 / portTICK_PERIOD_MS);
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
 
-    if (bean_battery_is_usb_powered())
+    // If powered by USB and not in development mode
+    if (bean_battery_is_usb_powered() && !usb_serial_jtag_ll_txfifo_writable())
     {
         ESP_LOGI(TAG, "Powered by USB: switching to MSC mode");
         vTaskDelay(5000 / portTICK_PERIOD_MS);
