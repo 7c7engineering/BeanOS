@@ -1,3 +1,4 @@
+#pragma once
 #include "soc/gpio_num.h"
 
 // GPIO pins

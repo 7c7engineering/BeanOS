@@ -22,9 +22,12 @@ typedef enum measurement_type
     MEASUREMENT_TYPE_TEMPERATURE,
     MEASUREMENT_TYPE_PRESSURE,
     MEASUREMENT_TYPE_ALTITUDE,
-    MEASUREMENT_TYPE_ACCELERATION,
+    MEASUREMENT_TYPE_ACCELERATION_X,
+    MEASUREMENT_TYPE_ACCELERATION_Y,
+    MEASUREMENT_TYPE_ACCELERATION_Z,
     MEASUREMENT_TYPE_GYROSCOPE,
-    MEASUREMENT_TYPE_BATTERY_VOLTAGE
+    MEASUREMENT_TYPE_BATTERY_VOLTAGE,
+    MEASUREMENT_TYPE_STAGE_TRANSITION
 } measurement_type_t;
 
 typedef struct event_data
@@ -38,7 +41,7 @@ typedef struct log_data
 {
     measurement_type_t measurement_type;
     uint32_t timestamp;
-    int32_t measurement_value;
+    float measurement_value;
 } log_data_t;
 
 esp_err_t bean_context_init(bean_context_t **ctx);

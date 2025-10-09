@@ -26,6 +26,8 @@
 #include "bean_context.h"
 #include "bean_core.h"
 #include "esp_timer.h"
+#include "pins.h"
+#include "driver/gpio.h"
 
 static char TAG[] = "MAIN";
 
@@ -33,7 +35,7 @@ static bean_context_t *bean_context = NULL; // The main bean context that is sha
 
 esp_err_t bean_init()
 {
-    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context),    TAG, "Bean Context Init failed");
+    ESP_RETURN_ON_ERROR(bean_context_init(&bean_context),   TAG, "Bean Context Init failed");
     ESP_RETURN_ON_ERROR(io_init(),                          TAG, "IO Init failed");
     ESP_RETURN_ON_ERROR(bean_led_init(),                    TAG, "LEDs Init failed");
     ESP_RETURN_ON_ERROR(bean_battery_init(bean_context),    TAG, "Battery Init failed");
@@ -44,6 +46,51 @@ esp_err_t bean_init()
     ESP_RETURN_ON_ERROR(bean_core_init(bean_context),       TAG, "Core Init failed");
     return ESP_OK;
 }
+
+void test_pyro_channels()
+{
+    // Set PYRO channels as output and low
+    gpio_set_direction(PIN_PYRO_0, GPIO_MODE_OUTPUT);
+    gpio_set_direction(PIN_PYRO_1, GPIO_MODE_OUTPUT);       
+    gpio_set_level(PIN_PYRO_0, 0);
+    gpio_set_level(PIN_PYRO_1, 0);
+    for (int i = 0; i < 30; i++)
+    {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 0, 0 });
+        bean_beep_sound(NOTE_A5, 100);
+        bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+    }
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 0 });
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    bean_beep_sound(NOTE_B5, 100);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    bean_beep_sound(NOTE_C5, 100);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    bean_beep_sound(NOTE_E5, 100);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    for (int i = 0; i < 5; i++)
+    {
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
+        bean_beep_sound(NOTE_A6, 50);
+        bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+    }
+    // Set pyro channel high
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
+    gpio_set_level(PIN_PYRO_0, 1);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    gpio_set_level(PIN_PYRO_0, 0);
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 255 });
+
+    while(1)
+    {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+
+}
+
 
 void app_main()
 {
@@ -67,6 +114,8 @@ void app_main()
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
     vTaskDelay(3000 / portTICK_PERIOD_MS);
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+
+    //test_pyro_channels();
 
     while (1)
     {

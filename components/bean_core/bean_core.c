@@ -3,9 +3,12 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 #include "bean_altimeter.h"
 #include "bean_imu.h"
 #include "bean_led.h"
+#include "esp_timer.h"
+#include "esp_check.h"
 
 #define DUAL_DEPLOYMENT 0 // set to 1 to enable dual deployment, 0 for single deployment
 
@@ -27,6 +30,7 @@ static core_flight_state_t current_flight_state = FLIGHT_STATE_PRELAUNCH;
 
 esp_err_t bean_core_goto_state(core_flight_state_t new_state)
 {
+    ESP_LOGI(TAG, "Trying to transition to state %d from state %d", new_state, current_flight_state);
     // handle any state transition logic here
     if (new_state == current_flight_state)
     {
@@ -48,7 +52,7 @@ esp_err_t bean_core_goto_state(core_flight_state_t new_state)
     {
         ESP_LOGE(TAG, "Can only transition to DROGUE_OUT state from ASCENT state");
         return ESP_FAIL;
-    }else if (new_state == FLIGHT_STATE_MAIN_OUT && current_flight_state != FLIGHT_STATE_DROGUE_OUT)
+    }else if (new_state == FLIGHT_STATE_MAIN_OUT && ((current_flight_state != FLIGHT_STATE_DROGUE_OUT)&&(current_flight_state != FLIGHT_STATE_ASCENT)))
     {
         ESP_LOGE(TAG, "Can only transition to MAIN_OUT state from DROGUE_OUT state");
         return ESP_FAIL;
@@ -138,6 +142,7 @@ esp_err_t bean_core_process_drogue_out(bean_context_t *ctx)
 esp_err_t bean_core_process_ascent(bean_context_t *ctx)
 {
     // check for apogee conditions, alt based & timer as safety
+    bean_altimeter_update();
     current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
     if (current_height > current_recorded_max_height) //update max height during flight
     {
@@ -168,12 +173,14 @@ esp_err_t bean_core_process_armed(bean_context_t *ctx)
 {
     //check for takeoff conditions,accel based
     float accel_mag = calculate_acceleration_vector_magnitude(get_x_accel_data(), get_y_accel_data(), get_z_accel_data());
-
+    
     if (accel_mag > LAUNCH_ACCEL_THRESHOLD)
     {
+        ESP_LOGI(TAG, "Launch acceleration detected: %f g", accel_mag);
         launch_counter++;
         if (launch_counter > LAUNCH_ACCEL_COUNT)
         {
+            ESP_LOGI(TAG, "YEET!");
             takeoff_timestamp_ms = esp_timer_get_time()/1000; //take a timestamp for the takeoff time, needed for apogee detection
             bean_core_goto_state(FLIGHT_STATE_ASCENT);
             return ESP_OK;
@@ -203,14 +210,41 @@ double calculate_height(double pressure, double ref_temperature, double ref_pres
     return (ref_temperature / -0.0065) * (pow((pressure / ref_pressure), 0.190263) - 1.0);
 }
 
+esp_err_t log_measurements(bean_context_t *ctx)
+{
+    uint32_t timestamp = (uint32_t)esp_log_timestamp();
+    log_data_t log_data = {
+        .measurement_type = MEASUREMENT_TYPE_ACCELERATION_X,
+        .timestamp = timestamp,
+        .measurement_value = get_x_accel_data()
+    };
+    xQueueSend(ctx->data_log_queue, &log_data, 1); // Try 1 tick and then give up
+
+    log_data.measurement_type = MEASUREMENT_TYPE_ACCELERATION_Y;
+    log_data.measurement_value = get_y_accel_data();
+    xQueueSend(ctx->data_log_queue, &log_data, 1); // Try 1 tick and then give up
+
+    log_data.measurement_type = MEASUREMENT_TYPE_ACCELERATION_Z;
+    log_data.measurement_value = get_z_accel_data();
+    xQueueSend(ctx->data_log_queue, &log_data, 1); // Try 1 tick and then give up
+
+    return ESP_OK;
+}
+
 void core_task(void *arg)
 {
     bean_context_t *ctx = (bean_context_t *)arg;
     while (1)
     {
+        //int64_t current_time = esp_timer_get_time();
+        bean_imu_update_accel();
+        //log_measurements(ctx);
+
+        //bean_altimeter_update();
+        //uint64_t elapsed_time = esp_timer_get_time() - current_time;
+        //ESP_LOGI(TAG, "IMU update took %llu us", elapsed_time);
         switch (current_flight_state)
         {
-
         case FLIGHT_STATE_PRELAUNCH:
             bean_core_process_prelaunch(ctx);
             break;
@@ -232,6 +266,7 @@ void core_task(void *arg)
         default:
             break;
         }
+        
         vTaskDelay(pdMS_TO_TICKS(10)); // run every 10ms // about 1 tick
     }
 }
@@ -239,8 +274,11 @@ void core_task(void *arg)
 esp_err_t bean_core_init(bean_context_t *ctx)
 {
     ESP_LOGI(TAG, "Initializing Bean Core");
+    bean_altimeter_update(); //initial update to get reference pressure and temperature
     reference_pressure = bean_altimeter_get_pressure(); //initial reference pressure and temperature
     reference_temperature = bean_altimeter_get_temperature() + 273.15;
+    ESP_LOGI(TAG, "Reference pressure: %f Pa", reference_pressure);
+    ESP_LOGI(TAG, "Reference temperature: %f K", reference_temperature);
     xTaskCreate(&core_task, "core_task", 1024 * 4, (void *)ctx, tskIDLE_PRIORITY, &core_task_handle);
 
 

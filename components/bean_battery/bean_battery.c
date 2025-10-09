@@ -67,7 +67,7 @@ esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)
     log_data_t log_data = {
         .measurement_type = MEASUREMENT_TYPE_BATTERY_VOLTAGE,
         .timestamp = esp_log_timestamp(),
-        .measurement_value = voltage_mv
+        .measurement_value = voltage_mv/1000.0f
     };
     if (xQueueSend(ctx->data_log_queue, &log_data, pdMS_TO_TICKS(100)) != pdPASS) {
         ESP_LOGW(TAG, "Failed to enqueue battery voltage");
