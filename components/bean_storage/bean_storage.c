@@ -132,19 +132,16 @@ esp_err_t bean_storage_init(bean_context_t *ctx)
         return ESP_FAIL;
     }
 
-    if (bean_storage_logger_init() != ESP_OK)  {
+    if (bean_storage_logger_init() != ESP_OK)
+    {
         ESP_LOGE(TAG, "Failed to initialize storage logger");
         return ESP_FAIL;
     }
 
     // TOOD create task handle for event queue
     // also make sure the run ID is consistent between the file name of data_log and of event_log
-    xTaskCreate(&vtask_data_log_handler,
-                "data_log_handler",
-                4096,
-                (void *)ctx,
-                tskIDLE_PRIORITY,
-                &storage_logger_task_handle);
+    xTaskCreate(
+      &vtask_data_log_handler, "data_log_handler", 4096, (void *)ctx, tskIDLE_PRIORITY, &storage_logger_task_handle);
     return ESP_OK;
 }
 
