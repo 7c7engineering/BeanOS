@@ -12,7 +12,7 @@
 #include "esp_vfs_fat.h"
 #include "bean_storage_usb.h"
 #include "sys/dirent.h"
-#include "bean_storage_data_logger.h"
+#include "bean_storage_logger.h"
 
 #define HOST_ID      SPI2_HOST //SPI3_HOST
 #define SPI_DMA_CHAN SPI_DMA_CH_AUTO
@@ -24,7 +24,7 @@ static const char *TAG         = "BEAN_STORAGE";
 const char *base_path          = STORAGE_BASE_PATH;
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 
-TaskHandle_t storage_data_logger_task_handle;
+TaskHandle_t storage_logger_task_handle;
 
 static esp_flash_t *init_ext_flash(void)
 {
@@ -132,12 +132,19 @@ esp_err_t bean_storage_init(bean_context_t *ctx)
         return ESP_FAIL;
     }
 
+    if (bean_storage_logger_init() != ESP_OK)  {
+        ESP_LOGE(TAG, "Failed to initialize storage logger");
+        return ESP_FAIL;
+    }
+
+    // TOOD create task handle for event queue
+    // also make sure the run ID is consistent between the file name of data_log and of event_log
     xTaskCreate(&vtask_data_log_handler,
                 "data_log_handler",
                 4096,
                 (void *)ctx,
                 tskIDLE_PRIORITY,
-                &storage_data_logger_task_handle);
+                &storage_logger_task_handle);
     return ESP_OK;
 }
 

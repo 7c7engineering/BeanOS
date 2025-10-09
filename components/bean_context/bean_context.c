@@ -5,6 +5,8 @@ esp_err_t bean_context_init(bean_context_t **ctx)
 {
 
     *ctx = (bean_context_t *)malloc(sizeof(bean_context_t));
+
+    (*ctx)->is_not_usb_msc = false;
     if (!*ctx)
         return ESP_ERR_NO_MEM;
 

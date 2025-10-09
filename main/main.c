@@ -54,15 +54,12 @@ void app_main()
     bean_beep_sound(NOTE_C5, 100);
     bean_beep_sound(NOTE_E5, 100);
 
-    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
-    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
-
     // If powered by USB and not in development mode
     if (bean_battery_is_usb_powered() && !usb_serial_jtag_ll_txfifo_writable())
     {
+        bean_context->is_not_usb_msc = false;
         ESP_LOGI(TAG, "Powered by USB: switching to MSC mode");
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        vTaskDelay(8000 / portTICK_PERIOD_MS);
         storage_enable_usb_msc();
         // Prevent it from continuing in the code
         // The device should now only work as an USB MSC device
@@ -75,6 +72,14 @@ void app_main()
             bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
         }
     }
+    else
+    {
+        bean_context->is_not_usb_msc = true;
+    }
+
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
 
     while (1)
     {
