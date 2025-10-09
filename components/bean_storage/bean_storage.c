@@ -40,8 +40,8 @@ static esp_flash_t *init_ext_flash(void)
         .host_id   = HOST_ID,
         .cs_id     = 0,
         .cs_io_num = PIN_FLASH_CS,
-        .io_mode   = SPI_FLASH_SLOWRD,
-        .freq_mhz  = 10,
+        .io_mode   = SPI_FLASH_DIO,
+        .freq_mhz  = 40,
     };
 
     ESP_LOGI(TAG, "Initializing external SPI Flash");
