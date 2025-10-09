@@ -2,7 +2,8 @@
 #include "bean_context.h"
 #include "esp_err.h"
 
-#define STORAGE_BASE_PATH "/extflash"
+#define BEAN_STORAGE_FLUSH_INTERVAL_MS 1000
+#define STORAGE_BASE_PATH              "/extflash"
 
 esp_err_t bean_storage_init(bean_context_t *ctx);
 esp_err_t storage_write_file(char *filename, const char *data);

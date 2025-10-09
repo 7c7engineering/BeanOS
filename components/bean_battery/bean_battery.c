@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "bean_context.h"
 #include "driver/adc_types_legacy.h"
 #include "esp_log.h"
 #include "esp_check.h"
@@ -72,6 +73,17 @@ esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)
                             .timestamp         = esp_log_timestamp(),
                             .measurement_value = voltage_mv };
     if (xQueueSend(ctx->data_log_queue, &log_data, pdMS_TO_TICKS(100)) != pdPASS)
+    {
+        ESP_LOGW(TAG, "Failed to enqueue battery voltage");
+        return ESP_FAIL;
+    }
+
+    event_data_t event_data = {
+        .timestamp  = esp_log_timestamp(),
+        .event_id   = 1,
+        .event_data = "test event",
+    };
+    if (xQueueSend(ctx->event_queue, &event_data, pdMS_TO_TICKS(100)) != pdPASS)
     {
         ESP_LOGW(TAG, "Failed to enqueue battery voltage");
         return ESP_FAIL;
