@@ -110,12 +110,12 @@ void write_performance_test(size_t bytes_per_write, int num_writes, int num_pers
 
         if (i % num_persist_writes == 0)
         {
-            fflush(data_log_file);
             fsync(fileno(data_log_file));
             ESP_LOGI(TAG, "Progress: %d/%d writes completed", i, num_writes);
         }
     }
-    fflush(data_log_file);
+
+    ESP_LOGI(TAG, "Progress: all lines written, now syncing");
     fsync(fileno(data_log_file));
 
     // Calculate results
@@ -123,8 +123,11 @@ void write_performance_test(size_t bytes_per_write, int num_writes, int num_pers
     int64_t total_time_us = end_time - start_time;
     size_t total_bytes    = bytes_per_write * num_writes;
 
-    ESP_LOGI(
-      TAG, "Performance test completed: %u bytes per line - write every %u lines", bytes_per_write, num_persist_writes);
+    ESP_LOGI(TAG,
+             "Performance test completed: %u bytes per line - write every %u lines - total lines %u",
+             bytes_per_write,
+             num_persist_writes,
+             num_writes);
     ESP_LOGI(TAG, "Total bytes written: %zu", total_bytes);
     ESP_LOGI(TAG, "Total time: %lld us (%.2f ms)", total_time_us, total_time_us / 1000.0);
     ESP_LOGI(TAG, "Average time per write: %lld us", total_time_us / num_writes);
