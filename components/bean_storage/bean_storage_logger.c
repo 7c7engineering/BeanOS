@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "freertos/idf_additions.h"
 #include "portmacro.h"
+#include "projdefs.h"
 #include "sys/dirent.h"
 #include <ctype.h>
 #include <stdint.h>
@@ -10,9 +11,10 @@
 #include <sys/unistd.h>
 #include "esp_timer.h"
 
-static const char *TAG     = "BEAN_STORAGE_LOGGER";
-static int log_number      = 0;
-static FILE *data_log_file = NULL;
+static const char *TAG      = "BEAN_STORAGE_LOGGER";
+static int log_number       = 0;
+static FILE *data_log_file  = NULL;
+static FILE *event_log_file = NULL;
 // todo add event_log_file here
 
 int get_next_log_number(void)
@@ -55,87 +57,6 @@ int get_next_log_number(void)
     return highest_num + 1; // Return next available number
 }
 
-esp_err_t append_log_data_to_log_file(const log_data_t *data)
-{
-    if (data_log_file == NULL)
-    {
-        return ESP_FAIL;
-    }
-
-    // Append the data
-    fprintf(data_log_file, "%lu,%d,%ld\n", data->timestamp, data->measurement_type, data->measurement_value);
-
-    // Flush to ensure data is written (but keep file open)
-    fflush(data_log_file); // flushing can be done periodically to improve speed
-    fsync(fileno(data_log_file)); // Forces write to storage device
-
-    return ESP_OK;
-}
-
-void write_performance_test(size_t bytes_per_write, int num_writes, int num_persist_writes)
-{
-    if (data_log_file == NULL)
-    {
-        ESP_LOGE(TAG, "Failed to start performance test - file not open");
-        return;
-    }
-
-    // Create test data buffer
-    char *test_buffer = malloc(bytes_per_write);
-    if (test_buffer == NULL)
-    {
-        ESP_LOGE(TAG, "Failed to allocate test buffer of %zu bytes", bytes_per_write);
-        return;
-    }
-
-    // Fill buffer with test data
-    for (size_t i = 0; i < bytes_per_write; i++)
-    {
-        test_buffer[i] = '0' + (i % 10);
-    }
-    // Ensure last character is newline for readability
-    if (bytes_per_write > 0)
-    {
-        test_buffer[bytes_per_write - 1] = '\n';
-    }
-
-    ESP_LOGI(TAG, "Starting performance test: %d writes of %zu bytes each", num_writes, bytes_per_write);
-
-    // Get start time
-    int64_t start_time = esp_timer_get_time();
-
-    for (int i = 0; i < num_writes; i++)
-    {
-        fwrite(test_buffer, 1, bytes_per_write, data_log_file);
-
-        if (i % num_persist_writes == 0)
-        {
-            fsync(fileno(data_log_file));
-            ESP_LOGI(TAG, "Progress: %d/%d writes completed", i, num_writes);
-        }
-    }
-
-    ESP_LOGI(TAG, "Progress: all lines written, now syncing");
-    fsync(fileno(data_log_file));
-
-    // Calculate results
-    int64_t end_time      = esp_timer_get_time();
-    int64_t total_time_us = end_time - start_time;
-    size_t total_bytes    = bytes_per_write * num_writes;
-
-    ESP_LOGI(TAG,
-             "Performance test completed: %u bytes per line - write every %u lines - total lines %u",
-             bytes_per_write,
-             num_persist_writes,
-             num_writes);
-    ESP_LOGI(TAG, "Total bytes written: %zu", total_bytes);
-    ESP_LOGI(TAG, "Total time: %lld us (%.2f ms)", total_time_us, total_time_us / 1000.0);
-    ESP_LOGI(TAG, "Average time per write: %lld us", total_time_us / num_writes);
-    ESP_LOGI(TAG, "Throughput: %.2f KB/s", (total_bytes * 1000000.0) / (total_time_us * 1024.0));
-
-    free(test_buffer);
-}
-
 esp_err_t bean_storage_logger_init()
 {
 
@@ -149,11 +70,13 @@ void vtask_data_log_handler(void *pvParameter)
 {
     bean_context_t *ctx = (bean_context_t *)pvParameter;
     log_data_t received_data;
-    bool initialized = false;
+    bool initialized = false, has_written = false;
+    TickType_t last_sync_tick = 0;
+    uint16_t sync_tick_threshold = pdMS_TO_TICKS(1000);
 
     while (1)
     {
-        if (xQueueReceive(ctx->data_log_queue, &received_data, portMAX_DELAY) == pdTRUE)
+        if (xQueueReceive(ctx->data_log_queue, &received_data, 1000 / portTICK_PERIOD_MS) == pdTRUE)
         {
             if (!ctx->is_not_usb_msc)
                 continue;
@@ -165,17 +88,31 @@ void vtask_data_log_handler(void *pvParameter)
                 sprintf(file_name, "log_d%03d.csv", log_number);
                 snprintf(full_path, sizeof(full_path), "%s/%s", STORAGE_BASE_PATH, file_name);
                 data_log_file = fopen(full_path, "a");
+                setvbuf(data_log_file, NULL, _IOFBF, 8192 * 2);
 
-                write_performance_test(128, 1024, 128);
                 initialized = true;
             }
-            if (append_log_data_to_log_file(&received_data) != ESP_OK)
+
+            fprintf(data_log_file,
+                    "%lu,%d,%ld\n",
+                    received_data.timestamp,
+                    received_data.measurement_type,
+                    received_data.measurement_value);
+            has_written = true;
+        }
+
+        // Check if we need to sync (every 1 second and only if we've written something)
+        TickType_t current_tick = xTaskGetTickCount();
+        if (has_written && data_log_file != NULL)
+        {
+            uint16_t delta_ticks = current_tick - last_sync_tick;
+            ESP_LOGI(TAG, "has written with delta %u", delta_ticks);
+            if (delta_ticks >= sync_tick_threshold)
             {
-                ESP_LOGE(TAG,
-                         "Failed to log data: type=%d, timestamp=%lu, value=%ld",
-                         received_data.measurement_type,
-                         received_data.timestamp,
-                         received_data.measurement_value);
+                fflush(data_log_file);
+                fsync(fileno(data_log_file));
+                last_sync_tick = current_tick;
+                has_written    = false; // Reset flag after sync
             }
         }
     }
