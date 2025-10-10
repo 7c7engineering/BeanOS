@@ -153,12 +153,13 @@ void vtask_event_log_handler(void *pvParameter)
                             "%lu,%d,%s\n",
                             received_data.timestamp,
                             received_data.event_id,
-                            received_data.event_data);
+                            received_data.event_data ? received_data.event_data : "");
                     has_written = true;
                 }
             }
 
-            free(received_data.event_data);
+            if (received_data.event_data != NULL)
+                free(received_data.event_data);
         }
 
         // Check if we need to sync (every 1 second and only if we've written something)
