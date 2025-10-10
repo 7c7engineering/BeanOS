@@ -39,7 +39,7 @@ typedef struct log_data
 {
     measurement_type_t measurement_type;
     uint32_t timestamp;
-    int32_t measurement_value;
+    char measurement_value[20];
 } log_data_t;
 
 esp_err_t bean_context_init(bean_context_t **ctx);

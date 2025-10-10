@@ -86,7 +86,7 @@ void vtask_data_log_handler(void *pvParameter)
                 sprintf(file_name, "log_d%03d.csv", log_number);
                 snprintf(full_path, sizeof(full_path), "%s/%s", STORAGE_BASE_PATH, file_name);
                 data_log_file = fopen(full_path, "a");
-                setvbuf(data_log_file, NULL, _IOFBF, 8192 * 2);
+                setvbuf(data_log_file, NULL, _IOFBF, 8192 * 2); // Increase buffer size for speed
                 fprintf(data_log_file, "timestamp,measurement_type,value\n"); // Write headers
 
                 initialized = true;
@@ -96,7 +96,7 @@ void vtask_data_log_handler(void *pvParameter)
                 continue;
 
             fprintf(data_log_file,
-                    "%lu,%d,%ld\n",
+                    "%lu,%d,%s\n",
                     received_data.timestamp,
                     received_data.measurement_type,
                     received_data.measurement_value);
@@ -104,10 +104,10 @@ void vtask_data_log_handler(void *pvParameter)
         }
 
         // Check if we need to sync (every 1 second and only if we've written something)
-        TickType_t current_tick = xTaskGetTickCount();
         if (has_written && data_log_file != NULL)
         {
-            uint16_t delta_ticks = current_tick - last_sync_tick;
+            TickType_t current_tick = xTaskGetTickCount();
+            uint16_t delta_ticks    = current_tick - last_sync_tick;
             if (delta_ticks >= sync_tick_threshold)
             {
                 fflush(data_log_file);
@@ -131,35 +131,41 @@ void vtask_event_log_handler(void *pvParameter)
     {
         if (xQueueReceive(ctx->event_queue, &received_data, sync_tick_threshold) == pdTRUE)
         {
-            if (!ctx->is_not_usb_msc)
-                continue;
-
-            if (!initialized)
+            if (ctx->is_not_usb_msc)
             {
-                char file_name[13], full_path[23];
-                // Initialize data log file
-                sprintf(file_name, "log_e%03d.csv", log_number);
-                snprintf(full_path, sizeof(full_path), "%s/%s", STORAGE_BASE_PATH, file_name);
-                event_log_file = fopen(full_path, "a");
-                setvbuf(event_log_file, NULL, _IOFBF, 8192 * 2);
-                fprintf(event_log_file, "timestamp,event_id,event_data\n"); // Write headers
+                if (!initialized)
+                {
+                    char file_name[13], full_path[23];
+                    // Initialize data log file
+                    sprintf(file_name, "log_e%03d.csv", log_number);
+                    snprintf(full_path, sizeof(full_path), "%s/%s", STORAGE_BASE_PATH, file_name);
+                    event_log_file = fopen(full_path, "a");
+                    setvbuf(event_log_file, NULL, _IOFBF, 8192 * 2); // Increase file buffer for speed
+                    fprintf(event_log_file, "timestamp,event_id,event_data\n"); // Write headers
 
-                initialized = true;
+                    initialized = true;
+                }
+
+                if (event_log_file != NULL)
+                {
+
+                    fprintf(event_log_file,
+                            "%lu,%d,%s\n",
+                            received_data.timestamp,
+                            received_data.event_id,
+                            received_data.event_data);
+                    has_written = true;
+                }
             }
 
-            if (event_log_file == NULL)
-                continue;
-
-            fprintf(
-              event_log_file, "%lu,%d,%s\n", received_data.timestamp, received_data.event_id, received_data.event_data);
-            has_written = true;
+            free(received_data.event_data);
         }
 
         // Check if we need to sync (every 1 second and only if we've written something)
-        TickType_t current_tick = xTaskGetTickCount();
         if (has_written && event_log_file != NULL)
         {
-            uint16_t delta_ticks = current_tick - last_sync_tick;
+            TickType_t current_tick = xTaskGetTickCount();
+            uint16_t delta_ticks    = current_tick - last_sync_tick;
             if (delta_ticks >= sync_tick_threshold)
             {
                 fflush(event_log_file);
