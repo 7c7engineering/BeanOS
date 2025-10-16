@@ -9,6 +9,8 @@
 #include "host/ble_gatt.h"
 #include "host/ble_uuid.h"
 #include "host/ble_hs.h"
+#include "bean_storage.h"
+#include "bean_storage_logger.h"
 
 static uint16_t ctrl_tx_handle, ctrl_rx_handle;
 static uint16_t data_tx_handle, data_rx_handle;
@@ -56,14 +58,20 @@ static int noop_rw_cb(uint16_t conn_handle, uint16_t attr_handle, struct ble_gat
 static int om_to_flat(struct os_mbuf *om, uint8_t **out_buf, uint16_t *out_len)
 {
     uint32_t len32 = OS_MBUF_PKTLEN(om);
-    if (len32 > 0xFFFF) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+    if (len32 > 0xFFFF)
+        return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
 
     uint16_t len = (uint16_t)len32;
     uint8_t *buf = (uint8_t *)malloc(len ? len : 1); // avoid malloc(0)
-    if (!buf) return BLE_ATT_ERR_INSUFFICIENT_RES;
+    if (!buf)
+        return BLE_ATT_ERR_INSUFFICIENT_RES;
 
     int rc = os_mbuf_copydata(om, 0, len, buf);
-    if (rc != 0) { free(buf); return BLE_ATT_ERR_UNLIKELY; }
+    if (rc != 0)
+    {
+        free(buf);
+        return BLE_ATT_ERR_UNLIKELY;
+    }
 
     *out_buf = buf;
     *out_len = len;
@@ -72,11 +80,12 @@ static int om_to_flat(struct os_mbuf *om, uint8_t **out_buf, uint16_t *out_len)
 
 static int ctrl_rx_cb(uint16_t conn, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    uint8_t  *buf = NULL;
-    uint16_t  len = 0;
+    uint8_t *buf = NULL;
+    uint16_t len = 0;
 
     int rc = om_to_flat(ctxt->om, &buf, &len);
-    if (rc != 0) {
+    if (rc != 0)
+    {
         ESP_LOGW(TAG, "CTRL_RX: failed to copy data rc=%d", rc);
         return rc; // Return ATT error so the client knows write failed (for Write With Response).
     }
@@ -84,48 +93,139 @@ static int ctrl_rx_cb(uint16_t conn, uint16_t attr_handle, struct ble_gatt_acces
     // Interpret as a UTF-8 command line (trim CR/LF). If you have a binary framing, parse it here instead.
     // Ensure null-termination for logging/processing convenience:
     char *cmd = (char *)malloc(len + 1);
-    if (!cmd) { free(buf); return BLE_ATT_ERR_INSUFFICIENT_RES; }
+    if (!cmd)
+    {
+        free(buf);
+        return BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
     memcpy(cmd, buf, len);
     cmd[len] = '\0';
 
     // Optional: trim trailing newline(s)
-    while (len > 0 && (cmd[len-1] == '\n' || cmd[len-1] == '\r')) { cmd[--len] = '\0'; }
+    while (len > 0 && (cmd[len - 1] == '\n' || cmd[len - 1] == '\r'))
+    {
+        cmd[--len] = '\0';
+    }
 
     ESP_LOGI(TAG, "CTRL_RX: got command: '%s' (len=%u)", cmd, (unsigned)len);
 
-    // TODO: dispatch to your command handler here
-    // e.g., handle_command(cmd, len);
-
-    // Example response: echo back the command and status over CTRL_TX
-    // (You can return binary, JSON, etc.)
+    // Handle specific commands
+    char *response = NULL;
+    if (strcmp(cmd, "data_stats") == 0)
     {
-        // Compose "OK <cmd>\n"
-        const char *prefix = "OK ";
-        const char *suffix = "\n";
-        size_t out_len = strlen(prefix) + len + strlen(suffix);
-        char *out = (char *)malloc(out_len);
-        if (out) {
-            memcpy(out, prefix, strlen(prefix));
-            memcpy(out + strlen(prefix), cmd, len);
-            memcpy(out + strlen(prefix) + len, suffix, strlen(suffix));
+        // Get file name and size
 
-            struct os_mbuf *om = ble_hs_mbuf_from_flat(out, (uint16_t)out_len);
-            if (om) {
-                int nrc = ble_gatts_notify_custom(conn, ctrl_tx_chr_val_handle, om);
-                if (nrc != 0) {
-                    ESP_LOGW(TAG, "notify CTRL_TX failed rc=%d", nrc);
-                    os_mbuf_free_chain(om); // Usually freed by NimBLE if success, but guard on failure
+        size_t file_size;
+        char filename[13];
+        bean_storage_get_current_data_filename(filename);
+        storage_get_file_size(filename, &file_size);
+
+        // Format response as "filename,size"
+        int resp_len = snprintf(NULL, 0, "%s,%zu", filename, file_size);
+        response     = malloc(resp_len + 1);
+        if (response)
+        {
+            snprintf(response, resp_len + 1, "%s,%zu", filename, file_size);
+        }
+    }
+    else if (strncmp(cmd, "data_bytes,", 11) == 0)
+    {
+        // Parse offset from command: "data_bytes,1234"
+        char *offset_str = cmd + 11; // Skip "data_bytes,"
+        size_t offset    = (size_t)atoi(offset_str);
+
+        // Get current data file info
+        char filename[13];
+        bean_storage_get_current_data_filename(filename);
+
+        const size_t max_read_size = 100;
+        uint8_t *file_buffer       = malloc(max_read_size);
+        if (file_buffer)
+        {
+            esp_err_t err = storage_read_file_bytes(filename, file_buffer, max_read_size, offset);
+            if (err == ESP_OK)
+            {
+                // Convert binary data to hex string for transmission
+                // Each byte becomes 2 hex chars, plus null terminator
+                size_t hex_len = max_read_size * 2 + 1;
+                response       = malloc(hex_len);
+                if (response)
+                {
+                    char *hex_ptr = response;
+                    for (size_t i = 0; i < max_read_size; i++)
+                    {
+                        sprintf(hex_ptr, "%02x", file_buffer[i]);
+                        hex_ptr += 2;
+                    }
+                    *hex_ptr = '\0';
                 }
-            } else {
+            }
+            else
+            {
+                // Error reading file
+                const char *error_msg = "error_reading_file";
+                response              = malloc(strlen(error_msg) + 1);
+                if (response)
+                {
+                    strcpy(response, error_msg);
+                }
+            }
+            free(file_buffer);
+        }
+        else
+        {
+            // Memory allocation failed
+            const char *error_msg = "memory_error";
+            response              = malloc(strlen(error_msg) + 1);
+            if (response)
+            {
+                strcpy(response, error_msg);
+            }
+        }
+    }
+    else
+    {
+        // Default response for unknown commands
+        const char *prefix = "res: ";
+        size_t out_len     = strlen(prefix) + len;
+        response           = malloc(out_len + 1);
+        if (response)
+        {
+            snprintf(response, out_len + 1, "%s%s", prefix, cmd);
+        }
+    }
+
+    // Send response via CTRL_TX notification
+    if (response)
+    {
+        size_t resp_len  = strlen(response);
+        char *final_resp = malloc(resp_len + 2); // +2 for "\n" and null terminator
+        if (final_resp)
+        {
+            snprintf(final_resp, resp_len + 2, "%s\n", response);
+
+            struct os_mbuf *om = ble_hs_mbuf_from_flat(final_resp, strlen(final_resp));
+            if (om)
+            {
+                int nrc = ble_gatts_notify_custom(conn, ctrl_tx_chr_val_handle, om);
+                if (nrc != 0)
+                {
+                    ESP_LOGW(TAG, "notify CTRL_TX failed rc=%d", nrc);
+                    os_mbuf_free_chain(om);
+                }
+            }
+            else
+            {
                 ESP_LOGW(TAG, "alloc mbuf for notify failed");
             }
-            free(out);
+            free(final_resp);
         }
+        free(response);
     }
 
     free(cmd);
     free(buf);
-    return 0; // success
+    return 0;
 }
 
 static const struct ble_gatt_svc_def gatt_svcs[] = {
@@ -211,7 +311,8 @@ void gatt_svr_subscribe_cb(struct ble_gap_event *event)
         ESP_LOGI(TAG, "subscribe by nimble stack; attr_handle=%d", event->subscribe.attr_handle);
     }
 
-    if (event->subscribe.attr_handle == ctrl_tx_chr_val_handle) {
+    if (event->subscribe.attr_handle == ctrl_tx_chr_val_handle)
+    {
         ESP_LOGI(TAG, "!!! Received custom event");
     }
 }

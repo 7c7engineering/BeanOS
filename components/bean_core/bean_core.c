@@ -1,14 +1,12 @@
 #include <stdio.h>
 #include "bean_core.h"
 #include "esp_log.h"
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "bean_altimeter.h"
 #include "bean_imu.h"
 #include "bean_led.h"
 #include "esp_timer.h"
-#include "esp_check.h"
 
 #define DUAL_DEPLOYMENT 0 // set to 1 to enable dual deployment, 0 for single deployment
 
@@ -220,6 +218,11 @@ esp_err_t bean_core_process_prelaunch(bean_context_t *ctx)
     //chill out and wait for launch, could be temporarily a timer based wait to go to armed
     vTaskDelay(pdMS_TO_TICKS(10000)); // wait for 10 seconds
     bean_core_goto_state(FLIGHT_STATE_ARMED);
+
+    // Log initial value
+    current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
+    log_measurements(ctx);
+
     return ESP_OK;
 }
 

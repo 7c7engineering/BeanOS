@@ -248,6 +248,62 @@ esp_err_t storage_read_file(char *filename)
     return ESP_OK;
 }
 
+esp_err_t storage_get_file_size(char *filename, size_t *file_size)
+{
+    char *abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
+    strcpy(abs_filename, base_path);
+    strcat(abs_filename, "/");
+    strcat(abs_filename, filename);
+
+    FILE *f = fopen(abs_filename, "rb");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open file for size check");
+        free(abs_filename);
+        return ESP_FAIL;
+    }
+
+    fseek(f, 0, SEEK_END);
+    *file_size = ftell(f);
+    fclose(f);
+    free(abs_filename);
+    return ESP_OK;
+}
+
+esp_err_t storage_read_file_bytes(char *filename, uint8_t *buffer, size_t bytes_to_read, size_t offset)
+{
+    char *abs_filename = malloc(strlen(base_path) + strlen(filename) + 2);
+    strcpy(abs_filename, base_path);
+    strcat(abs_filename, "/");
+    strcat(abs_filename, filename);
+
+    FILE *f = fopen(abs_filename, "rb");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open file for reading bytes");
+        free(abs_filename);
+        return ESP_FAIL;
+    }
+
+    if (fseek(f, offset, SEEK_SET) != 0)
+    {
+        ESP_LOGE(TAG, "Failed to seek to offset %zu", offset);
+        fclose(f);
+        free(abs_filename);
+        return ESP_FAIL;
+    }
+
+    size_t bytes_read = fread(buffer, 1, bytes_to_read, f);
+    if (bytes_read != bytes_to_read)
+    {
+        ESP_LOGW(TAG, "Read %zu bytes instead of requested %zu bytes", bytes_read, bytes_to_read);
+    }
+
+    fclose(f);
+    free(abs_filename);
+    return ESP_OK;
+}
+
 esp_err_t storage_enable_usb_msc(void)
 {
     ESP_LOGI(TAG, "Enabling USB MSC");

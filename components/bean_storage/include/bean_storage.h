@@ -12,3 +12,5 @@ esp_err_t storage_read_file(char *filename);
 esp_err_t storage_append_file(char *filename, const char *data);
 esp_err_t storage_delete_file(char *filename);
 esp_err_t storage_enable_usb_msc(void);
+esp_err_t storage_get_file_size(char *filename, size_t *file_size);
+esp_err_t storage_read_file_bytes(char *filename, uint8_t *buffer, size_t bytes_to_read, size_t offset);

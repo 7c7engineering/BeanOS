@@ -177,3 +177,8 @@ void vtask_event_log_handler(void *pvParameter)
         }
     }
 }
+
+void bean_storage_get_current_data_filename(char *filename)
+{
+    sprintf(filename, "log_d%03d.csv", log_number);
+}
