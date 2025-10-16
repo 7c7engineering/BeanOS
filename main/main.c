@@ -20,6 +20,7 @@
 #include "esp_timer.h"
 #include "pins.h"
 #include "driver/gpio.h"
+#include "bean_bluetooth.h"
 #include "hal/usb_serial_jtag_ll.h"
 
 static char TAG[] = "MAIN";
@@ -37,6 +38,7 @@ esp_err_t bean_init()
     ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
     ESP_RETURN_ON_ERROR(bean_storage_init(bean_context), TAG, "Storage Init failed");
     ESP_RETURN_ON_ERROR(bean_core_init(bean_context), TAG, "Core Init failed");
+    ESP_RETURN_ON_ERROR(bean_bluetooth_init(bean_context), TAG, "Bluetooth init failed");
     return ESP_OK;
 }
 
