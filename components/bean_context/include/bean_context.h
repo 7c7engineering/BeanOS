@@ -8,13 +8,14 @@
 
 #include "bean_bits.h"
 #include "pins.h"
-
+#include <stdbool.h>
 
 typedef struct bean_context
 {
     EventGroupHandle_t system_event_group;
     QueueHandle_t event_queue;
     QueueHandle_t data_log_queue;
+    bool is_not_usb_msc;
 } bean_context_t;
 
 typedef enum measurement_type
@@ -38,7 +39,7 @@ typedef struct log_data
 {
     measurement_type_t measurement_type;
     uint32_t timestamp;
-    int32_t measurement_value;
+    char measurement_value[20];
 } log_data_t;
 
 esp_err_t bean_context_init(bean_context_t **ctx);
