@@ -44,6 +44,36 @@ def hex_string_to_bytes(hex_string):
         return bytes.fromhex(hex_string)                                                                  
     except ValueError:                                                                                    
         return None                                                                                       
+
+async def req_height():
+    """Enable metrics on the device"""
+    dev = await find_device_by_name(DEV_NAME)
+    if not dev:
+        raise SystemExit(f"Device named {DEV_NAME!r} not found. Make sure it's advertising.")
+    
+    async with BleakClient(dev) as client:
+        await client.start_notify(CTRL_TX, notification_handler)
+        print("Sending request height command...")
+        await client.write_gatt_char(CTRL_RX, "req_height".encode('utf-8'), response=False)
+        print("Request height command sent")
+
+async def get_max_height():                                                                  
+    """Get max height from the device"""                                                     
+    dev = await find_device_by_name(DEV_NAME)                                                
+    if not dev:                                                                              
+        raise SystemExit(f"Device named {DEV_NAME!r} not found. Make sure it's advertising.")
+                                                                                             
+    async with BleakClient(dev) as client:                                                   
+        await client.start_notify(CTRL_TX, notification_handler)                             
+        print("Sending get max height command...")                                           
+                                                                                             
+        # Use the existing send_command_and_wait function                                    
+        response = await send_command_and_wait(client, "get_max_height")                     
+                                                                                             
+        if response:                                                                         
+            print(f"Max height response: {response}")                                        
+        else:                                                                                
+            print("No response received")                                                    
                                                                                                           
 async def enable_metrics():
     """Enable metrics on the device"""
@@ -149,6 +179,10 @@ async def main():
         await enable_metrics()
     elif command == "disable_metrics":
         await disable_metrics()
+    elif command == "req_height":
+        await req_height()
+    elif command == "get_max_height":
+        await get_max_height()
     elif command == "store_file":
         await store_file()
     else:

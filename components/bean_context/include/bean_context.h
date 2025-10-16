@@ -8,6 +8,7 @@
 
 #include "bean_bits.h"
 #include "pins.h"
+#include "portmacro.h"
 #include <stdbool.h>
 
 typedef struct bean_context
@@ -17,6 +18,8 @@ typedef struct bean_context
     QueueHandle_t data_log_queue;
     bool is_not_usb_msc;
     bool is_metrcis_enabled;
+    TickType_t last_height_requested_at;
+    float max_height;
 } bean_context_t;
 
 typedef enum measurement_type

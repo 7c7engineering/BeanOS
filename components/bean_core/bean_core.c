@@ -7,20 +7,23 @@
 #include "bean_imu.h"
 #include "bean_led.h"
 #include "esp_timer.h"
+#include "portmacro.h"
 
 #define DUAL_DEPLOYMENT 0 // set to 1 to enable dual deployment, 0 for single deployment
 
 const static char TAG[] = "BEAN_CORE";
 
 static TaskHandle_t core_task_handle; // handle of the core task
-uint8_t launch_counter            = 0; //counter for launch detection
-uint8_t apogee_counter            = 0; //counter for apogee detection
-int64_t takeoff_timestamp_ms      = 0; //timestamp of takeoff in ms
-int64_t apogee_timestamp_ms       = 0; //timestamp of apogee in ms
-float current_height              = 0;
-float current_recorded_max_height = 0;
-double reference_temperature      = 0; //reference temperature at launch
-double reference_pressure         = 0; //reference pressure at launch
+uint8_t launch_counter                = 0; //counter for launch detection
+uint8_t apogee_counter                = 0; //counter for apogee detection
+int64_t takeoff_timestamp_ms          = 0; //timestamp of takeoff in ms
+int64_t apogee_timestamp_ms           = 0; //timestamp of apogee in ms
+float reference_height                = 0;
+float current_height                  = 0;
+float current_recorded_max_height     = 0;
+double reference_temperature          = 0; //reference temperature at launch
+double reference_pressure             = 0; //reference pressure at launch
+static TickType_t height_requested_at = 0;
 
 static core_flight_state_t current_flight_state = FLIGHT_STATE_PRELAUNCH;
 
@@ -272,52 +275,40 @@ esp_err_t log_measurements(bean_context_t *ctx)
     return ESP_OK;
 }
 
-static bool metrics_triggered = false;
 void core_task(void *arg)
 {
     bean_context_t *ctx = (bean_context_t *)arg;
     while (1)
     {
-        //int64_t current_time = esp_timer_get_time();
-        bean_imu_update_accel();
-        if (ctx->is_metrcis_enabled)
-        {
-            if (!metrics_triggered)
-            {
-                reference_pressure    = bean_altimeter_get_pressure(); //initial reference pressure and temperature
-                reference_temperature = bean_altimeter_get_temperature() + 273.15;
-                metrics_triggered = true;
-            }
-            current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
-            log_measurements(ctx);
-        }
+        bean_altimeter_update();
 
-        //bean_altimeter_update();
-        //uint64_t elapsed_time = esp_timer_get_time() - current_time;
-        //ESP_LOGI(TAG, "IMU update took %llu us", elapsed_time);
-        switch (current_flight_state)
+        double height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
+        if (ctx->last_height_requested_at != height_requested_at)
         {
-        case FLIGHT_STATE_PRELAUNCH:
-            bean_core_process_prelaunch(ctx);
-            break;
-        case FLIGHT_STATE_ARMED:
-            bean_core_process_armed(ctx);
-            break;
-        case FLIGHT_STATE_ASCENT:
-            bean_core_process_ascent(ctx);
-            break;
-        case FLIGHT_STATE_DROGUE_OUT:
-            bean_core_process_drogue_out(ctx);
-            break;
-        case FLIGHT_STATE_MAIN_OUT:
-            bean_core_process_main_out(ctx);
-            break;
-        case FLIGHT_STATE_LANDED:
-            bean_core_process_landed(ctx);
-            break;
-        default:
-            break;
+            ESP_LOGI(TAG,
+                     "received height request %f - %f - %",
+                     height,
+                     bean_altimeter_get_pressure(),
+                     bean_altimeter_get_temperature());
+            // reset
+            reference_pressure          = bean_altimeter_get_pressure(); //initial reference pressure and temperature
+            reference_temperature       = bean_altimeter_get_temperature() + 273.15;
+            ctx->max_height             = 0.0f;
+            height_requested_at         = ctx->last_height_requested_at;
+            current_recorded_max_height = 0.0f;
+            reference_height            = height;
         }
+        else
+        {
+            float delta = height - reference_height;
+            if (delta > 0 && delta > current_recorded_max_height)
+            {
+                current_recorded_max_height = delta;
+                ctx->max_height             = delta;
+                ESP_LOGI(TAG, "updating max height with: %f", delta);
+            }
+        }
+        current_height = height;
 
         vTaskDelay(pdMS_TO_TICKS(10)); // run every 10ms // about 1 tick
     }

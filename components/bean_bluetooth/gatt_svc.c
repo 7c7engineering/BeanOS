@@ -6,6 +6,7 @@
 /* Includes */
 #include "gatt_svc.h"
 #include "common.h"
+#include "freertos/idf_additions.h"
 #include "host/ble_gatt.h"
 #include "host/ble_uuid.h"
 #include "host/ble_hs.h"
@@ -177,22 +178,6 @@ static int ctrl_rx_cb(uint16_t conn, uint16_t attr_handle, struct ble_gatt_acces
             }
             free(file_buffer);
         }
-        else if (strcmp(cmd, "enable_metrics") == 0)
-        {
-            if (g_bean_context)
-            {
-                g_bean_context->is_metrcis_enabled = true;
-                ESP_LOGI(TAG, "Metrics enabled");
-            }
-        }
-        else if (strcmp(cmd, "disable_metrics") == 0)
-        {
-            if (g_bean_context)
-            {
-                g_bean_context->is_metrcis_enabled = false;
-                ESP_LOGI(TAG, "Metrics disabled");
-            }
-        }
         else
         {
             // Memory allocation failed
@@ -201,6 +186,44 @@ static int ctrl_rx_cb(uint16_t conn, uint16_t attr_handle, struct ble_gatt_acces
             if (response)
             {
                 strcpy(response, error_msg);
+            }
+        }
+    }
+    else if (strcmp(cmd, "enable_metrics") == 0)
+    {
+        if (g_bean_context)
+        {
+            g_bean_context->is_metrcis_enabled = true;
+            ESP_LOGI(TAG, "Metrics enabled");
+        }
+    }
+    else if (strcmp(cmd, "disable_metrics") == 0)
+    {
+        if (g_bean_context)
+        {
+            g_bean_context->is_metrcis_enabled = false;
+            ESP_LOGI(TAG, "Metrics disabled");
+        }
+    }
+    else if (strncmp(cmd, "req_height", 10) == 0)
+    {
+        ESP_LOGI(TAG, "!!! req height received");
+        if (g_bean_context)
+        {
+            g_bean_context->last_height_requested_at = xTaskGetTickCount();
+            ESP_LOGI(TAG, "Request height: %d", g_bean_context->last_height_requested_at);
+        }
+    }
+    else if (strncmp(cmd, "get_max_height", 14) == 0)
+    {
+        if (g_bean_context)
+        {
+            // Convert float to string with appropriate precision
+            int resp_len = snprintf(NULL, 0, "%.2f", g_bean_context->max_height);
+            response     = malloc(resp_len + 1);
+            if (response)
+            {
+                snprintf(response, resp_len + 1, "%.2f", g_bean_context->max_height);
             }
         }
     }
