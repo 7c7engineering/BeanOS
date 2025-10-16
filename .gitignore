@@ -2,4 +2,6 @@ build/
 .vscode/settings.json
 .vscode/cpp_properties.json
 .vscode/tasks.json
+.cache/
 managed_components/
+.aider*
