@@ -8,6 +8,7 @@
 
 /* Includes */
 /* NimBLE GATT APIs */
+#include "bean_context.h"
 #include "host/ble_gatt.h"
 #include "services/gatt/ble_svc_gatt.h"
 
@@ -18,5 +19,6 @@
 void gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg);
 void gatt_svr_subscribe_cb(struct ble_gap_event *event);
 int gatt_svc_init(void);
+void gatt_svc_set_context(bean_context_t *ctx);
 
 #endif // GATT_SVR_H

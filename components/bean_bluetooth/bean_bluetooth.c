@@ -90,6 +90,7 @@ esp_err_t bean_bluetooth_init(bean_context_t *ctx)
     }
 
     /* GATT server initialization */
+    gatt_svc_set_context(ctx);
     rc = gatt_svc_init();
     if (rc != 0)
     {

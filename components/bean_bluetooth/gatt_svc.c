@@ -12,8 +12,13 @@
 #include "bean_storage.h"
 #include "bean_storage_logger.h"
 
-static uint16_t ctrl_tx_handle, ctrl_rx_handle;
-static uint16_t data_tx_handle, data_rx_handle;
+static bean_context_t *g_bean_context = NULL;
+
+// Add a function to set the context
+void gatt_svc_set_context(bean_context_t *ctx)
+{
+    g_bean_context = ctx;
+}
 
 // 2b771fcc-c87d-42bd-9216-000000000000
 static const ble_uuid128_t SVC_UUID =
@@ -171,6 +176,22 @@ static int ctrl_rx_cb(uint16_t conn, uint16_t attr_handle, struct ble_gatt_acces
                 }
             }
             free(file_buffer);
+        }
+        else if (strcmp(cmd, "enable_metrics") == 0)
+        {
+            if (g_bean_context)
+            {
+                g_bean_context->is_metrcis_enabled = true;
+                ESP_LOGI(TAG, "Metrics enabled");
+            }
+        }
+        else if (strcmp(cmd, "disable_metrics") == 0)
+        {
+            if (g_bean_context)
+            {
+                g_bean_context->is_metrcis_enabled = false;
+                ESP_LOGI(TAG, "Metrics disabled");
+            }
         }
         else
         {

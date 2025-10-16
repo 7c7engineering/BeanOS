@@ -268,7 +268,7 @@ void core_task(void *arg)
     {
         //int64_t current_time = esp_timer_get_time();
         bean_imu_update_accel();
-        //log_measurements(ctx);
+        if (ctx->is_metrcis_enabled) log_measurements(ctx);
 
         //bean_altimeter_update();
         //uint64_t elapsed_time = esp_timer_get_time() - current_time;

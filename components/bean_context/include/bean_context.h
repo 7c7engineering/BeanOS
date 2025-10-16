@@ -16,6 +16,7 @@ typedef struct bean_context
     QueueHandle_t event_queue;
     QueueHandle_t data_log_queue;
     bool is_not_usb_msc;
+    bool is_metrcis_enabled;
 } bean_context_t;
 
 typedef enum measurement_type
