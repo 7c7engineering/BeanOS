@@ -77,10 +77,10 @@ esp_err_t bean_core_goto_state(core_flight_state_t new_state)
         current_height              = 0; //VERY IMPORTANT to reset height and max height on launch
         current_recorded_max_height = 0; //VERY IMPORTANT to reset height and max height on launch
 
-        reference_temperature =
-          bean_altimeter_get_temperature() +
-          273.15; //recalibrate reference temperature and pressure, not very acurate because rocket is aleady moving. Moving average before launch better
-        reference_pressure = bean_altimeter_get_pressure();
+        // reference_temperature =
+        //   bean_altimeter_get_temperature() +
+        //   273.15; //recalibrate reference temperature and pressure, not very acurate because rocket is aleady moving. Moving average before launch better
+        // reference_pressure = bean_altimeter_get_pressure();
         ESP_LOGI(TAG, "Launch detected, rocket ascending");
         bean_led_set_color(LED_L1, (led_color_rgb_t){ .r = 255, .g = 165, .b = 0 }); // Orange
     }
@@ -138,6 +138,10 @@ esp_err_t bean_core_process_main_out(bean_context_t *ctx)
 
 esp_err_t bean_core_process_drogue_out(bean_context_t *ctx)
 {
+    if (ctx->is_metrcis_enabled)
+    {
+        ctx->is_metrcis_enabled = false;
+    }
     //check for altitude treshold to deploy main, based on altimeter reading
     current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
     if (current_height < MAIN_HEIGHT_DEPLOY) //check if height is lower than threshold and time after drogue deployment
@@ -191,6 +195,13 @@ esp_err_t bean_core_process_armed(bean_context_t *ctx)
     //check for takeoff conditions,accel based
     float accel_mag =
       calculate_acceleration_vector_magnitude(get_x_accel_data(), get_y_accel_data(), get_z_accel_data());
+
+    // update references
+    if (!reference_pressure)
+    {
+        reference_temperature = bean_altimeter_get_temperature() + 273.15;
+        reference_pressure    = bean_altimeter_get_pressure();
+    }
 
     if (accel_mag > LAUNCH_ACCEL_THRESHOLD)
     {
@@ -261,6 +272,7 @@ esp_err_t log_measurements(bean_context_t *ctx)
     return ESP_OK;
 }
 
+static bool metrics_triggered = false;
 void core_task(void *arg)
 {
     bean_context_t *ctx = (bean_context_t *)arg;
@@ -268,7 +280,17 @@ void core_task(void *arg)
     {
         //int64_t current_time = esp_timer_get_time();
         bean_imu_update_accel();
-        if (ctx->is_metrcis_enabled) log_measurements(ctx);
+        if (ctx->is_metrcis_enabled)
+        {
+            if (!metrics_triggered)
+            {
+                reference_pressure    = bean_altimeter_get_pressure(); //initial reference pressure and temperature
+                reference_temperature = bean_altimeter_get_temperature() + 273.15;
+                metrics_triggered = true;
+            }
+            current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
+            log_measurements(ctx);
+        }
 
         //bean_altimeter_update();
         //uint64_t elapsed_time = esp_timer_get_time() - current_time;
