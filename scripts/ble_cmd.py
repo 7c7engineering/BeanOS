@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from bleak import BleakScanner, BleakClient
 
 DEV_NAME = "BeanOS"
@@ -44,7 +45,32 @@ def hex_string_to_bytes(hex_string):
     except ValueError:                                                                                    
         return None                                                                                       
                                                                                                           
-async def main():                                                                                         
+async def enable_metrics():
+    """Enable metrics on the device"""
+    dev = await find_device_by_name(DEV_NAME)
+    if not dev:
+        raise SystemExit(f"Device named {DEV_NAME!r} not found. Make sure it's advertising.")
+    
+    async with BleakClient(dev) as client:
+        await client.start_notify(CTRL_TX, notification_handler)
+        print("Sending enable_metrics command...")
+        await client.write_gatt_char(CTRL_RX, "enable_metrics".encode('utf-8'), response=False)
+        print("Enable metrics command sent")
+
+async def disable_metrics():
+    """Disable metrics on the device"""
+    dev = await find_device_by_name(DEV_NAME)
+    if not dev:
+        raise SystemExit(f"Device named {DEV_NAME!r} not found. Make sure it's advertising.")
+    
+    async with BleakClient(dev) as client:
+        await client.start_notify(CTRL_TX, notification_handler)
+        print("Sending disable_metrics command...")
+        await client.write_gatt_char(CTRL_RX, "disable_metrics".encode('utf-8'), response=False)
+        print("Disable metrics command sent")
+
+async def store_file():
+    """Download file from the device"""
     global response_data                                                                                  
                                                                                                           
     dev = await find_device_by_name(DEV_NAME)                                                             
@@ -109,6 +135,25 @@ async def main():
                     break                                                                                 
                                                                                                           
         print(f"Download complete! Data saved to: {output_filename}")                                     
-        print(f"Total bytes downloaded: {offset}")                                                        
+        print(f"Total bytes downloaded: {offset}")
+
+async def main():
+    if len(sys.argv) != 2:
+        print("Usage: python ble_cmd.py <command>")
+        print("Commands: enable_metrics, disable_metrics, store_file")
+        sys.exit(1)
+    
+    command = sys.argv[1]
+    
+    if command == "enable_metrics":
+        await enable_metrics()
+    elif command == "disable_metrics":
+        await disable_metrics()
+    elif command == "store_file":
+        await store_file()
+    else:
+        print(f"Unknown command: {command}")
+        print("Available commands: enable_metrics, disable_metrics, store_file")
+        sys.exit(1)
                                                                                                           
 asyncio.run(main())                                                                                       
