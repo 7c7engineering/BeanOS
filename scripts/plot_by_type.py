@@ -108,6 +108,18 @@ def main():
     saved = []
     for t in unique_types:
         sub = df[df["type"] == t]
+        
+        # For type 2 (Altitude), ignore 0 values until first non-zero value
+        if t == 2:
+            # Find the index of the first non-zero value
+            non_zero_mask = sub["value"] != 0
+            if non_zero_mask.any():
+                first_non_zero_idx = sub[non_zero_mask].index[0]
+                # Keep all data from the first non-zero value onwards
+                sub = sub.loc[first_non_zero_idx:]
+            else:
+                # If all values are zero, keep the original data
+                pass
 
         # Prepare figure
         plt.figure(figsize=(10, 4.5))
