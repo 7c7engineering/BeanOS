@@ -6,8 +6,6 @@ DEV_NAME = "BeanOS"
 SERVICE = "2b771fcc-c87d-42bd-9216-000000000000"
 CTRL_RX = "2b771fcc-c87d-42bd-9216-000000000020"
 CTRL_TX = "2b771fcc-c87d-42bd-9216-000000000010"
-# DATA_RX = "12345678-0003-1000-8000-00805f9b34fb"
-# DATA_TX = "12345678-0004-1000-8000-00805f9b34fb"
 
 # Global variable to store the response                                                                   
 response_data = None                                                                                      
