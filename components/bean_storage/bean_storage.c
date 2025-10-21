@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/unistd.h>
 #include "esp_flash.h"
 #include "esp_flash_spi_init.h"
@@ -25,6 +26,7 @@ const char *base_path          = STORAGE_BASE_PATH;
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 
 TaskHandle_t storage_data_logger_task_handle, storage_event_logger_task_handle;
+esp_err_t init_config_file(bean_context_t *ctx);
 
 static esp_flash_t *init_ext_flash(void)
 {
@@ -132,24 +134,32 @@ esp_err_t bean_storage_init(bean_context_t *ctx)
         return ESP_FAIL;
     }
 
+    if (init_config_file(ctx) != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to initialize configuration");
+        return ESP_FAIL;
+    }
+
     if (bean_storage_logger_init() != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to initialize storage logger");
         return ESP_FAIL;
     }
 
-    xTaskCreate(&vtask_data_log_handler,
-                "data_log_handler",
-                4096,
-                (void *)ctx,
-                tskIDLE_PRIORITY,
-                &storage_data_logger_task_handle);
-    xTaskCreate(&vtask_event_log_handler,
-                "event_log_handler",
-                4096,
-                (void *)ctx,
-                tskIDLE_PRIORITY,
-                &storage_event_logger_task_handle);
+    if (ctx->config.data_logging_enabled)
+        xTaskCreate(&vtask_data_log_handler,
+                    "data_log_handler",
+                    4096,
+                    (void *)ctx,
+                    tskIDLE_PRIORITY,
+                    &storage_data_logger_task_handle);
+    if (ctx->config.event_logging_enabled)
+        xTaskCreate(&vtask_event_log_handler,
+                    "event_log_handler",
+                    4096,
+                    (void *)ctx,
+                    tskIDLE_PRIORITY,
+                    &storage_event_logger_task_handle);
     return ESP_OK;
 }
 
@@ -245,6 +255,111 @@ esp_err_t storage_read_file(char *filename)
         printf("%s", data);
     }
     fclose(f);
+    free(abs_filename);
+    return ESP_OK;
+}
+
+static char *trim_whitespace(char *str)
+{
+    char *end;
+
+    // Trim leading space
+    while (isspace((unsigned char)*str))
+        str++;
+
+    if (*str == 0)
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end))
+        end--;
+
+    end[1] = '\0';
+    return str;
+}
+
+static esp_err_t write_config_file(bean_context_t *ctx, const char *filename)
+{
+    FILE *f = fopen(filename, "w");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open config file for writing");
+        return ESP_FAIL;
+    }
+
+    // Write all config values
+    fprintf(f, "data_logging_enabled=%d\n", ctx->config.data_logging_enabled ? 1 : 0);
+    fprintf(f, "event_logging_enabled=%d\n", ctx->config.event_logging_enabled ? 1 : 0);
+
+    fclose(f);
+    return ESP_OK;
+}
+
+static esp_err_t read_config_file(bean_context_t *ctx, const char *filename)
+{
+    FILE *f = fopen(filename, "r");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open config file for reading");
+        return ESP_FAIL;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), f))
+    {
+        // Skip empty lines and comments
+        char *trimmed = trim_whitespace(line);
+        if (strlen(trimmed) == 0 || trimmed[0] == '#')
+        {
+            continue;
+        }
+
+        // Find the '=' separator
+        char *equals = strchr(trimmed, '=');
+        if (equals == NULL)
+        {
+            continue; // Skip malformed lines
+        }
+
+        // Split into key and value
+        *equals     = '\0';
+        char *key   = trim_whitespace(trimmed);
+        char *value = trim_whitespace(equals + 1);
+
+        if (strcmp(key, "data_logging_enabled") == 0)
+            ctx->config.data_logging_enabled = (atoi(value) != 0);
+        else if (strcmp(key, "event_logging_enabled") == 0)
+            ctx->config.event_logging_enabled = (atoi(value) != 0);
+        // Add other config fields here
+    }
+
+    fclose(f);
+    return ESP_OK;
+}
+
+esp_err_t init_config_file(bean_context_t *ctx)
+{
+    char *abs_filename = malloc(strlen(base_path) + strlen(CONFIG_FILE_NAME) + 2);
+    strcpy(abs_filename, base_path);
+    strcat(abs_filename, "/");
+    strcat(abs_filename, CONFIG_FILE_NAME);
+
+    // Try to read existing config
+    if (read_config_file(ctx, abs_filename) != ESP_OK)
+    {
+        ESP_LOGI(TAG, "Config file doesn't exist, creating with defaults");
+
+        // Write default config file
+        if (write_config_file(ctx, abs_filename) != ESP_OK)
+        {
+            ESP_LOGE(TAG, "Failed to create default config file");
+            free(abs_filename);
+            return ESP_FAIL;
+        }
+    }
+
+    free(abs_filename);
     return ESP_OK;
 }
 

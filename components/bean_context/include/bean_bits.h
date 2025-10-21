@@ -1,6 +1,6 @@
 #pragma once
+#include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
-#include "esp_system.h"
 
 const static EventBits_t BEAN_SYSTEM_INIT_OK =
   BIT0; // Indicates the system is fully initialized, this bit can be used to synchronize the start of other tasks

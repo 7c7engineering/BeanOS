@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "bean_bits.h"
 #include "bean_context.h"
 #include "driver/adc_types_legacy.h"
 #include "esp_log.h"
