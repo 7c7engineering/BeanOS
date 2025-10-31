@@ -67,7 +67,6 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
         ESP_LOGW(TAG, "No config available, using defaults");
     }
 
-
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_USB_DET, GPIO_MODE_INPUT), TAG, "Set USB DET pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_CHRG_STAT, GPIO_MODE_INPUT), TAG, "Set CHRG STAT pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_VBAT_ADC, GPIO_MODE_INPUT), TAG, "Set VBAT ADC pin direction failed");
