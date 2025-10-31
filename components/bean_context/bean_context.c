@@ -267,10 +267,6 @@ esp_err_t bean_context_init(bean_context_t **ctx)
 
     (*ctx)->is_not_usb_msc = false;
 
-    // Set default config, will be overwritten or used by bean_storage
-    (*ctx)->config.data_logging_enabled  = true;
-    (*ctx)->config.event_logging_enabled = true;
-
     if (!*ctx)
         return ESP_ERR_NO_MEM;
 

@@ -146,20 +146,18 @@ esp_err_t bean_storage_init(bean_context_t *ctx)
         return ESP_FAIL;
     }
 
-    if (ctx->config.data_logging_enabled)
-        xTaskCreate(&vtask_data_log_handler,
-                    "data_log_handler",
-                    4096,
-                    (void *)ctx,
-                    tskIDLE_PRIORITY,
-                    &storage_data_logger_task_handle);
-    if (ctx->config.event_logging_enabled)
-        xTaskCreate(&vtask_event_log_handler,
-                    "event_log_handler",
-                    4096,
-                    (void *)ctx,
-                    tskIDLE_PRIORITY,
-                    &storage_event_logger_task_handle);
+    xTaskCreate(&vtask_data_log_handler,
+                "data_log_handler",
+                4096,
+                (void *)ctx,
+                tskIDLE_PRIORITY,
+                &storage_data_logger_task_handle);
+    xTaskCreate(&vtask_event_log_handler,
+                "event_log_handler",
+                4096,
+                (void *)ctx,
+                tskIDLE_PRIORITY,
+                &storage_event_logger_task_handle);
     return ESP_OK;
 }
 
