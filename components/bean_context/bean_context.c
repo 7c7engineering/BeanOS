@@ -7,7 +7,7 @@ extern const uint8_t _binary_default_json_end[]; // one past last byte
 
 static const char *TAG = "BEAN_CONTEXT";
 // Gets loaded with default at first & is overwritten with the stored conf.json
-static cJSON *config   = NULL;
+static cJSON *config = NULL;
 
 const cJSON *config_store_get(void)
 {
