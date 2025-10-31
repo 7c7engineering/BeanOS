@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include "bean_bits.h"
 #include "bean_context.h"
@@ -25,10 +26,48 @@ static adc_unit_t vbat_adc_unit;
 static adc_oneshot_unit_handle_t vbat_adc_handle;
 static adc_cali_handle_t vbat_adc_cali_handle;
 
+// Configuration settings
+static bool vbat_logging_enabled       = true;
+static uint16_t vbat_check_interval_ms = 5000;
+
 TaskHandle_t battery_monitor_task_handle;
 
 esp_err_t bean_battery_init(bean_context_t *ctx)
 {
+    // Read configuration from JSON
+    const cJSON *config = config_store_get();
+    if (config)
+    {
+        const cJSON *battery_config = cJSON_GetObjectItem(config, "bean_battery");
+        if (battery_config)
+        {
+            // Read check interval
+            const cJSON *check_interval = cJSON_GetObjectItem(battery_config, "check_interval_ms");
+            if (cJSON_IsNumber(check_interval))
+            {
+                vbat_check_interval_ms = (uint16_t)cJSON_GetNumberValue(check_interval);
+                ESP_LOGI(TAG, "Battery check interval set to %d ms", vbat_check_interval_ms);
+            }
+
+            // Read logging enabled flag
+            const cJSON *logging = cJSON_GetObjectItem(battery_config, "logging");
+            if (cJSON_IsBool(logging))
+            {
+                vbat_logging_enabled = cJSON_IsTrue(logging);
+                ESP_LOGI(TAG, "Battery logging %s", vbat_logging_enabled ? "enabled" : "disabled");
+            }
+        }
+        else
+        {
+            ESP_LOGW(TAG, "No bean_battery config found, using defaults");
+        }
+    }
+    else
+    {
+        ESP_LOGW(TAG, "No config available, using defaults");
+    }
+
+
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_USB_DET, GPIO_MODE_INPUT), TAG, "Set USB DET pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_CHRG_STAT, GPIO_MODE_INPUT), TAG, "Set CHRG STAT pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_VBAT_ADC, GPIO_MODE_INPUT), TAG, "Set VBAT ADC pin direction failed");
@@ -70,6 +109,9 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
 
 esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)
 {
+    if (!vbat_logging_enabled)
+        return ESP_OK;
+
     log_data_t log_data = { .measurement_type  = MEASUREMENT_TYPE_BATTERY_VOLTAGE,
                             .timestamp         = esp_log_timestamp(),
                             .measurement_value = "" };

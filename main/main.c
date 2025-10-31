@@ -17,6 +17,7 @@
 #include "bean_battery.h"
 #include "bean_context.h"
 #include "hal/usb_serial_jtag_ll.h"
+#include "cJSON.h"
 
 static char TAG[] = "MAIN";
 
