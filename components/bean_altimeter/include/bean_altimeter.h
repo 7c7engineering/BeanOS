@@ -9,6 +9,15 @@
 
 #define BMP3_DOUBLE_PRECISION_COMPENSATION
 
+typedef enum
+{
+    ALTIMETER_STATE_UNINITIALIZED,
+    ALTIMETER_STATE_SLEEPING,
+    ALTIMETER_STATE_ACTIVE,
+    ALTIMETER_STATE_ERROR
+} altimeter_state_t;
+
+altimeter_state_t bean_altimeter_get_state(void);
 esp_err_t bean_altimeter_init(void);
 esp_err_t bean_altimeter_update(void);
 double bean_altimeter_get_pressure(void);
@@ -17,3 +26,4 @@ esp_err_t setTemperatureOversampling(uint8_t oversample);
 esp_err_t setPressureOversampling(uint8_t oversample);
 esp_err_t setIIRFilterCoeff(uint8_t coeff);
 esp_err_t setOutputDataRate(uint8_t odr);
+void test_altimeter_speed();
