@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/unistd.h>
 #include "esp_flash.h"
 #include "esp_flash_spi_init.h"
@@ -25,6 +26,7 @@ const char *base_path          = STORAGE_BASE_PATH;
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 
 TaskHandle_t storage_data_logger_task_handle, storage_event_logger_task_handle;
+esp_err_t init_config_file(bean_context_t *ctx);
 
 static esp_flash_t *init_ext_flash(void)
 {
@@ -129,6 +131,12 @@ esp_err_t bean_storage_init(bean_context_t *ctx)
     if (!mount_fatfs(partition_label))
     {
         ESP_LOGE(TAG, "Failed to mount FATFS");
+        return ESP_FAIL;
+    }
+
+    if (init_config_file(ctx) != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to initialize configuration");
         return ESP_FAIL;
     }
 
@@ -245,6 +253,161 @@ esp_err_t storage_read_file(char *filename)
         printf("%s", data);
     }
     fclose(f);
+    free(abs_filename);
+    return ESP_OK;
+}
+
+static char *trim_whitespace(char *str)
+{
+    char *end;
+
+    // Trim leading space
+    while (isspace((unsigned char)*str))
+        str++;
+
+    if (*str == 0)
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end))
+        end--;
+
+    end[1] = '\0';
+    return str;
+}
+
+static esp_err_t write_config_file(bean_context_t *ctx, const char *filename)
+{
+    const cJSON *conf = config_store_get();
+    if (conf == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to get config from context");
+        return ESP_FAIL;
+    }
+
+    char *json_string = cJSON_Print(conf);
+    if (json_string == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to convert config to JSON string");
+        return ESP_FAIL;
+    }
+
+    FILE *f = fopen(filename, "w");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open config file for writing");
+        free(json_string);
+        return ESP_FAIL;
+    }
+
+    // Write all config values
+    fprintf(f, "%s", json_string);
+    fclose(f);
+    free(json_string);
+
+    return ESP_OK;
+}
+
+static esp_err_t read_config_file(const char *filename, cJSON **config_json)
+{
+
+    FILE *f = fopen(filename, "r");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open config file for reading");
+        return ESP_FAIL;
+    }
+
+    // Get file size
+    fseek(f, 0, SEEK_END);
+    long file_size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    if (file_size <= 0)
+    {
+        ESP_LOGE(TAG, "Config file is empty or invalid");
+        fclose(f);
+        return ESP_FAIL;
+    }
+
+    // Allocate buffer for file contents
+    char *json_buffer = malloc(file_size + 1);
+    if (json_buffer == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to allocate memory for config file");
+        fclose(f);
+        return ESP_FAIL;
+    }
+
+    // Read entire file
+    size_t bytes_read = fread(json_buffer, 1, file_size, f);
+    fclose(f);
+
+    if (bytes_read != file_size)
+    {
+        ESP_LOGE(TAG, "Failed to read complete config file");
+        free(json_buffer);
+        return ESP_FAIL;
+    }
+
+    json_buffer[file_size] = '\0';
+
+    // Parse JSON
+    *config_json = cJSON_Parse(json_buffer);
+    free(json_buffer);
+
+    if (*config_json == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to parse config file as JSON");
+        return ESP_FAIL;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t init_config_file(bean_context_t *ctx)
+{
+    char *abs_filename = malloc(strlen(base_path) + strlen(CONFIG_FILE_NAME) + 2);
+    strcpy(abs_filename, base_path);
+    strcat(abs_filename, "/");
+    strcat(abs_filename, CONFIG_FILE_NAME);
+
+    cJSON *config_json        = NULL;
+    bool needs_storage_update = true;
+
+    if (read_config_file(abs_filename, &config_json) == ESP_OK)
+    {
+        // Merge the loaded JSON config with bean context
+        config_merge_result_t result = bean_context_initialize_config(config_json);
+
+        ESP_LOGI(TAG,
+                 "Config loaded: %d items updated, %d ignored, %d type mismatches",
+                 result.items_updated,
+                 result.items_ignored,
+                 result.type_mismatches);
+
+        // Clean up the JSON object
+        // cJSON_Delete(config_json); // crashes
+        needs_storage_update = result.needs_storage_update;
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Config file doesn't exist or is invalid");
+    }
+
+    if (needs_storage_update)
+    {
+        // Write default config file
+        if (write_config_file(ctx, abs_filename) != ESP_OK)
+        {
+            ESP_LOGE(TAG, "Failed to create default config file");
+            free(abs_filename);
+            return ESP_FAIL;
+        }
+    }
+
+    free(abs_filename);
     return ESP_OK;
 }
 

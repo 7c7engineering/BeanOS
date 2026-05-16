@@ -1,0 +1,181 @@
+{
+    "bean_core": {
+        "loop_delay": 10,
+        "start_on_usb": true,
+        "logging": {
+            "baro": true,
+            "imu": true
+        },
+        "flight_states": {
+            "pre_launch": {
+                "timeout_ms": 1000
+            },
+            "armed": {
+                "accel_threshold_ms2": 12.0,
+                "threshold_duration_ms": 150
+            },
+            "ascending": {
+                "apogee_min_time_ms": 5000,
+                "apogee_max_time_ms": 120000
+            },
+            "drogue_deployed": {
+                "enabled": false,
+                "deploy_height_m": 60.0,
+                "pyro_channel": 1,
+                "servo_channel": -1,
+                "servo_position": 180,
+                "timeout_ms": 10000
+            },
+            "main_deployed": {
+                "enabled": false,
+                "land_height_m": 15.0,
+                "pyro_channel": 2,
+                "servo_channel": -1,
+                "servo_position": 180,
+                "timeout_ms": 20000
+            }
+        }
+    },
+    "bean_leds": {
+        "LED1_function": "flight_state",
+        "LED2_function": "battery",
+        "functions": {
+            "flight_state": {
+                "pre_launch": {
+                    "color": [
+                        0,
+                        0,
+                        255
+                    ],
+                    "pattern": "fixed"
+                },
+                "armed": {
+                    "color": [
+                        255,
+                        255,
+                        0
+                    ],
+                    "pattern": "slow_blink"
+                },
+                "ascending": {
+                    "color": [
+                        255,
+                        165,
+                        0
+                    ],
+                    "pattern": "fast_blink"
+                },
+                "drogue_deployed": {
+                    "color": [
+                        255,
+                        0,
+                        0
+                    ],
+                    "pattern": "pulse"
+                },
+                "main_deployed": {
+                    "color": [
+                        0,
+                        255,
+                        0
+                    ],
+                    "pattern": "fixed"
+                },
+                "landed": {
+                    "color": [
+                        255,
+                        255,
+                        255
+                    ],
+                    "pattern": "pulse"
+                }
+            },
+            "battery": {
+                "full": {
+                    "color": [
+                        0,
+                        255,
+                        0
+                    ],
+                    "pattern": "fixed"
+                },
+                "low": {
+                    "color": [
+                        255,
+                        255,
+                        0
+                    ],
+                    "pattern": "slow_blink"
+                },
+                "critical": {
+                    "color": [
+                        255,
+                        0,
+                        0
+                    ],
+                    "pattern": "pulse"
+                },
+                "charging": {
+                    "color": [
+                        0,
+                        0,
+                        255
+                    ],
+                    "pattern": "fast_blink"
+                }
+            },
+            "patterns": {
+                "slow_blink_rate": 0.5,
+                "fast_blink_rate": 2.0,
+                "pulse": {
+                    "duration_ms": 100,
+                    "interval_ms": 1000
+                }
+            }
+        }
+    },
+    "bean_battery": {
+        "check_interval_ms": 5000,
+        "logging": true,
+        "full_voltage": 4.2,
+        "low_voltage": 3.5,
+        "critical_voltage": 3.3,
+        "shutdown_voltage": 3.2
+    },
+    "bean_beep": {
+        "beep_on_startup": [880, 1320, 1760],
+        "beep_on_state_change": 0,
+        "states" : {
+            "pre_launch": {
+                "notes": [],
+                "note_duration_ms": 0,
+                "pattern_interval_ms": 0
+            },
+            "armed": {
+                "notes": [440],
+                "note_duration_ms": 500,
+                "pattern_interval_ms": 2000
+            },
+            "ascending": {
+                "notes": [],
+                "note_duration_ms": 0,
+                "pattern_interval_ms": 0
+            },
+            "drogue_deployed": {
+                "notes": [],
+                "note_duration_ms": 0,
+                "pattern_interval_ms": 0
+            },
+            "main_deployed": {
+                "notes": [],
+                "note_duration_ms": 0,
+                "pattern_interval_ms": 0
+            },
+            "landed": {
+                "notes": [2093, 3136, 4699],
+                "note_duration_ms": 300,
+                "pattern_interval_ms": 3000
+            }
+        }
+    }
+}
