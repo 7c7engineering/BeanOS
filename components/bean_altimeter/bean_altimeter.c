@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "bean_altimeter.h"
+#include "bmp3_defs.h"
+#include "esp_err.h"
 
 bool _filterEnabled, _tempOSEnabled, _presOSEnabled, _ODREnabled;
 uint8_t _i2caddr;
@@ -13,7 +15,13 @@ int8_t bmp390_address = 0x76;
 struct bmp3_dev *sensor;
 struct bmp3_settings *settings;
 
-static const char *TAG = "BMP390";
+static const char *TAG                   = "BMP390";
+static altimeter_state_t altimeter_state = ALTIMETER_STATE_UNINITIALIZED;
+
+altimeter_state_t bean_altimeter_get_state(void)
+{
+    return altimeter_state;
+}
 
 // Our hardware interface functions
 
@@ -101,6 +109,33 @@ static int8_t validate_trimming_param(struct bmp3_dev *dev)
     return rslt;
 }
 
+esp_err_t bean_altimeter_sleep(void)
+{
+    settings->op_mode = BMP3_MODE_SLEEP;
+    int8_t rslt       = bmp3_set_op_mode(settings, sensor);
+    if (rslt != BMP3_OK)
+    {
+        ESP_LOGE(TAG, "Failed to set sleep mode");
+        return ESP_FAIL;
+    }
+    altimeter_state = ALTIMETER_STATE_SLEEPING;
+    return ESP_OK;
+}
+
+esp_err_t bean_altimeter_wake(void)
+{
+    ESP_LOGI(TAG, "Activating altimeter");
+    settings->op_mode = BMP3_MODE_NORMAL;
+    int8_t rslt       = bmp3_set_op_mode(settings, sensor);
+    if (rslt != BMP3_OK)
+    {
+        ESP_LOGE(TAG, "Failed to wake sensor");
+        return ESP_FAIL;
+    }
+    altimeter_state = ALTIMETER_STATE_ACTIVE;
+    return ESP_OK;
+}
+
 esp_err_t bean_altimeter_init()
 {
     sensor             = (struct bmp3_dev *)malloc(sizeof(struct bmp3_dev));
@@ -132,10 +167,46 @@ esp_err_t bean_altimeter_init()
     setTemperatureOversampling(BMP3_NO_OVERSAMPLING);
     setPressureOversampling(BMP3_NO_OVERSAMPLING);
     setIIRFilterCoeff(BMP3_IIR_FILTER_DISABLE);
-    setOutputDataRate(BMP3_ODR_25_HZ);
+    setOutputDataRate(BMP3_ODR_200_HZ);
+
+    // Configure sensor settings ONCE during init
+    uint16_t settings_sel = 0;
+
+    settings->temp_en = BMP3_ENABLE;
+    settings_sel |= BMP3_SEL_TEMP_EN;
+
+    settings->press_en = BMP3_ENABLE;
+    settings_sel |= BMP3_SEL_PRESS_EN;
+
+    // Add your oversampling/filter settings here
+    if (_tempOSEnabled)
+        settings_sel |= BMP3_SEL_TEMP_OS;
+    if (_presOSEnabled)
+        settings_sel |= BMP3_SEL_PRESS_OS;
+    if (_filterEnabled)
+        settings_sel |= BMP3_SEL_IIR_FILTER;
+    if (_ODREnabled)
+        settings_sel |= BMP3_SEL_ODR;
+
+    // Configure once
+    rslt = bmp3_set_sensor_settings(settings_sel, settings, sensor);
+    if (rslt != BMP3_OK)
+    {
+        ESP_LOGE(TAG, "BMP3 set sensor settings failed");
+        return ESP_FAIL;
+    }
 
     // don't do anything till we request a reading
-    settings->op_mode = BMP3_MODE_FORCED;
+    settings->op_mode = BMP3_MODE_SLEEP;
+
+    rslt = bmp3_set_op_mode(settings, sensor);
+    if (rslt != BMP3_OK)
+    {
+        ESP_LOGE(TAG, "BMP3 set operation mode failed");
+        return ESP_FAIL;
+    }
+
+    altimeter_state = ALTIMETER_STATE_SLEEPING;
 
     return ESP_OK;
 }
@@ -143,51 +214,24 @@ esp_err_t bean_altimeter_init()
 esp_err_t bean_altimeter_update()
 {
     int8_t rslt;
-    /* Used to select the settings user needs to change */
-    uint16_t settings_sel = 0;
+
+    if (altimeter_state == ALTIMETER_STATE_SLEEPING)
+    {
+        if (bean_altimeter_wake() != ESP_OK)
+        {
+            return ESP_FAIL;
+        }
+    }
     /* Variable used to select the sensor component */
     uint8_t sensor_comp = 0;
 
     /* Select the pressure and temperature sensor to be enabled */
-    settings->temp_en = BMP3_ENABLE;
-    settings_sel |= BMP3_SEL_TEMP_EN;
+    // settings->temp_en = BMP3_ENABLE;
     sensor_comp |= BMP3_TEMP;
-    if (_tempOSEnabled)
-    {
-        settings_sel |= BMP3_SEL_TEMP_OS;
-    }
 
-    settings->press_en = BMP3_ENABLE;
-    settings_sel |= BMP3_SEL_PRESS_EN;
+    // settings->press_en = BMP3_ENABLE;
     sensor_comp |= BMP3_PRESS;
-    if (_presOSEnabled)
-    {
-        settings_sel |= BMP3_SEL_PRESS_OS;
-    }
 
-    if (_filterEnabled)
-    {
-        settings_sel |= BMP3_SEL_IIR_FILTER;
-    }
-
-    if (_ODREnabled)
-    {
-        settings_sel |= BMP3_SEL_ODR;
-    }
-
-    rslt = bmp3_set_sensor_settings(settings_sel, settings, sensor);
-    if (rslt != BMP3_OK)
-    {
-        ESP_LOGE(TAG, "BMP3 set sensor settings failed");
-        return ESP_FAIL;
-    }
-    settings->op_mode = BMP3_MODE_FORCED;
-    rslt              = bmp3_set_op_mode(settings, sensor);
-    if (rslt != BMP3_OK)
-    {
-        ESP_LOGE(TAG, "BMP3 set operation mode failed");
-        return ESP_FAIL;
-    }
     struct bmp3_data data;
     rslt = bmp3_get_sensor_data(sensor_comp, &data, sensor);
     if (rslt != BMP3_OK)
