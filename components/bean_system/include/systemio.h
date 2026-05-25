@@ -7,3 +7,4 @@
 #include "driver/i2c_master.h"
 
 esp_err_t io_init();
+esp_err_t io_get_i2c_bus(i2c_master_bus_handle_t *out_bus);

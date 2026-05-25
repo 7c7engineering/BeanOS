@@ -1,6 +1,6 @@
 #pragma once
 #include "esp_types.h"
-#include "driver/i2c.h"
+#include "esp_err.h"
 #include "esp_log.h"
 #include "bmi08x.h"
 #include "rom/ets_sys.h"

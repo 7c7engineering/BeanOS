@@ -1,6 +1,5 @@
 #pragma once
 #include <stdio.h>
-#include "driver/i2c.h"
 #include "esp_err.h"
 #include "string.h"
 #include "rom/ets_sys.h"

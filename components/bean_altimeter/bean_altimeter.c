@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "bean_altimeter.h"
+#include "systemio.h"
 #include "bmp3_defs.h"
 #include "esp_err.h"
+#include "esp_check.h"
 
 bool _filterEnabled, _tempOSEnabled, _presOSEnabled, _ODREnabled;
 uint8_t _i2caddr;
@@ -14,6 +16,7 @@ double bmp390_temperature = 0;
 int8_t bmp390_address = 0x76;
 struct bmp3_dev *sensor;
 struct bmp3_settings *settings;
+static i2c_master_dev_handle_t bmp390_i2c_dev;
 
 static const char *TAG                   = "BMP390";
 static altimeter_state_t altimeter_state = ALTIMETER_STATE_UNINITIALIZED;
@@ -27,10 +30,11 @@ altimeter_state_t bean_altimeter_get_state(void)
 
 static int8_t i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
+    i2c_master_dev_handle_t dev = (i2c_master_dev_handle_t)intf_ptr;
     uint8_t *buf = (uint8_t *)malloc(len + 1);
     buf[0]       = reg_addr;
     memcpy(buf + 1, reg_data, len);
-    esp_err_t ret = i2c_master_write_to_device(I2C_NUM_0, bmp390_address, buf, len + 1, pdMS_TO_TICKS(1000));
+    esp_err_t ret = i2c_master_transmit(dev, buf, len + 1, 1000);
     free(buf);
     if (ret == ESP_OK)
     {
@@ -42,8 +46,8 @@ static int8_t i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len,
 
 static int8_t i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    esp_err_t ret =
-      i2c_master_write_read_device(I2C_NUM_0, bmp390_address, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
+    i2c_master_dev_handle_t dev = (i2c_master_dev_handle_t)intf_ptr;
+    esp_err_t ret = i2c_master_transmit_receive(dev, &reg_addr, 1, reg_data, len, 1000);
     if (ret == ESP_OK)
     {
         return BMP3_OK;
@@ -138,6 +142,20 @@ esp_err_t bean_altimeter_wake(void)
 
 esp_err_t bean_altimeter_init()
 {
+    i2c_master_bus_handle_t i2c_bus = NULL;
+    ESP_RETURN_ON_ERROR(io_get_i2c_bus(&i2c_bus), TAG, "Failed to get I2C bus");
+
+    const i2c_device_config_t bmp390_cfg = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address  = bmp390_address,
+        .scl_speed_hz    = 400000,
+    };
+    if (bmp390_i2c_dev == NULL)
+    {
+        ESP_RETURN_ON_ERROR(i2c_master_bus_add_device(i2c_bus, &bmp390_cfg, &bmp390_i2c_dev), TAG,
+                            "Failed to add BMP390 I2C device");
+    }
+
     sensor             = (struct bmp3_dev *)malloc(sizeof(struct bmp3_dev));
     settings           = (struct bmp3_settings *)malloc(sizeof(struct bmp3_settings));
     sensor->chip_id    = bmp390_address;
@@ -145,7 +163,7 @@ esp_err_t bean_altimeter_init()
     sensor->read       = &i2c_read;
     sensor->write      = &i2c_write;
     sensor->delay_us   = &delay_usec;
-    sensor->intf_ptr   = &i2c_write;
+    sensor->intf_ptr   = (void *)bmp390_i2c_dev;
     sensor->dummy_byte = 0x00;
 
     int8_t rslt = BMP3_OK;

@@ -23,3 +23,15 @@ esp_err_t io_init()
     ESP_RETURN_ON_ERROR(i2c_new_master_bus(&conf, &s_i2c_bus), tag, "Failed to initialize I2C master bus");
     return ESP_OK;
 }
+
+esp_err_t io_get_i2c_bus(i2c_master_bus_handle_t *out_bus)
+{
+    if (out_bus == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ESP_RETURN_ON_ERROR(io_init(), tag, "Failed to initialize I2C bus");
+    *out_bus = s_i2c_bus;
+    return ESP_OK;
+}

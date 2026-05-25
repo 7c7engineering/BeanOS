@@ -5,6 +5,10 @@ Description: BMI088 driver for ESP32-S3 using BMI08X library from Bosch Sensorte
 */
 
 #include "bean_imu.h"
+#include "systemio.h"
+#include "esp_check.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 static float lsb_to_mps2(int16_t val, float g_range, uint8_t bit_width);
 static float lsb_to_dps(int16_t val, float dps, uint8_t bit_width);
@@ -20,21 +24,21 @@ static struct bmi08_sensor_data *accel_data;
 static struct bmi08_sensor_data *gyro_data;
 static struct bmi08_sensor_data_f *accel_data_f;
 static struct bmi08_sensor_data_f *gyro_data_f;
+static i2c_master_dev_handle_t accel_i2c_dev;
+static i2c_master_dev_handle_t gyro_i2c_dev;
 const uint8_t *config_file_ptr;
-uint8_t acc_dev_addr = BMI088_ACC_I2C_ADDR;
-uint8_t gyr_dev_addr = BMI088_GYR_I2C_ADDR;
 
 uint8_t accel_range = 0;
 uint16_t gyro_range = 0;
 
 static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
+    i2c_master_dev_handle_t dev = (i2c_master_dev_handle_t)intf_ptr;
     uint8_t *buf = (uint8_t *)malloc(len + 1);
     buf[0]       = reg_addr;
     memcpy(buf + 1, reg_data, len);
-    uint8_t dev_addr = *(uint8_t *)intf_ptr;
 
-    esp_err_t ret = i2c_master_write_to_device(I2C_NUM_0, dev_addr, buf, len + 1, pdMS_TO_TICKS(1000));
+    esp_err_t ret = i2c_master_transmit(dev, buf, len + 1, 1000);
     free(buf);
 
     if (ret != ESP_OK)
@@ -47,9 +51,9 @@ static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t *
 
 static BMI08_INTF_RET_TYPE i2c_read_registers(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    uint8_t dev_addr = *(uint8_t *)intf_ptr;
+    i2c_master_dev_handle_t dev = (i2c_master_dev_handle_t)intf_ptr;
 
-    esp_err_t ret = i2c_master_write_read_device(I2C_NUM_0, dev_addr, &reg_addr, 1, reg_data, len, pdMS_TO_TICKS(1000));
+    esp_err_t ret = i2c_master_transmit_receive(dev, &reg_addr, 1, reg_data, len, 1000);
 
     if (ret != ESP_OK)
     {
@@ -66,6 +70,31 @@ static void delay_us(uint32_t period, void *intf_ptr)
 
 esp_err_t bean_imu_init()
 {
+    i2c_master_bus_handle_t i2c_bus = NULL;
+    ESP_RETURN_ON_ERROR(io_get_i2c_bus(&i2c_bus), TAG, "Failed to get I2C bus");
+
+    const i2c_device_config_t accel_cfg = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address  = BMI088_ACC_I2C_ADDR,
+        .scl_speed_hz    = 400000,
+    };
+    const i2c_device_config_t gyro_cfg = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address  = BMI088_GYR_I2C_ADDR,
+        .scl_speed_hz    = 400000,
+    };
+
+    if (accel_i2c_dev == NULL)
+    {
+        ESP_RETURN_ON_ERROR(i2c_master_bus_add_device(i2c_bus, &accel_cfg, &accel_i2c_dev), TAG,
+                            "Failed to add accel I2C device");
+    }
+    if (gyro_i2c_dev == NULL)
+    {
+        ESP_RETURN_ON_ERROR(i2c_master_bus_add_device(i2c_bus, &gyro_cfg, &gyro_i2c_dev), TAG,
+                            "Failed to add gyro I2C device");
+    }
+
     sensor          = (struct bmi08_dev *)malloc(sizeof(struct bmi08_dev));
     config_file_ptr = (uint8_t *)malloc(sizeof(uint8_t));
     accel_data      = (struct bmi08_sensor_data *)malloc(sizeof(struct bmi08_sensor_data));
@@ -73,8 +102,8 @@ esp_err_t bean_imu_init()
     accel_data_f    = (struct bmi08_sensor_data_f *)malloc(sizeof(struct bmi08_sensor_data_f));
     gyro_data_f     = (struct bmi08_sensor_data_f *)malloc(sizeof(struct bmi08_sensor_data_f));
 
-    sensor->intf_ptr_accel = &acc_dev_addr;
-    sensor->intf_ptr_gyro  = &gyr_dev_addr;
+    sensor->intf_ptr_accel = (void *)accel_i2c_dev;
+    sensor->intf_ptr_gyro  = (void *)gyro_i2c_dev;
     sensor->intf           = BMI08_I2C_INTF;
     sensor->variant        = BMI088_VARIANT;
     sensor->dummy_byte     = UINT8_C(0x00);
