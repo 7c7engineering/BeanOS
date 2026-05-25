@@ -1,21 +1,25 @@
 #include "systemio.h"
 #include "bean_context.h"
+#include "esp_check.h"
 static char tag[] = "systemio";
+static i2c_master_bus_handle_t s_i2c_bus;
 
 esp_err_t io_init()
 {
-    esp_err_t ret = ESP_OK;
-    i2c_config_t conf;
-    conf.mode             = I2C_MODE_MASTER;
-    conf.sda_io_num       = (int)PIN_I2C_SDA;
-    conf.scl_io_num       = (int)PIN_I2C_SCL;
-    conf.sda_pullup_en    = GPIO_PULLUP_ENABLE;
-    conf.scl_pullup_en    = GPIO_PULLUP_ENABLE;
-    conf.master.clk_speed = 100000;
-    conf.clk_flags        = 0;
+    if (s_i2c_bus != NULL)
+    {
+        return ESP_OK;
+    }
 
-    int i2c_master_port = I2C_NUM_0;
-    ESP_ERROR_CHECK(i2c_param_config(i2c_master_port, &conf));
-    ESP_ERROR_CHECK(i2c_driver_install(i2c_master_port, conf.mode, 0, 0, 0));
+    i2c_master_bus_config_t conf = {
+        .i2c_port = I2C_NUM_0,
+        .sda_io_num = PIN_I2C_SDA,
+        .scl_io_num = PIN_I2C_SCL,
+        .clk_source = I2C_CLK_SRC_DEFAULT,
+        .glitch_ignore_cnt = 7,
+        .flags.enable_internal_pullup = true,
+    };
+
+    ESP_RETURN_ON_ERROR(i2c_new_master_bus(&conf, &s_i2c_bus), tag, "Failed to initialize I2C master bus");
     return ESP_OK;
 }

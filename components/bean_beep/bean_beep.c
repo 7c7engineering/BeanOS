@@ -1,50 +1,82 @@
 #include <stdio.h>
 #include "bean_beep.h"
-#include "driver/mcpwm.h"
+#include "driver/ledc.h"
 #include "bean_context.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#define BEEP_MCPWM_UNIT  MCPWM_UNIT_0
-#define BEEP_MCPWM_TIMER MCPWM_TIMER_0
+static const ledc_mode_t BEEP_LEDC_MODE          = LEDC_LOW_SPEED_MODE;
+static const ledc_timer_t BEEP_LEDC_TIMER        = LEDC_TIMER_1;
+static const ledc_channel_t BEEP_LEDC_CHANNEL_P  = LEDC_CHANNEL_6;
+static const ledc_channel_t BEEP_LEDC_CHANNEL_N  = LEDC_CHANNEL_7;
+static const ledc_timer_bit_t BEEP_DUTY_RES_BITS = LEDC_TIMER_10_BIT;
+static bool beep_initialized                      = false;
 
 esp_err_t bean_beep_init()
 {
-    // Initialize MCPWM GPIOs
-    mcpwm_gpio_init(BEEP_MCPWM_UNIT, MCPWM0A, PIN_BUZ_P);
-    mcpwm_gpio_init(BEEP_MCPWM_UNIT, MCPWM0B, PIN_BUZ_N);
-
-    // Configure MCPWM timer for default 2kHz, 50% duty
-    mcpwm_config_t pwm_config = {
-        .frequency    = 2000,
-        .cmpr_a       = 0.0,
-        .cmpr_b       = 0.0,
-        .duty_mode    = MCPWM_DUTY_MODE_0,
-        .counter_mode = MCPWM_UP_COUNTER,
+    ledc_timer_config_t timer_cfg = {
+        .speed_mode      = BEEP_LEDC_MODE,
+        .duty_resolution = BEEP_DUTY_RES_BITS,
+        .timer_num       = BEEP_LEDC_TIMER,
+        .freq_hz         = 2000,
+        .clk_cfg         = LEDC_AUTO_CLK,
     };
-    esp_err_t err = mcpwm_init(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, &pwm_config);
+    esp_err_t err = ledc_timer_config(&timer_cfg);
     if (err != ESP_OK)
         return err;
 
-    // Set complementary output: A = PWM, B = inverted PWM
-    mcpwm_set_duty_type(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
-    mcpwm_set_duty_type(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_B, MCPWM_DUTY_MODE_1); // Inverted
+    ledc_channel_config_t ch_cfg = {
+        .speed_mode = BEEP_LEDC_MODE,
+        .timer_sel  = BEEP_LEDC_TIMER,
+        .intr_type  = LEDC_INTR_DISABLE,
+        .duty       = 0,
+    };
+
+    ch_cfg.channel  = BEEP_LEDC_CHANNEL_P;
+    ch_cfg.gpio_num = PIN_BUZ_P;
+    ch_cfg.flags.output_invert = 0;
+    err = ledc_channel_config(&ch_cfg);
+    if (err != ESP_OK)
+        return err;
+
+    ch_cfg.channel  = BEEP_LEDC_CHANNEL_N;
+    ch_cfg.gpio_num = PIN_BUZ_N;
+    ch_cfg.flags.output_invert = 1;
+    err = ledc_channel_config(&ch_cfg);
+    if (err != ESP_OK)
+        return err;
+
+    beep_initialized = true;
     return ESP_OK;
 }
 
 esp_err_t bean_beep_sound(uint32_t frequency, uint32_t duration)
 {
-    // Set frequency and 50% duty
-    mcpwm_set_frequency(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, frequency); // Not available in ESP-IDF, so:
-    mcpwm_set_duty(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_A, 50.0);
-    mcpwm_set_duty(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_B, 50.0);
-    mcpwm_set_duty_type(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_B, MCPWM_DUTY_MODE_1); // Inverted
+    if (!beep_initialized)
+    {
+        esp_err_t init_err = bean_beep_init();
+        if (init_err != ESP_OK)
+            return init_err;
+    }
+
+    if (frequency > 0)
+    {
+        ledc_set_freq(BEEP_LEDC_MODE, BEEP_LEDC_TIMER, frequency);
+    }
+
+    uint32_t duty_50 = (1U << BEEP_DUTY_RES_BITS) / 2U;
+    ledc_set_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_P, duty_50);
+    ledc_set_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_N, duty_50);
+    ledc_update_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_P);
+    ledc_update_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_N);
 
     // Wait for duration
     vTaskDelay(duration / portTICK_PERIOD_MS);
 
     // Set duty to 0 to silence
-    mcpwm_set_duty(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_A, 0.0);
-    mcpwm_set_duty(BEEP_MCPWM_UNIT, BEEP_MCPWM_TIMER, MCPWM_OPR_B, 0.0);
+    ledc_set_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_P, 0);
+    ledc_set_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_N, 0);
+    ledc_update_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_P);
+    ledc_update_duty(BEEP_LEDC_MODE, BEEP_LEDC_CHANNEL_N);
     return ESP_OK;
 }

@@ -1,74 +1,40 @@
 #include "bean_storage_usb.h"
 
-#include "device/usbd.h"
 #include "tinyusb.h"
-#include "tusb_msc_storage.h"
+#include "tinyusb_default_config.h"
+#include "tinyusb_msc.h"
 
 static const char *TAG = "BEAN_STORAGE_USB";
 
-// USB MSC descriptors
-#define EPNUM_MSC           1
-#define TUSB_DESC_TOTAL_LEN (TUD_CONFIG_DESC_LEN + TUD_MSC_DESC_LEN)
-
-enum
-{
-    ITF_NUM_MSC = 0,
-    ITF_NUM_TOTAL
-};
-
-enum
-{
-    EDPT_CTRL_OUT = 0x00,
-    EDPT_CTRL_IN  = 0x80,
-    EDPT_MSC_OUT  = 0x01,
-    EDPT_MSC_IN   = 0x81,
-};
-
-static tusb_desc_device_t descriptor_config = { .bLength            = sizeof(descriptor_config),
-                                                .bDescriptorType    = TUSB_DESC_DEVICE,
-                                                .bcdUSB             = 0x0200,
-                                                .bDeviceClass       = TUSB_CLASS_MISC,
-                                                .bDeviceSubClass    = MISC_SUBCLASS_COMMON,
-                                                .bDeviceProtocol    = MISC_PROTOCOL_IAD,
-                                                .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
-                                                .idVendor           = 0x303A, // Espressif VID
-                                                .idProduct          = 0x4002,
-                                                .bcdDevice          = 0x100,
-                                                .iManufacturer      = 0x01,
-                                                .iProduct           = 0x02,
-                                                .iSerialNumber      = 0x03,
-                                                .bNumConfigurations = 0x01 };
-
-static uint8_t const msc_fs_configuration_desc[] = {
-    // Config number, interface count, string index, total length, attribute, power in mA
-    TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, TUSB_DESC_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
-    // Interface number, string index, EP Out & EP In address, EP size
-    TUD_MSC_DESCRIPTOR(ITF_NUM_MSC, 0, EDPT_MSC_OUT, EDPT_MSC_IN, 64),
-};
-
-static char const *string_desc_arr[] = {
-    (const char[]){ 0x09, 0x04 }, // 0: is supported language is English (0x0409)
-    "Bean Device", // 1: Manufacturer
-    "Bean Storage", // 2: Product
-    "123456", // 3: Serials
-    "Bean MSC", // 4. MSC
-};
-
 static bool usb_msc_enabled = false;
+static tinyusb_msc_storage_handle_t storage_handle;
 
 // USB MSC mount changed callback
-static void storage_mount_changed_cb(tinyusb_msc_event_t *event)
+static void storage_mount_changed_cb(tinyusb_msc_storage_handle_t handle, tinyusb_msc_event_t *event, void *arg)
 {
-    if (event->mount_changed_data.is_mounted)
+    (void)handle;
+    (void)arg;
+
+    switch (event->id)
     {
-        ESP_LOGI(TAG, "Storage mounted to application");
+    case TINYUSB_MSC_EVENT_MOUNT_START:
+        ESP_LOGI(TAG, "Storage mount transition started");
+        break;
+    case TINYUSB_MSC_EVENT_MOUNT_COMPLETE:
+        ESP_LOGI(TAG, "Storage mount transition completed");
+        break;
+    case TINYUSB_MSC_EVENT_MOUNT_FAILED:
+        ESP_LOGW(TAG, "Storage mount transition failed");
+        break;
+    case TINYUSB_MSC_EVENT_FORMAT_REQUIRED:
+        ESP_LOGW(TAG, "Storage requires FAT formatting");
+        break;
+    case TINYUSB_MSC_EVENT_FORMAT_FAILED:
+        ESP_LOGW(TAG, "Storage format failed");
+        break;
+    default:
+        break;
     }
-    else
-    {
-        ESP_LOGI(TAG, "Storage unmounted from application - exposing to USB");
-        // Could automatically expose here, but this might cause issues
-    }
-    ESP_LOGI(TAG, "Storage mounted to application: %s", event->mount_changed_data.is_mounted ? "Yes" : "No");
 }
 
 esp_err_t bean_storage_usb_init(wl_handle_t s_wl_handle)
@@ -77,26 +43,30 @@ esp_err_t bean_storage_usb_init(wl_handle_t s_wl_handle)
     // Initialize USB MSC with the external flash
     ESP_LOGI(TAG, "Initializing USB MSC");
 
-    const tinyusb_msc_spiflash_config_t config_spi = {
-        .wl_handle              = s_wl_handle,
-        .callback_mount_changed = storage_mount_changed_cb,
-        .mount_config.max_files = 5,
+    const tinyusb_msc_storage_config_t config_spi = {
+        .medium.wl_handle = s_wl_handle,
+        .mount_point = TINYUSB_MSC_STORAGE_MOUNT_APP,
+        .fat_fs.base_path = STORAGE_BASE_PATH,
+        .fat_fs.config.max_files = 5,
+        .fat_fs.config.format_if_mount_failed = true,
+        .fat_fs.config.allocation_unit_size = CONFIG_WL_SECTOR_SIZE,
     };
 
-    esp_err_t ret = tinyusb_msc_storage_init_spiflash(&config_spi);
+    esp_err_t ret = tinyusb_msc_new_storage_spiflash(&config_spi, &storage_handle);
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to initialize MSC storage: %s", esp_err_to_name(ret));
         return ret;
     }
 
-    const tinyusb_config_t tusb_cfg = {
-        .device_descriptor        = &descriptor_config,
-        .string_descriptor        = string_desc_arr,
-        .string_descriptor_count  = sizeof(string_desc_arr) / sizeof(string_desc_arr[0]),
-        .external_phy             = false,
-        .configuration_descriptor = msc_fs_configuration_desc,
-    };
+    ret = tinyusb_msc_set_storage_callback(storage_mount_changed_cb, NULL);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to register MSC callback: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    const tinyusb_config_t tusb_cfg = TINYUSB_DEFAULT_CONFIG();
 
     ret = tinyusb_driver_install(&tusb_cfg);
     if (ret != ESP_OK)
@@ -134,14 +104,28 @@ esp_err_t storage_expose_usb(void)
         return ESP_FAIL;
     }
 
-    if (tinyusb_msc_storage_in_use_by_usb_host())
+    if (storage_handle == NULL)
+    {
+        ESP_LOGE(TAG, "USB storage handle is invalid");
+        return ESP_FAIL;
+    }
+
+    tinyusb_msc_mount_point_t mount_point;
+    esp_err_t ret = tinyusb_msc_get_storage_mount_point(storage_handle, &mount_point);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to query storage mount point: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    if (mount_point == TINYUSB_MSC_STORAGE_MOUNT_USB)
     {
         ESP_LOGW(TAG, "Storage already exposed over USB");
         return ESP_OK;
     }
 
     ESP_LOGI(TAG, "Exposing storage over USB...");
-    esp_err_t ret = tinyusb_msc_storage_unmount();
+    ret = tinyusb_msc_set_storage_mount_point(storage_handle, TINYUSB_MSC_STORAGE_MOUNT_USB);
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to unmount storage for USB exposure: %s", esp_err_to_name(ret));
@@ -171,14 +155,28 @@ esp_err_t storage_hide_usb(void)
         return ESP_FAIL;
     }
 
-    if (!tinyusb_msc_storage_in_use_by_usb_host())
+    if (storage_handle == NULL)
+    {
+        ESP_LOGE(TAG, "USB storage handle is invalid");
+        return ESP_FAIL;
+    }
+
+    tinyusb_msc_mount_point_t mount_point;
+    esp_err_t ret = tinyusb_msc_get_storage_mount_point(storage_handle, &mount_point);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to query storage mount point: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    if (mount_point == TINYUSB_MSC_STORAGE_MOUNT_APP)
     {
         ESP_LOGW(TAG, "Storage not currently exposed over USB");
         return ESP_OK;
     }
 
     ESP_LOGI(TAG, "Hiding storage from USB...");
-    esp_err_t ret = tinyusb_msc_storage_mount(STORAGE_BASE_PATH);
+    ret = tinyusb_msc_set_storage_mount_point(storage_handle, TINYUSB_MSC_STORAGE_MOUNT_APP);
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to mount storage after USB hide: %s", esp_err_to_name(ret));
@@ -191,9 +189,16 @@ esp_err_t storage_hide_usb(void)
 
 bool storage_is_exposed_usb(void)
 {
-    if (!usb_msc_enabled)
+    if (!usb_msc_enabled || storage_handle == NULL)
     {
         return false;
     }
-    return tinyusb_msc_storage_in_use_by_usb_host();
+
+    tinyusb_msc_mount_point_t mount_point;
+    if (tinyusb_msc_get_storage_mount_point(storage_handle, &mount_point) != ESP_OK)
+    {
+        return false;
+    }
+
+    return mount_point == TINYUSB_MSC_STORAGE_MOUNT_USB;
 }

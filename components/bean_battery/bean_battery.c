@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "bean_bits.h"
 #include "bean_context.h"
-#include "driver/adc_types_legacy.h"
 #include "esp_log.h"
 #include "esp_check.h"
 #include "bean_battery.h"
@@ -25,6 +24,7 @@ static adc_channel_t vbat_adc_channel;
 static adc_unit_t vbat_adc_unit;
 static adc_oneshot_unit_handle_t vbat_adc_handle;
 static adc_cali_handle_t vbat_adc_cali_handle;
+static bool vbat_adc_cali_enabled;
 
 // Configuration settings
 static bool vbat_logging_enabled       = true;
@@ -81,7 +81,7 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
     };
     ESP_RETURN_ON_ERROR(adc_oneshot_new_unit(&init_config1, &vbat_adc_handle), TAG, "Failed to create VBAT ADC unit");
 
-    adc_oneshot_chan_cfg_t chan_config = { .bitwidth = ADC_WIDTH_BIT_12, .atten = ADC_ATTEN_DB_12 };
+    adc_oneshot_chan_cfg_t chan_config = { .bitwidth = ADC_BITWIDTH_12, .atten = ADC_ATTEN_DB_12 };
     ESP_RETURN_ON_ERROR(adc_oneshot_config_channel(vbat_adc_handle, vbat_adc_channel, &chan_config),
                         TAG,
                         "Failed to configure VBAT ADC channel");
@@ -90,11 +90,22 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
         .unit_id  = vbat_adc_unit,
         .chan     = vbat_adc_channel,
         .atten    = ADC_ATTEN_DB_12,
-        .bitwidth = ADC_WIDTH_BIT_12,
+        .bitwidth = ADC_BITWIDTH_12,
     };
-    ESP_RETURN_ON_ERROR(adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle),
-                        TAG,
-                        "Failed to create VBAT ADC calibration handle");
+    esp_err_t cali_ret = adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle);
+    if (cali_ret == ESP_OK)
+    {
+        vbat_adc_cali_enabled = true;
+    }
+    else if (cali_ret == ESP_ERR_NOT_SUPPORTED)
+    {
+        vbat_adc_cali_enabled = false;
+        ESP_LOGW(TAG, "ADC calibration not supported on this target, using raw readings");
+    }
+    else
+    {
+        ESP_RETURN_ON_ERROR(cali_ret, TAG, "Failed to create VBAT ADC calibration handle");
+    }
 
     xTaskCreate(
       &vtask_battery_monitor, "battery_monitor", 2560, (void *)ctx, tskIDLE_PRIORITY, &battery_monitor_task_handle);
@@ -140,8 +151,16 @@ void vtask_battery_monitor(void *pvParameter)
         esp_err_t ret = adc_oneshot_read(vbat_adc_handle, vbat_adc_channel, &voltage_raw);
         if (ret == ESP_OK)
         {
-            adc_cali_raw_to_voltage(vbat_adc_cali_handle, voltage_raw, &voltage_mv);
-            voltage_mv *= resistor_voltage_divider;
+            if (vbat_adc_cali_enabled)
+            {
+                adc_cali_raw_to_voltage(vbat_adc_cali_handle, voltage_raw, &voltage_mv);
+            }
+            else
+            {
+                voltage_mv = voltage_raw;
+            }
+
+            voltage_mv = (int)((float)voltage_mv * resistor_voltage_divider);
             enqueue_battery_voltage(ctx, voltage_mv);
         }
         else
@@ -162,7 +181,7 @@ void vtask_battery_monitor(void *pvParameter)
         //ESP_LOGI(TAG, "Charge status: %d", chrg_stat);
 
         // Delay before the next reading
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(vbat_check_interval_ms));
     }
 }
 

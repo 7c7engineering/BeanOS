@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
+#include <dirent.h>
 #include <sys/unistd.h>
 #include "esp_flash.h"
 #include "esp_flash_spi_init.h"
@@ -12,7 +14,6 @@
 #include "esp_partition.h"
 #include "esp_vfs_fat.h"
 #include "bean_storage_usb.h"
-#include "sys/dirent.h"
 #include "bean_storage_logger.h"
 
 #define HOST_ID      SPI2_HOST //SPI3_HOST
@@ -72,24 +73,29 @@ static esp_flash_t *init_ext_flash(void)
     }
 
     // Print out the ID and size
-    uint32_t id;
+    uint32_t id = 0;
+    uint32_t flash_size = 0;
     ESP_ERROR_CHECK(esp_flash_read_id(ext_flash, &id));
-    ESP_LOGI(TAG, "Initialized external Flash, size=%" PRIu32 " KB, ID=0x%" PRIx32, ext_flash->size / 1024, id);
+    ESP_ERROR_CHECK(esp_flash_get_size(ext_flash, &flash_size));
+    ESP_LOGI(TAG, "Initialized external Flash, size=%" PRIu32 " KB, ID=0x%" PRIx32, flash_size / 1024, id);
 
     return ext_flash;
 }
 
 static const esp_partition_t *add_partition(esp_flash_t *ext_flash, const char *partition_label)
 {
+    uint32_t flash_size = 0;
+    ESP_ERROR_CHECK(esp_flash_get_size(ext_flash, &flash_size));
+
     ESP_LOGI(TAG,
              "Adding external Flash as a partition, label=\"%s\", size=%" PRIu32 " KB",
              partition_label,
-             ext_flash->size / 1024);
+             flash_size / 1024);
     const esp_partition_t *fat_partition;
     const size_t offset = 0;
     ESP_ERROR_CHECK(esp_partition_register_external(ext_flash,
                                                     offset,
-                                                    ext_flash->size,
+                                                    flash_size,
                                                     partition_label,
                                                     ESP_PARTITION_TYPE_DATA,
                                                     ESP_PARTITION_SUBTYPE_DATA_FAT,

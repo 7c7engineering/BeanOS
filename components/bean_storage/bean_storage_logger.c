@@ -2,10 +2,9 @@
 #include "bean_storage.h"
 #include "esp_log.h"
 #include "freertos/idf_additions.h"
-#include "portmacro.h"
-#include "projdefs.h"
-#include "sys/dirent.h"
+#include <dirent.h>
 #include <ctype.h>
+#include <string.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/unistd.h>
