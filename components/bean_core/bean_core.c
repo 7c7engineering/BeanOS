@@ -9,6 +9,7 @@
 #include "bean_led.h"
 #include "esp_timer.h"
 #include "esp_check.h"
+#include "driver/gpio.h"
 
 #define DUAL_DEPLOYMENT 0 // set to 1 to enable dual deployment, 0 for single deployment
 
