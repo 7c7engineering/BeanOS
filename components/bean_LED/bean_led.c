@@ -1,6 +1,5 @@
 #include "bean_led.h"
 #include "esp_check.h"
-#include "driver/gpio.h"
 #include "driver/ledc.h"
 #include "gamma.h"
 #include "bean_context.h"

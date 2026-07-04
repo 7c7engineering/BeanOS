@@ -1,6 +1,7 @@
+#include <stdint.h>
 #include <stdio.h>
+#include "bean_bits.h"
 #include "bean_context.h"
-#include "driver/adc_types_legacy.h"
 #include "esp_log.h"
 #include "esp_check.h"
 #include "bean_battery.h"
@@ -23,11 +24,51 @@ static adc_channel_t vbat_adc_channel;
 static adc_unit_t vbat_adc_unit;
 static adc_oneshot_unit_handle_t vbat_adc_handle;
 static adc_cali_handle_t vbat_adc_cali_handle;
+static bool vbat_adc_cali_enabled;
+
+// Configuration settings
+static bool vbat_logging_enabled       = true;
+static uint16_t vbat_check_interval_ms = 10000;
+
+static int last_voltage_mv = -1;
 
 TaskHandle_t battery_monitor_task_handle;
 
 esp_err_t bean_battery_init(bean_context_t *ctx)
 {
+    // Read configuration from JSON
+    const cJSON *config = config_store_get();
+    if (config)
+    {
+        const cJSON *battery_config = cJSON_GetObjectItem(config, "bean_battery");
+        if (battery_config)
+        {
+            // Read check interval
+            const cJSON *check_interval = cJSON_GetObjectItem(battery_config, "check_interval_ms");
+            if (cJSON_IsNumber(check_interval))
+            {
+                vbat_check_interval_ms = (uint16_t)cJSON_GetNumberValue(check_interval);
+                ESP_LOGI(TAG, "Battery check interval set to %d ms", vbat_check_interval_ms);
+            }
+
+            // Read logging enabled flag
+            const cJSON *logging = cJSON_GetObjectItem(battery_config, "logging");
+            if (cJSON_IsBool(logging))
+            {
+                vbat_logging_enabled = cJSON_IsTrue(logging);
+                ESP_LOGI(TAG, "Battery logging %s", vbat_logging_enabled ? "enabled" : "disabled");
+            }
+        }
+        else
+        {
+            ESP_LOGW(TAG, "No bean_battery config found, using defaults");
+        }
+    }
+    else
+    {
+        ESP_LOGW(TAG, "No config available, using defaults");
+    }
+
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_USB_DET, GPIO_MODE_INPUT), TAG, "Set USB DET pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_CHRG_STAT, GPIO_MODE_INPUT), TAG, "Set CHRG STAT pin direction failed");
     ESP_RETURN_ON_ERROR(gpio_set_direction(PIN_VBAT_ADC, GPIO_MODE_INPUT), TAG, "Set VBAT ADC pin direction failed");
@@ -42,7 +83,7 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
     };
     ESP_RETURN_ON_ERROR(adc_oneshot_new_unit(&init_config1, &vbat_adc_handle), TAG, "Failed to create VBAT ADC unit");
 
-    adc_oneshot_chan_cfg_t chan_config = { .bitwidth = ADC_WIDTH_BIT_12, .atten = ADC_ATTEN_DB_12 };
+    adc_oneshot_chan_cfg_t chan_config = { .bitwidth = ADC_BITWIDTH_12, .atten = ADC_ATTEN_DB_12 };
     ESP_RETURN_ON_ERROR(adc_oneshot_config_channel(vbat_adc_handle, vbat_adc_channel, &chan_config),
                         TAG,
                         "Failed to configure VBAT ADC channel");
@@ -51,11 +92,22 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
         .unit_id  = vbat_adc_unit,
         .chan     = vbat_adc_channel,
         .atten    = ADC_ATTEN_DB_12,
-        .bitwidth = ADC_WIDTH_BIT_12,
+        .bitwidth = ADC_BITWIDTH_12,
     };
-    ESP_RETURN_ON_ERROR(adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle),
-                        TAG,
-                        "Failed to create VBAT ADC calibration handle");
+    esp_err_t cali_ret = adc_cali_create_scheme_curve_fitting(&cali_config, &vbat_adc_cali_handle);
+    if (cali_ret == ESP_OK)
+    {
+        vbat_adc_cali_enabled = true;
+    }
+    else if (cali_ret == ESP_ERR_NOT_SUPPORTED)
+    {
+        vbat_adc_cali_enabled = false;
+        ESP_LOGW(TAG, "ADC calibration not supported on this target, using raw readings");
+    }
+    else
+    {
+        ESP_RETURN_ON_ERROR(cali_ret, TAG, "Failed to create VBAT ADC calibration handle");
+    }
 
     xTaskCreate(
       &vtask_battery_monitor, "battery_monitor", 2560, (void *)ctx, tskIDLE_PRIORITY, &battery_monitor_task_handle);
@@ -69,6 +121,9 @@ esp_err_t bean_battery_init(bean_context_t *ctx)
 
 esp_err_t enqueue_battery_voltage(bean_context_t *ctx, int voltage_mv)
 {
+    if (!vbat_logging_enabled)
+        return ESP_OK;
+
     log_data_t log_data = { .measurement_type  = MEASUREMENT_TYPE_BATTERY_VOLTAGE,
                             .timestamp         = esp_log_timestamp(),
                             .measurement_value = "" };
@@ -98,8 +153,17 @@ void vtask_battery_monitor(void *pvParameter)
         esp_err_t ret = adc_oneshot_read(vbat_adc_handle, vbat_adc_channel, &voltage_raw);
         if (ret == ESP_OK)
         {
-            adc_cali_raw_to_voltage(vbat_adc_cali_handle, voltage_raw, &voltage_mv);
-            voltage_mv *= resistor_voltage_divider;
+            if (vbat_adc_cali_enabled)
+            {
+                adc_cali_raw_to_voltage(vbat_adc_cali_handle, voltage_raw, &voltage_mv);
+            }
+            else
+            {
+                voltage_mv = voltage_raw;
+            }
+
+            voltage_mv      = (int)((float)voltage_mv * resistor_voltage_divider);
+            last_voltage_mv = voltage_mv;
             enqueue_battery_voltage(ctx, voltage_mv);
         }
         else
@@ -120,8 +184,13 @@ void vtask_battery_monitor(void *pvParameter)
         //ESP_LOGI(TAG, "Charge status: %d", chrg_stat);
 
         // Delay before the next reading
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(vbat_check_interval_ms));
     }
+}
+
+int bean_battery_get_voltage_mv(void)
+{
+    return last_voltage_mv;
 }
 
 bool bean_battery_is_usb_powered(void)

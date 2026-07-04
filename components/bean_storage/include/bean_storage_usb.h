@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #define STORAGE_BASE_PATH "/extflash"
+#define CONFIG_FILE_NAME  "conf.json"
 esp_err_t bean_storage_usb_init(wl_handle_t s_wl_handle);
 esp_err_t storage_expose_usb(void);
 esp_err_t storage_hide_usb(void);
