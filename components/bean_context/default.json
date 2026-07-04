@@ -134,6 +134,25 @@
             }
         }
     },
+    "bean_webui": {
+        "enabled": true,
+        "wifi": {
+            "mode": "apsta",
+            "ap": {
+                "ssid": "",
+                "password": "skybean123",
+                "channel": 6,
+                "max_connections": 2
+            },
+            "sta": {
+                "ssid": "",
+                "password": ""
+            },
+            "disable_on_takeoff": false
+        },
+        "mdns_hostname": "skybean",
+        "sensor_update_hz": 5
+    },
     "bean_battery": {
         "check_interval_ms": 5000,
         "logging": true,

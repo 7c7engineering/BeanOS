@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skybean</title>
+<style>
+:root {
+  --bg: #14181f;
+  --card: #1d232d;
+  --text: #e6e9ee;
+  --muted: #8b94a3;
+  --accent: #4da3ff;
+  --armed: #e5484d;
+  --safe: #46a758;
+  font-size: 16px;
+}
+* { box-sizing: border-box; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 12px 24px;
+}
+header { display: flex; align-items: center; gap: 10px; padding: 16px 4px; }
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: #555; margin-left: auto; flex-shrink: 0; }
+.dot.live { background: var(--safe); }
+#connect-bar { display: flex; gap: 8px; margin-bottom: 14px; }
+#connect-bar[hidden] { display: none; }
+#host-input {
+  flex: 1; padding: 10px; font-size: 1rem;
+  color: var(--text); background: var(--card);
+  border: 1px solid #333c49; border-radius: 8px;
+}
+#host-input:focus { outline: none; border-color: var(--accent); }
+.card { background: var(--card); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.badge {
+  padding: 2px 12px; border-radius: 999px; font-weight: 600; font-size: .9rem;
+  background: #333c49; color: var(--muted);
+}
+.badge.armed { background: var(--armed); color: #fff; }
+.badge.safe { background: var(--safe); color: #fff; }
+.grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 10px 0; }
+.grid > span:nth-child(odd) { color: var(--muted); }
+.grid > span:nth-child(even) { text-align: right; font-variant-numeric: tabular-nums; }
+button {
+  width: 100%; padding: 14px; margin-top: 8px;
+  font-size: 1.1rem; font-weight: 700; color: #fff;
+  background: var(--safe); border: 0; border-radius: 8px; cursor: pointer;
+}
+button.armed { background: var(--armed); }
+button:disabled { opacity: .5; cursor: default; }
+button.small, td button {
+  width: auto; padding: 4px 12px; margin: 0;
+  font-size: .85rem; font-weight: 500; background: #333c49;
+}
+#connect-btn { width: auto; padding: 10px 18px; margin: 0; font-size: 1rem; background: var(--accent); }
+button.accent { background: var(--accent); }
+.form-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; align-items: center; margin: 10px 0; }
+.form-grid label { color: var(--muted); }
+.form-grid input, .form-grid select {
+  padding: 8px; font-size: 1rem; color: var(--text);
+  background: var(--bg); border: 1px solid #333c49; border-radius: 6px; width: 100%;
+}
+.form-grid input:focus, .form-grid select:focus { outline: none; border-color: var(--accent); }
+#wifi-note { color: var(--muted); margin-top: 10px; }
+#wifi-note button { margin-left: 8px; }
+td button.danger { background: var(--armed); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 6px 4px; text-align: left; font-size: .9rem; }
+th { color: var(--muted); font-weight: 500; }
+td:nth-child(2) { font-variant-numeric: tabular-nums; }
+a { color: var(--accent); text-decoration: none; }
+footer { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 8px; }
+#no-logs { color: var(--muted); padding: 8px 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Skybean</h1>
+  <span id="conn" class="dot" title="live data link"></span>
+</header>
+
+<!-- Shown only when the page is opened locally (file://) instead of served from the device -->
+<div id="connect-bar" hidden>
+  <input type="text" id="host-input" placeholder="skybean host / ip (e.g. 192.168.4.1)" spellcheck="false">
+  <button id="connect-btn">Connect</button>
+</div>
+
+<main>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Status</h2>
+    <span id="state-badge" class="badge">…</span>
+  </div>
+  <div class="grid">
+    <span>Battery</span><span id="battery">–</span>
+    <span>Power</span><span id="power">–</span>
+    <span>Firmware</span><span id="fw">–</span>
+    <span>Uptime</span><span id="uptime">–</span>
+    <span>Free heap</span><span id="heap">–</span>
+  </div>
+  <button id="arm-btn" disabled>…</button>
+</section>
+
+<section class="card">
+  <h2>Live data</h2>
+  <div class="grid live">
+    <span>Pressure</span><span id="p">–</span>
+    <span>Temperature</span><span id="tc">–</span>
+    <span>Accel X / Y / Z</span><span><span id="ax">–</span> / <span id="ay">–</span> / <span id="az">–</span> m/s²</span>
+    <span>Gyro X / Y / Z</span><span><span id="gx">–</span> / <span id="gy">–</span> / <span id="gz">–</span> rad/s</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2>WiFi settings</h2>
+  <div class="form-grid">
+    <label for="wifi-mode">Mode</label>
+    <select id="wifi-mode">
+      <option value="ap">Access point only</option>
+      <option value="apsta">Access point + join network</option>
+      <option value="sta">Join network (AP if not found)</option>
+    </select>
+    <label for="sta-ssid">Network SSID</label>
+    <input type="text" id="sta-ssid" autocomplete="off" spellcheck="false">
+    <label for="sta-psk">Password</label>
+    <input type="password" id="sta-psk" autocomplete="off">
+  </div>
+  <button id="wifi-save" class="accent" disabled>Save WiFi settings</button>
+  <p id="wifi-note" hidden>Saved. Settings apply after a reboot.
+    <button id="reboot-btn" class="small">Reboot now</button></p>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Flight logs</h2>
+    <button id="refresh-logs" class="small">Refresh</button>
+  </div>
+  <table id="log-table">
+    <thead><tr><th>File</th><th>Size</th><th></th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p id="no-logs" hidden>No logs on the device.</p>
+</section>
+
+</main>
+<footer>Skybean flight logger · <span id="host-label">not connected</span></footer>
+
+<script>
+'use strict';
+
+const $ = (id) => document.getElementById(id);
+const LS_HOST = 'skybean_host_v1';
+
+/* Served from the ESP32 itself → its address is authoritative for the API/WS host.
+   Opened from file:// → the user supplies the host via the connect bar. */
+const SERVED_FROM_DEVICE = location.protocol.startsWith('http') && !!location.host;
+
+let host = SERVED_FROM_DEVICE ? location.host : (localStorage.getItem(LS_HOST) || '');
+let armed = false;
+let ws = null;
+let wsBackoff = 1000;
+
+const api = (path) => `http://${host}${path}`;
+
+/* ---------- connect bar (local development mode) ---------- */
+
+if (!SERVED_FROM_DEVICE) {
+  $('connect-bar').hidden = false;
+  $('host-input').value = host;
+  const connect = () => {
+    const h = $('host-input').value.trim();
+    if (!h) { $('host-input').focus(); return; }
+    host = h;
+    try { localStorage.setItem(LS_HOST, host); } catch (e) {}
+    setHost();
+    wsBackoff = 1000;
+    if (ws) ws.close(); else connectWs();
+    refreshStatus();
+    refreshLogs();
+    loadWifiSettings();
+  };
+  $('connect-btn').addEventListener('click', connect);
+  $('host-input').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') connect(); });
+}
+
+function setHost() {
+  $('host-label').textContent = host || 'not connected';
+}
+
+/* ---------- status ---------- */
+
+function fmtUptime(ms) {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m ${s % 60}s`;
+}
+
+function applyStatus(st) {
+  armed = st.armed;
+  const badge = $('state-badge');
+  badge.textContent = st.flight_state;
+  badge.className = 'badge ' + (armed ? 'armed' : 'safe');
+  const btn = $('arm-btn');
+  btn.textContent = armed ? 'Disarm' : 'Arm';
+  btn.className = armed ? 'armed' : '';
+  btn.disabled = false;
+  $('battery').textContent = st.battery_mv < 0 ? '–' : (st.battery_mv / 1000).toFixed(2) + ' V';
+  $('power').textContent = st.usb_powered ? (st.charging ? 'USB, charging' : 'USB') : 'battery';
+  $('fw').textContent = st.fw_version;
+  $('uptime').textContent = fmtUptime(st.uptime_ms);
+  $('heap').textContent = Math.round(st.free_heap / 1024) + ' kB';
+}
+
+async function refreshStatus() {
+  if (!host) return;
+  try {
+    applyStatus(await (await fetch(api('/api/status'))).json());
+  } catch (e) {
+    $('arm-btn').disabled = true;
+  }
+}
+
+$('arm-btn').addEventListener('click', async () => {
+  if (armed && !confirm('Disarm the logger?')) return;
+  $('arm-btn').disabled = true;
+  try {
+    applyStatus(await (await fetch(api(armed ? '/api/disarm' : '/api/arm'), { method: 'POST' })).json());
+  } catch (e) {
+    refreshStatus();
+  }
+});
+
+/* ---------- live data over websocket ---------- */
+
+function connectWs() {
+  if (!host) return;
+  ws = new WebSocket(`ws://${host}/ws`);
+  ws.onopen = () => {
+    wsBackoff = 1000;
+    $('conn').classList.add('live');
+  };
+  ws.onmessage = (ev) => {
+    const d = JSON.parse(ev.data);
+    $('p').textContent = (d.p / 100).toFixed(2) + ' hPa';
+    $('tc').textContent = d.tc.toFixed(2) + ' °C';
+    for (const k of ['ax', 'ay', 'az']) $(k).textContent = d[k].toFixed(2);
+    for (const k of ['gx', 'gy', 'gz']) $(k).textContent = d[k].toFixed(3);
+    if (d.armed !== armed) refreshStatus(); // state changed from another client
+  };
+  ws.onclose = () => {
+    ws = null;
+    $('conn').classList.remove('live');
+    setTimeout(connectWs, wsBackoff);
+    wsBackoff = Math.min(wsBackoff * 2, 8000);
+  };
+}
+
+/* ---------- wifi settings ---------- */
+
+async function loadWifiSettings() {
+  if (!host) return;
+  try {
+    const cfg = await (await fetch(api('/api/config'))).json();
+    const wifi = cfg.bean_webui.wifi;
+    $('wifi-mode').value = wifi.mode;
+    $('sta-ssid').value = wifi.sta.ssid;
+    $('sta-psk').value = wifi.sta.password;
+    $('wifi-save').disabled = false;
+  } catch (e) { /* stays disabled until connected */ }
+}
+
+$('wifi-save').addEventListener('click', async () => {
+  const mode = $('wifi-mode').value;
+  const ssid = $('sta-ssid').value.trim();
+  if (mode !== 'ap' && !ssid) { alert('Enter the network SSID to join.'); return; }
+  const body = { bean_webui: { wifi: { mode, sta: { ssid, password: $('sta-psk').value } } } };
+  $('wifi-save').disabled = true;
+  try {
+    const res = await (await fetch(api('/api/config'), { method: 'POST', body: JSON.stringify(body) })).json();
+    if (res.type_mismatches) alert('Some settings were rejected by the device.');
+    $('wifi-note').hidden = false;
+  } catch (e) {
+    alert('Saving failed — check the connection.');
+  }
+  $('wifi-save').disabled = false;
+});
+
+$('reboot-btn').addEventListener('click', async () => {
+  if (!confirm('Reboot the Skybean now?')) return;
+  try { await fetch(api('/api/reboot'), { method: 'POST' }); } catch (e) {}
+  $('wifi-note').hidden = true;
+});
+
+/* ---------- flight logs ---------- */
+
+function fmtSize(b) {
+  return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB'
+       : b >= 1024 ? (b / 1024).toFixed(1) + ' kB'
+       : b + ' B';
+}
+
+async function refreshLogs() {
+  if (!host) return;
+  let files;
+  try {
+    files = (await (await fetch(api('/api/logs'))).json()).files;
+  } catch (e) {
+    return;
+  }
+  files.sort((a, b) => a.name.localeCompare(b.name));
+  const tbody = $('log-table').querySelector('tbody');
+  tbody.textContent = '';
+  $('no-logs').hidden = files.length > 0;
+  for (const f of files) {
+    const tr = document.createElement('tr');
+
+    const name = document.createElement('td');
+    name.textContent = f.name + (f.active ? ' •' : '');
+    name.title = f.active ? 'currently being written' : '';
+
+    const size = document.createElement('td');
+    size.textContent = fmtSize(f.size);
+
+    const dl = document.createElement('td');
+    const a = document.createElement('a');
+    a.href = api('/api/logs/download?name=' + encodeURIComponent(f.name));
+    a.textContent = 'Download';
+    dl.appendChild(a);
+
+    const del = document.createElement('td');
+    const btn = document.createElement('button');
+    btn.textContent = 'Delete';
+    btn.className = 'danger';
+    btn.disabled = f.active;
+    btn.addEventListener('click', async () => {
+      if (!confirm(`Delete ${f.name}?`)) return;
+      await fetch(api('/api/logs?name=' + encodeURIComponent(f.name)), { method: 'DELETE' });
+      refreshLogs();
+    });
+    del.appendChild(btn);
+
+    tr.append(name, size, dl, del);
+    tbody.appendChild(tr);
+  }
+}
+
+$('refresh-logs').addEventListener('click', refreshLogs);
+
+/* ---------- init ---------- */
+
+setHost();
+refreshStatus();
+setInterval(refreshStatus, 5000);
+connectWs();
+refreshLogs();
+loadWifiSettings();
+</script>
+</body>
+</html>

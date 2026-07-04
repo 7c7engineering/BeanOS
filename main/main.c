@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <esp_log.h>
+#include "esp_attr.h"
 #include "esp_check.h"
 #include "esp_event.h"
+#include "esp_system.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include <freertos/task.h>
@@ -16,12 +18,18 @@
 #include "bean_storage.h"
 #include "bean_battery.h"
 #include "bean_context.h"
+#include "bean_webui.h"
 #include "hal/usb_serial_jtag_ll.h"
 #include "cJSON.h"
 
 static char TAG[] = "MAIN";
 
 static bean_context_t *bean_context = NULL; // The main bean context that is shared between components
+
+// Survives soft resets (not power cycles): set when USB MSC failed so the next
+// boot skips MSC instead of retrying it into a reboot loop
+RTC_NOINIT_ATTR static uint32_t msc_failed_marker;
+#define MSC_FAILED_MAGIC 0xB5C0FA11u
 
 esp_err_t bean_init()
 {
@@ -56,74 +64,52 @@ void app_main()
     bean_beep_sound(NOTE_E5, 100);
 
     // If powered by USB and not in development mode
-    if (bean_battery_is_usb_powered() && !usb_serial_jtag_ll_txfifo_writable())
+    if (bean_battery_is_usb_powered() && !usb_serial_jtag_ll_txfifo_writable() && msc_failed_marker != MSC_FAILED_MAGIC)
     {
         bean_context->is_not_usb_msc = false;
         ESP_LOGI(TAG, "Powered by USB: switching to MSC mode");
         vTaskDelay(8000 / portTICK_PERIOD_MS);
-        storage_enable_usb_msc();
-        // Prevent it from continuing in the code
-        // The device should now only work as an USB MSC device
-        while (1)
+        if (storage_enable_usb_msc() == ESP_OK)
         {
-            // Display slow flashing soft white LED
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
-            bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 50, 50, 50 });
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
-            bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+            // Prevent it from continuing in the code
+            // The device should now only work as an USB MSC device
+            while (1)
+            {
+                // Display slow flashing soft white LED
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
+                bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 50, 50, 50 });
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
+                bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
+            }
         }
+        // A failed MSC handover leaves the filesystem in a broken state, so
+        // continuing in place is not safe. Restart once; the marker makes the
+        // next boot skip MSC and come up as a normal logger with the web UI.
+        ESP_LOGE(TAG, "USB MSC failed to start, restarting into normal mode");
+        msc_failed_marker = MSC_FAILED_MAGIC;
+        esp_restart();
     }
-    else
+
+    bean_context->is_not_usb_msc = true;
+
+    // The web UI must never brick flight logging, so a failure only warns
+    if (bean_webui_init(bean_context) != ESP_OK)
     {
-        bean_context->is_not_usb_msc = true;
+        ESP_LOGW(TAG, "Web UI failed to start; continuing without it");
     }
 
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 255, 255, 255 });
     vTaskDelay(3000 / portTICK_PERIOD_MS);
     bean_led_set_color(LED_BOTH, (led_color_rgb_t){ 0, 0, 0 });
 
+    // Sensor polling lives in the web UI sampler task; this loop is only a heartbeat
     while (1)
     {
-
         vTaskDelay(5000 / portTICK_PERIOD_MS);
         bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 50, 0 });
         vTaskDelay(5000 / portTICK_PERIOD_MS);
         bean_led_set_color(LED_L1, (led_color_rgb_t){ 0, 0, 0 });
 
-        if (bean_altimeter_update() == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Pressure: %.2f Pa, Temperature: %.2f C",
-                     bean_altimeter_get_pressure(),
-                     bean_altimeter_get_temperature());
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to read from altimeter");
-        }
-        if (bean_imu_update_accel() == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Accel X: %.2f m/s^2, Y: %.2f m/s^2, Z: %.2f m/s^2",
-                     get_x_accel_data(),
-                     get_y_accel_data(),
-                     get_z_accel_data());
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to update accelerometer data");
-        }
-        if (bean_imu_update_gyro() == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Gyro X: %.2f rad/s, Y: %.2f rad/s, Z: %.2f rad/s",
-                     get_x_gyro_data(),
-                     get_y_gyro_data(),
-                     get_z_gyro_data());
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to update gyroscope data");
-        }
+        ESP_LOGI(TAG, "Free heap: %lu bytes", esp_get_free_heap_size());
     }
 }

@@ -28,7 +28,9 @@ static bool vbat_adc_cali_enabled;
 
 // Configuration settings
 static bool vbat_logging_enabled       = true;
-static uint16_t vbat_check_interval_ms = 5000;
+static uint16_t vbat_check_interval_ms = 10000;
+
+static int last_voltage_mv = -1;
 
 TaskHandle_t battery_monitor_task_handle;
 
@@ -160,7 +162,8 @@ void vtask_battery_monitor(void *pvParameter)
                 voltage_mv = voltage_raw;
             }
 
-            voltage_mv = (int)((float)voltage_mv * resistor_voltage_divider);
+            voltage_mv      = (int)((float)voltage_mv * resistor_voltage_divider);
+            last_voltage_mv = voltage_mv;
             enqueue_battery_voltage(ctx, voltage_mv);
         }
         else
@@ -183,6 +186,11 @@ void vtask_battery_monitor(void *pvParameter)
         // Delay before the next reading
         vTaskDelay(pdMS_TO_TICKS(vbat_check_interval_ms));
     }
+}
+
+int bean_battery_get_voltage_mv(void)
+{
+    return last_voltage_mv;
 }
 
 bool bean_battery_is_usb_powered(void)

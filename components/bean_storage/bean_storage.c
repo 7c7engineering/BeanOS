@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <inttypes.h>
 #include <dirent.h>
+#include <sys/stat.h>
 #include <sys/unistd.h>
 #include "esp_flash.h"
 #include "esp_flash_spi_init.h"
@@ -110,7 +111,7 @@ static const esp_partition_t *add_partition(esp_flash_t *ext_flash, const char *
 static bool mount_fatfs(const char *partition_label)
 {
     ESP_LOGI(TAG, "Mounting FAT filesystem");
-    const esp_vfs_fat_mount_config_t mount_config = { .max_files              = 4,
+    const esp_vfs_fat_mount_config_t mount_config = { .max_files              = 6,
                                                       .format_if_mount_failed = true,
                                                       .allocation_unit_size   = CONFIG_WL_SECTOR_SIZE };
     esp_err_t err = esp_vfs_fat_spiflash_mount_rw_wl(base_path, partition_label, &mount_config, &s_wl_handle);
@@ -219,6 +220,30 @@ esp_err_t storage_list_files()
     while ((pDirent = readdir(dir)) != NULL)
     {
         ESP_LOGI(TAG, "File: %s", pDirent->d_name);
+    }
+    closedir(dir);
+    return ESP_OK;
+}
+
+esp_err_t storage_iterate_files(storage_file_cb_t cb, void *arg)
+{
+    DIR *dir = opendir(base_path);
+    if (dir == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open directory");
+        return ESP_FAIL;
+    }
+
+    struct dirent *pDirent;
+    struct stat st;
+    char full_path[strlen(base_path) + sizeof(pDirent->d_name) + 2];
+    while ((pDirent = readdir(dir)) != NULL)
+    {
+        if (pDirent->d_type != DT_REG)
+            continue;
+        snprintf(full_path, sizeof(full_path), "%s/%s", base_path, pDirent->d_name);
+        size_t size = (stat(full_path, &st) == 0) ? st.st_size : 0;
+        cb(pDirent->d_name, size, arg);
     }
     closedir(dir);
     return ESP_OK;
@@ -417,9 +442,19 @@ esp_err_t init_config_file(bean_context_t *ctx)
     return ESP_OK;
 }
 
+esp_err_t storage_save_config(void)
+{
+    char *abs_filename = malloc(strlen(base_path) + strlen(CONFIG_FILE_NAME) + 2);
+    strcpy(abs_filename, base_path);
+    strcat(abs_filename, "/");
+    strcat(abs_filename, CONFIG_FILE_NAME);
+    esp_err_t err = write_config_file(NULL, abs_filename);
+    free(abs_filename);
+    return err;
+}
+
 esp_err_t storage_enable_usb_msc(void)
 {
     ESP_LOGI(TAG, "Enabling USB MSC");
-    bean_storage_usb_init(s_wl_handle);
-    return ESP_OK;
+    return bean_storage_usb_init(s_wl_handle);
 }

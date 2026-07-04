@@ -28,6 +28,12 @@ typedef enum measurement_type
     MEASUREMENT_TYPE_BATTERY_VOLTAGE
 } measurement_type_t;
 
+typedef enum bean_event_id
+{
+    BEAN_EVENT_ARMED    = 1,
+    BEAN_EVENT_DISARMED = 2,
+} bean_event_id_t;
+
 typedef struct event_data
 {
     int event_id;

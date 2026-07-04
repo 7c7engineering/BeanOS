@@ -63,6 +63,24 @@ esp_err_t bean_storage_logger_init()
     return ESP_OK;
 }
 
+bool storage_logger_file_in_use(const char *filename)
+{
+    char active_name[13];
+    if (data_log_file != NULL)
+    {
+        snprintf(active_name, sizeof(active_name), "log_d%03d.csv", log_number);
+        if (strcmp(filename, active_name) == 0)
+            return true;
+    }
+    if (event_log_file != NULL)
+    {
+        snprintf(active_name, sizeof(active_name), "log_e%03d.csv", log_number);
+        if (strcmp(filename, active_name) == 0)
+            return true;
+    }
+    return false;
+}
+
 void vtask_data_log_handler(void *pvParameter)
 {
     bean_context_t *ctx = (bean_context_t *)pvParameter;
