@@ -2,10 +2,9 @@
 #include "bean_storage.h"
 #include "esp_log.h"
 #include "freertos/idf_additions.h"
-#include "portmacro.h"
-#include "projdefs.h"
-#include "sys/dirent.h"
+#include <dirent.h>
 #include <ctype.h>
+#include <string.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/unistd.h>
@@ -62,6 +61,24 @@ esp_err_t bean_storage_logger_init()
     ESP_LOGI(TAG, "Using log_number %u", log_number);
 
     return ESP_OK;
+}
+
+bool storage_logger_file_in_use(const char *filename)
+{
+    char active_name[13];
+    if (data_log_file != NULL)
+    {
+        snprintf(active_name, sizeof(active_name), "log_d%03d.csv", log_number);
+        if (strcmp(filename, active_name) == 0)
+            return true;
+    }
+    if (event_log_file != NULL)
+    {
+        snprintf(active_name, sizeof(active_name), "log_e%03d.csv", log_number);
+        if (strcmp(filename, active_name) == 0)
+            return true;
+    }
+    return false;
 }
 
 void vtask_data_log_handler(void *pvParameter)
