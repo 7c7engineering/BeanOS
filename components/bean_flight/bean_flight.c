@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "bean_core.h"
+#include "bean_flight.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -13,9 +13,9 @@
 
 #define DUAL_DEPLOYMENT 0 // set to 1 to enable dual deployment, 0 for single deployment
 
-const static char TAG[] = "BEAN_CORE";
+const static char TAG[] = "BEAN_FLIGHT";
 
-static TaskHandle_t core_task_handle; // handle of the core task
+static TaskHandle_t flight_task_handle; // handle of the flight task
 uint8_t launch_counter            = 0; //counter for launch detection
 uint8_t apogee_counter            = 0; //counter for apogee detection
 int64_t takeoff_timestamp_ms      = 0; //timestamp of takeoff in ms
@@ -25,9 +25,9 @@ float current_recorded_max_height = 0;
 double reference_temperature      = 0; //reference temperature at launch
 double reference_pressure         = 0; //reference pressure at launch
 
-static core_flight_state_t current_flight_state = FLIGHT_STATE_PRELAUNCH;
+static flight_state_t current_flight_state = FLIGHT_STATE_PRELAUNCH;
 
-esp_err_t bean_core_goto_state(core_flight_state_t new_state)
+esp_err_t bean_flight_goto_state(flight_state_t new_state)
 {
     ESP_LOGI(TAG, "Trying to transition to state %d from state %d", new_state, current_flight_state);
     // handle any state transition logic here
@@ -117,13 +117,13 @@ esp_err_t bean_core_goto_state(core_flight_state_t new_state)
     return ESP_OK;
 }
 
-esp_err_t bean_core_process_landed(bean_context_t *ctx)
+esp_err_t bean_flight_process_landed(bean_context_t *ctx)
 {
     // landed state, do nothing or log data
     return ESP_OK;
 }
 
-esp_err_t bean_core_process_main_out(bean_context_t *ctx)
+esp_err_t bean_flight_process_main_out(bean_context_t *ctx)
 {
     //check for landing conditions, TODO: based on timer and mean altitude over 10 seconds staying withing a range (peak-to-peak)
     current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
@@ -132,24 +132,24 @@ esp_err_t bean_core_process_main_out(bean_context_t *ctx)
          (apogee_timestamp_ms +
           LANDED_TIME_AFTER_MAIN))) //check if height is lower than threshold or time after drogue deployment
     {
-        bean_core_goto_state(FLIGHT_STATE_LANDED);
+        bean_flight_goto_state(FLIGHT_STATE_LANDED);
     }
     return ESP_OK;
 }
 
-esp_err_t bean_core_process_drogue_out(bean_context_t *ctx)
+esp_err_t bean_flight_process_drogue_out(bean_context_t *ctx)
 {
     //check for altitude treshold to deploy main, based on altimeter reading
     current_height = calculate_height(bean_altimeter_get_pressure(), reference_temperature, reference_pressure);
     if (current_height < MAIN_HEIGHT_DEPLOY) //check if height is lower than threshold and time after drogue deployment
     {
-        bean_core_goto_state(FLIGHT_STATE_MAIN_OUT);
+        bean_flight_goto_state(FLIGHT_STATE_MAIN_OUT);
         return ESP_OK;
     }
     return ESP_OK;
 }
 
-esp_err_t bean_core_process_ascent(bean_context_t *ctx)
+esp_err_t bean_flight_process_ascent(bean_context_t *ctx)
 {
     // check for apogee conditions, alt based & timer as safety
     bean_altimeter_update();
@@ -170,9 +170,9 @@ esp_err_t bean_core_process_ascent(bean_context_t *ctx)
             apogee_timestamp_ms =
               esp_timer_get_time() / 1000; //take a timestamp for the apogee time, needed for main deployment timing
 #if DUAL_DEPLOYMENT
-            bean_core_goto_state(FLIGHT_STATE_DROGUE_OUT);
+            bean_flight_goto_state(FLIGHT_STATE_DROGUE_OUT);
 #else
-            bean_core_goto_state(FLIGHT_STATE_MAIN_OUT);
+            bean_flight_goto_state(FLIGHT_STATE_MAIN_OUT);
 #endif
             return ESP_OK;
         }
@@ -186,7 +186,7 @@ esp_err_t bean_core_process_ascent(bean_context_t *ctx)
     return ESP_OK;
 }
 
-esp_err_t bean_core_process_armed(bean_context_t *ctx)
+esp_err_t bean_flight_process_armed(bean_context_t *ctx)
 {
     //check for takeoff conditions,accel based
     float accel_mag =
@@ -201,7 +201,7 @@ esp_err_t bean_core_process_armed(bean_context_t *ctx)
             ESP_LOGI(TAG, "YEET!");
             takeoff_timestamp_ms =
               esp_timer_get_time() / 1000; //take a timestamp for the takeoff time, needed for apogee detection
-            bean_core_goto_state(FLIGHT_STATE_ASCENT);
+            bean_flight_goto_state(FLIGHT_STATE_ASCENT);
             return ESP_OK;
         }
     }
@@ -213,11 +213,11 @@ esp_err_t bean_core_process_armed(bean_context_t *ctx)
     return ESP_OK;
 }
 
-esp_err_t bean_core_process_prelaunch(bean_context_t *ctx)
+esp_err_t bean_flight_process_prelaunch(bean_context_t *ctx)
 {
     //chill out and wait for launch, could be temporarily a timer based wait to go to armed
     vTaskDelay(pdMS_TO_TICKS(10000)); // wait for 10 seconds
-    bean_core_goto_state(FLIGHT_STATE_ARMED);
+    bean_flight_goto_state(FLIGHT_STATE_ARMED);
     return ESP_OK;
 }
 
@@ -251,7 +251,7 @@ esp_err_t log_measurements(bean_context_t *ctx)
     return ESP_OK;
 }
 
-void core_task(void *arg)
+void flight_task(void *arg)
 {
     bean_context_t *ctx = (bean_context_t *)arg;
     while (1)
@@ -266,22 +266,22 @@ void core_task(void *arg)
         switch (current_flight_state)
         {
         case FLIGHT_STATE_PRELAUNCH:
-            bean_core_process_prelaunch(ctx);
+            bean_flight_process_prelaunch(ctx);
             break;
         case FLIGHT_STATE_ARMED:
-            bean_core_process_armed(ctx);
+            bean_flight_process_armed(ctx);
             break;
         case FLIGHT_STATE_ASCENT:
-            bean_core_process_ascent(ctx);
+            bean_flight_process_ascent(ctx);
             break;
         case FLIGHT_STATE_DROGUE_OUT:
-            bean_core_process_drogue_out(ctx);
+            bean_flight_process_drogue_out(ctx);
             break;
         case FLIGHT_STATE_MAIN_OUT:
-            bean_core_process_main_out(ctx);
+            bean_flight_process_main_out(ctx);
             break;
         case FLIGHT_STATE_LANDED:
-            bean_core_process_landed(ctx);
+            bean_flight_process_landed(ctx);
             break;
         default:
             break;
@@ -291,19 +291,19 @@ void core_task(void *arg)
     }
 }
 
-esp_err_t bean_core_init(bean_context_t *ctx)
+esp_err_t bean_flight_init(bean_context_t *ctx)
 {
-    ESP_LOGI(TAG, "Initializing Bean Core");
+    ESP_LOGI(TAG, "Initializing Bean Flight");
     bean_altimeter_update(); //initial update to get reference pressure and temperature
     reference_pressure    = bean_altimeter_get_pressure(); //initial reference pressure and temperature
     reference_temperature = bean_altimeter_get_temperature() + 273.15;
     ESP_LOGI(TAG, "Reference pressure: %f Pa", reference_pressure);
     ESP_LOGI(TAG, "Reference temperature: %f K", reference_temperature);
-    xTaskCreate(&core_task, "core_task", 1024 * 4, (void *)ctx, tskIDLE_PRIORITY, &core_task_handle);
+    xTaskCreate(&flight_task, "flight_task", 1024 * 4, (void *)ctx, tskIDLE_PRIORITY, &flight_task_handle);
 
-    if (core_task_handle == NULL)
+    if (flight_task_handle == NULL)
     {
-        ESP_LOGE(TAG, "Failed to create core task");
+        ESP_LOGE(TAG, "Failed to create flight task");
         return ESP_FAIL;
     }
     return ESP_OK;

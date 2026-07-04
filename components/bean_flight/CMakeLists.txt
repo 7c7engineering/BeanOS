@@ -1,4 +1,4 @@
 set(priv_requires "bean_context" "esp_driver_gpio" "freertos" "bean_IMU" "bean_LED" "bean_altimeter" "esp_timer")
-idf_component_register(SRCS "bean_core.c"
+idf_component_register(SRCS "bean_flight.c"
                     INCLUDE_DIRS "include"
                     PRIV_REQUIRES ${priv_requires})

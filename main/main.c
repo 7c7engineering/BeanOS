@@ -18,7 +18,7 @@
 #include "bean_storage.h"
 #include "bean_battery.h"
 #include "bean_context.h"
-#include "bean_core.h"
+#include "bean_flight.h"
 #include "pins.h"
 #include "driver/gpio.h"
 #include "bean_webui.h"
@@ -44,7 +44,7 @@ esp_err_t bean_init()
     ESP_RETURN_ON_ERROR(bean_altimeter_init(), TAG, "BMP390 Init failed");
     ESP_RETURN_ON_ERROR(bean_imu_init(), TAG, "BMI088 Init failed");
     ESP_RETURN_ON_ERROR(bean_beep_init(), TAG, "Beep Init failed");
-    ESP_RETURN_ON_ERROR(bean_core_init(bean_context), TAG, "Core Init failed");
+    ESP_RETURN_ON_ERROR(bean_flight_init(bean_context), TAG, "Flight Init failed");
     return ESP_OK;
 }
 

@@ -29,9 +29,9 @@ typedef enum
     FLIGHT_STATE_DROGUE_OUT,
     FLIGHT_STATE_MAIN_OUT,
     FLIGHT_STATE_LANDED
-} core_flight_state_t;
+} flight_state_t;
 
-esp_err_t bean_core_init(bean_context_t *ctx);
+esp_err_t bean_flight_init(bean_context_t *ctx);
 float calculate_acceleration_vector_magnitude(float x, float y, float z);
 double calculate_height(double pressure, double ref_temperature, double ref_pressure);
-esp_err_t bean_core_goto_state(core_flight_state_t new_state);
+esp_err_t bean_flight_goto_state(flight_state_t new_state);
