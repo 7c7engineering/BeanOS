@@ -53,9 +53,9 @@ static void vtask_webui_sampler(void *pvParameter)
         int len          = snprintf(msg,
                            sizeof(msg),
                            "{\"t\":%lu,\"p\":%.2f,\"tc\":%.2f,"
-                           "\"ax\":%.2f,\"ay\":%.2f,\"az\":%.2f,"
-                           "\"gx\":%.3f,\"gy\":%.3f,\"gz\":%.3f,"
-                           "\"vbat\":%d,\"armed\":%s,\"state\":\"%s\"}",
+                                    "\"ax\":%.2f,\"ay\":%.2f,\"az\":%.2f,"
+                                    "\"gx\":%.3f,\"gy\":%.3f,\"gz\":%.3f,"
+                                    "\"vbat\":%d,\"armed\":%s,\"state\":\"%s\"}",
                            esp_log_timestamp(),
                            bean_altimeter_get_pressure(),
                            bean_altimeter_get_temperature(),

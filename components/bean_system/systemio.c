@@ -12,11 +12,11 @@ esp_err_t io_init()
     }
 
     i2c_master_bus_config_t conf = {
-        .i2c_port = I2C_NUM_0,
-        .sda_io_num = PIN_I2C_SDA,
-        .scl_io_num = PIN_I2C_SCL,
-        .clk_source = I2C_CLK_SRC_DEFAULT,
-        .glitch_ignore_cnt = 7,
+        .i2c_port                     = I2C_NUM_0,
+        .sda_io_num                   = PIN_I2C_SDA,
+        .scl_io_num                   = PIN_I2C_SCL,
+        .clk_source                   = I2C_CLK_SRC_DEFAULT,
+        .glitch_ignore_cnt            = 7,
         .flags.enable_internal_pullup = true,
     };
 

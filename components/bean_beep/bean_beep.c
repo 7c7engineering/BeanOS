@@ -10,7 +10,7 @@ static const ledc_timer_t BEEP_LEDC_TIMER        = LEDC_TIMER_1;
 static const ledc_channel_t BEEP_LEDC_CHANNEL_P  = LEDC_CHANNEL_6;
 static const ledc_channel_t BEEP_LEDC_CHANNEL_N  = LEDC_CHANNEL_7;
 static const ledc_timer_bit_t BEEP_DUTY_RES_BITS = LEDC_TIMER_10_BIT;
-static bool beep_initialized                      = false;
+static bool beep_initialized                     = false;
 
 esp_err_t bean_beep_init()
 {
@@ -32,17 +32,17 @@ esp_err_t bean_beep_init()
         .duty       = 0,
     };
 
-    ch_cfg.channel  = BEEP_LEDC_CHANNEL_P;
-    ch_cfg.gpio_num = PIN_BUZ_P;
+    ch_cfg.channel             = BEEP_LEDC_CHANNEL_P;
+    ch_cfg.gpio_num            = PIN_BUZ_P;
     ch_cfg.flags.output_invert = 0;
-    err = ledc_channel_config(&ch_cfg);
+    err                        = ledc_channel_config(&ch_cfg);
     if (err != ESP_OK)
         return err;
 
-    ch_cfg.channel  = BEEP_LEDC_CHANNEL_N;
-    ch_cfg.gpio_num = PIN_BUZ_N;
+    ch_cfg.channel             = BEEP_LEDC_CHANNEL_N;
+    ch_cfg.gpio_num            = PIN_BUZ_N;
     ch_cfg.flags.output_invert = 1;
-    err = ledc_channel_config(&ch_cfg);
+    err                        = ledc_channel_config(&ch_cfg);
     if (err != ESP_OK)
         return err;
 

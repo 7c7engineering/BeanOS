@@ -16,9 +16,9 @@
 #include "esp_system.h"
 #include "esp_timer.h"
 
-#define WEBUI_HTTPD_STACK    8192
-#define WEBUI_DL_CHUNK       2048
-#define WEBUI_MAX_LOG_NAME   32
+#define WEBUI_HTTPD_STACK  8192
+#define WEBUI_DL_CHUNK     2048
+#define WEBUI_MAX_LOG_NAME 32
 
 static const char *TAG = "BEAN_WEBUI_HTTP";
 

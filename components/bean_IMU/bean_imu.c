@@ -34,8 +34,8 @@ uint16_t gyro_range = 0;
 static BMI08_INTF_RET_TYPE i2c_write_registers(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
     i2c_master_dev_handle_t dev = (i2c_master_dev_handle_t)intf_ptr;
-    uint8_t *buf = (uint8_t *)malloc(len + 1);
-    buf[0]       = reg_addr;
+    uint8_t *buf                = (uint8_t *)malloc(len + 1);
+    buf[0]                      = reg_addr;
     memcpy(buf + 1, reg_data, len);
 
     esp_err_t ret = i2c_master_transmit(dev, buf, len + 1, 1000);
@@ -86,13 +86,13 @@ esp_err_t bean_imu_init()
 
     if (accel_i2c_dev == NULL)
     {
-        ESP_RETURN_ON_ERROR(i2c_master_bus_add_device(i2c_bus, &accel_cfg, &accel_i2c_dev), TAG,
-                            "Failed to add accel I2C device");
+        ESP_RETURN_ON_ERROR(
+          i2c_master_bus_add_device(i2c_bus, &accel_cfg, &accel_i2c_dev), TAG, "Failed to add accel I2C device");
     }
     if (gyro_i2c_dev == NULL)
     {
-        ESP_RETURN_ON_ERROR(i2c_master_bus_add_device(i2c_bus, &gyro_cfg, &gyro_i2c_dev), TAG,
-                            "Failed to add gyro I2C device");
+        ESP_RETURN_ON_ERROR(
+          i2c_master_bus_add_device(i2c_bus, &gyro_cfg, &gyro_i2c_dev), TAG, "Failed to add gyro I2C device");
     }
 
     sensor          = (struct bmi08_dev *)malloc(sizeof(struct bmi08_dev));

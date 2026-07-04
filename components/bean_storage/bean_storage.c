@@ -74,7 +74,7 @@ static esp_flash_t *init_ext_flash(void)
     }
 
     // Print out the ID and size
-    uint32_t id = 0;
+    uint32_t id         = 0;
     uint32_t flash_size = 0;
     ESP_ERROR_CHECK(esp_flash_read_id(ext_flash, &id));
     ESP_ERROR_CHECK(esp_flash_get_size(ext_flash, &flash_size));

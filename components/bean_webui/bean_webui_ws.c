@@ -47,9 +47,7 @@ static void ws_async_send(void *arg)
     ws_async_send_t *msg = (ws_async_send_t *)arg;
     if (httpd_ws_get_fd_info(server_handle, msg->fd) == HTTPD_WS_CLIENT_WEBSOCKET)
     {
-        httpd_ws_frame_t frame = { .type    = HTTPD_WS_TYPE_TEXT,
-                                   .payload = (uint8_t *)msg->data,
-                                   .len     = msg->len };
+        httpd_ws_frame_t frame = { .type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t *)msg->data, .len = msg->len };
         esp_err_t err          = httpd_ws_send_frame_async(server_handle, msg->fd, &frame);
         if (err != ESP_OK)
         {

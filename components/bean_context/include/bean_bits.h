@@ -11,4 +11,5 @@ const static EventBits_t BEAN_SYSTEM_BATTERY_CRITICAL =
 const static EventBits_t BEAN_SYSTEM_BATTERY_CHARGING = BIT4; // Indicates the battery is charging
 const static EventBits_t BEAN_SYSTEM_BATTERY_FULL     = BIT5; // Indicates the battery is full
 const static EventBits_t BEAN_SYSTEM_USB_POWERED      = BIT6; // Indicates the system is powered via USB
-const static EventBits_t BEAN_SYSTEM_ARMED            = BIT7; // Indicates the logger is armed (currently a stub set via the web UI; takeoff detection will consume this later)
+const static EventBits_t BEAN_SYSTEM_ARMED =
+  BIT7; // Indicates the logger is armed (currently a stub set via the web UI; takeoff detection will consume this later)

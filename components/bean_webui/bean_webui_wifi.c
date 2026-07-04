@@ -17,9 +17,9 @@ static const char *TAG = "BEAN_WEBUI_WIFI";
 
 typedef enum
 {
-    WEBUI_WIFI_MODE_AP,    // access point only
+    WEBUI_WIFI_MODE_AP, // access point only
     WEBUI_WIFI_MODE_APSTA, // AP always on + join configured network
-    WEBUI_WIFI_MODE_STA,   // join configured network; fallback AP if it fails
+    WEBUI_WIFI_MODE_STA, // join configured network; fallback AP if it fails
 } webui_wifi_mode_t;
 
 static webui_wifi_mode_t wifi_mode = WEBUI_WIFI_MODE_APSTA;
@@ -57,30 +57,30 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
     {
         switch (event_id)
         {
-            case WIFI_EVENT_STA_START:
+        case WIFI_EVENT_STA_START:
+            esp_wifi_connect();
+            break;
+        case WIFI_EVENT_STA_DISCONNECTED:
+            sta_retries++;
+            if (wifi_mode == WEBUI_WIFI_MODE_STA && sta_retries >= WEBUI_STA_FALLBACK_RETRIES)
+                start_ap_fallback(); // keeps retrying STA below, AP now covers access
+            if (sta_retries < WEBUI_STA_MAX_RETRIES)
+            {
+                ESP_LOGW(TAG, "STA disconnected, reconnect attempt %d/%d", sta_retries, WEBUI_STA_MAX_RETRIES);
                 esp_wifi_connect();
-                break;
-            case WIFI_EVENT_STA_DISCONNECTED:
-                sta_retries++;
-                if (wifi_mode == WEBUI_WIFI_MODE_STA && sta_retries >= WEBUI_STA_FALLBACK_RETRIES)
-                    start_ap_fallback(); // keeps retrying STA below, AP now covers access
-                if (sta_retries < WEBUI_STA_MAX_RETRIES)
-                {
-                    ESP_LOGW(TAG, "STA disconnected, reconnect attempt %d/%d", sta_retries, WEBUI_STA_MAX_RETRIES);
-                    esp_wifi_connect();
-                }
-                else
-                {
-                    ESP_LOGW(TAG, "STA gave up after %d attempts, continuing AP-only", WEBUI_STA_MAX_RETRIES);
-                    if (wifi_mode == WEBUI_WIFI_MODE_STA)
-                        start_ap_fallback();
-                }
-                break;
-            case WIFI_EVENT_AP_STACONNECTED:
-                ESP_LOGI(TAG, "Client joined the access point");
-                break;
-            default:
-                break;
+            }
+            else
+            {
+                ESP_LOGW(TAG, "STA gave up after %d attempts, continuing AP-only", WEBUI_STA_MAX_RETRIES);
+                if (wifi_mode == WEBUI_WIFI_MODE_STA)
+                    start_ap_fallback();
+            }
+            break;
+        case WIFI_EVENT_AP_STACONNECTED:
+            ESP_LOGI(TAG, "Client joined the access point");
+            break;
+        default:
+            break;
         }
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
@@ -203,7 +203,9 @@ esp_err_t bean_webui_wifi_init(const cJSON *webui_cfg)
     if (wifi_mode != WEBUI_WIFI_MODE_STA)
         ESP_LOGI(TAG, "Access point \"%s\" started, web UI at http://192.168.4.1", (char *)ap_config.ap.ssid);
     if (wifi_mode != WEBUI_WIFI_MODE_AP)
-        ESP_LOGI(TAG, "Joining \"%s\" as station%s", sta_ssid,
+        ESP_LOGI(TAG,
+                 "Joining \"%s\" as station%s",
+                 sta_ssid,
                  wifi_mode == WEBUI_WIFI_MODE_STA ? " (AP fallback if it is not found)" : "");
 
     if (mdns_start(cfg_str(webui_cfg, "mdns_hostname", "skybean")) != ESP_OK)

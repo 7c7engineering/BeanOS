@@ -44,12 +44,12 @@ esp_err_t bean_storage_usb_init(wl_handle_t s_wl_handle)
     ESP_LOGI(TAG, "Initializing USB MSC");
 
     const tinyusb_msc_storage_config_t config_spi = {
-        .medium.wl_handle = s_wl_handle,
-        .mount_point = TINYUSB_MSC_STORAGE_MOUNT_APP,
-        .fat_fs.base_path = STORAGE_BASE_PATH,
-        .fat_fs.config.max_files = 5,
+        .medium.wl_handle                     = s_wl_handle,
+        .mount_point                          = TINYUSB_MSC_STORAGE_MOUNT_APP,
+        .fat_fs.base_path                     = STORAGE_BASE_PATH,
+        .fat_fs.config.max_files              = 5,
         .fat_fs.config.format_if_mount_failed = true,
-        .fat_fs.config.allocation_unit_size = CONFIG_WL_SECTOR_SIZE,
+        .fat_fs.config.allocation_unit_size   = CONFIG_WL_SECTOR_SIZE,
     };
 
     esp_err_t ret = tinyusb_msc_new_storage_spiflash(&config_spi, &storage_handle);
